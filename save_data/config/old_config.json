@@ -1,0 +1,31 @@
+{
+    "percentage_trade_spend": 0.2,
+    "max_open_trades": 3,
+    "max_account_loss": 0.8,
+    "timeframe": "1h", 
+    "wager_currency": "BUSD",
+    "fiat_display_currency": "USD",
+    "dry_run": true,
+
+    "exchange_id": "binance",
+    "api_key": "",
+    "secret": "",
+    "ohlcv_request_size": 500,
+
+    "symbol_whitelist": [
+        "BTC/BUSD"
+    ],
+
+    "buy_strategy": {
+        "buy_price": "bid",
+        "order_type": "market"
+    },
+
+    "sell_strategy": {
+        "sell_price": "ask",
+        "order_type": "limit",
+        "emergency_type": "market",
+        "stoploss_enabled": false,
+        "stoploss": 0.1
+    }
+}
