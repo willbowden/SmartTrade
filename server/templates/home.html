@@ -1,16 +1,25 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-        <title>SmartTrade Home</title>
-    </head>
-    <body>
-        <div class="centered_div">
-            <form action="" method="post">
-                <button name="strategy_editor" value="strategy_editor">Strategy Editor</button>
-                <button name="backtest" value="backtest">Backtest</button>
-            </form>
-        </div>
-    </body>
+  <head>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+    />
+    <title>SmartTrade Home</title>
+  </head>
+
+  <body>
+    <div class="centered_div">
+      <form action="" method="post">
+        <button name="strategy_editor" value="strategy_editor">
+          Strategy Editor
+        </button>
+        <button name="backtest" value="backtest">Backtest</button>
+      </form>
+    </div>
+  </body>
 </html>
