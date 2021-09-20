@@ -1,9 +1,9 @@
 import os
 from flask import Flask, render_template, redirect, url_for, request, session
-
-accounts = [{'username': "admin", "password": "password", "id": 1}] # FOR TEMPORARY TESTING USE. NOT FINAL.
+from dbmanager import DBManager
 
 def main():
+    dbmanager = DBManager()
     SECRET_KEY = os.urandom(32)
 
     app = Flask(__name__)
@@ -11,12 +11,13 @@ def main():
 
     @app.route("/", methods=['GET', 'POST'])
     def login(): # Login page
-        global accounts # NOT FINAL I KNOW GLOBALS ARE BAD
         msg = False
         if session.get('loggedIn') == True: # If already logged in just go to home page
             return redirect(url_for('home'))
         if request.method == 'POST' and 'username' in request.form and 'password' in request.form: # Only attempt login if method=post and form was filled.
-            for account in accounts:
+            if dbmanager.user_exists(request.form['username']):
+                account = dbmanager.get_account_by_column(column="username", value=request.form['username'])
+                print(account['username'], account['password'])
                 if account['username'] == request.form['username']:
                     if account['password'] == request.form['password']:
                         # Create session data
