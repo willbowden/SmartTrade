@@ -17,7 +17,6 @@ def main():
         if request.method == 'POST' and 'username' in request.form and 'password' in request.form: # Only attempt login if method=post and form was filled.
             if dbmanager.user_exists(request.form['username']):
                 account = dbmanager.get_account_by_column(column="username", value=request.form['username'])
-                print(account['username'], account['password'])
                 if account['username'] == request.form['username']:
                     if account['password'] == request.form['password']:
                         # Create session data
@@ -25,10 +24,30 @@ def main():
                         session['id'] = account['id']
                         session['username'] = account['username']
                         return redirect(url_for('home'))
-            if session.get('loggedIn') == None:
-                msg = 'Incorrect username/password'
+                    else:
+                        msg = 'Incorrect username/password'
+            else:
+                msg = 'Account does not exist. Please register.'
 
         return render_template("index.html", msg=msg)
+
+    @app.route("/register", methods=['GET', 'POST'])
+    def register():
+        msg = False
+        if session.get('loggedIn') == True: # If already logged in just go to home page
+            return redirect(url_for('home'))
+        if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'nickname' in request.form: # Only attempt login if method=post and form was filled.
+            if not dbmanager.user_exists(request.form['username']):
+                dbmanager.create_account(request.form['username'], request.form['password'], request.form['nickname'])
+                account = dbmanager.get_account_by_column('username', request.form['username'])
+                session['loggedIn'] = True
+                session['id'] = account['id']
+                session['username'] = account['username']
+                return redirect(url_for('home'))
+            else:
+                msg = 'Account already exists! Please log in.'
+
+        return render_template("register.html", msg=msg)
 
     @app.route("/home", methods=['GET', 'POST'])
     def home():

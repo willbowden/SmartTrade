@@ -30,3 +30,11 @@ h1 {
 * {
     font-family: Verdana, sans-serif;
 }
+
+.error-message {
+    color:black;
+    padding: 10px;
+    border-radius: 5px;
+    border-style: hidden;
+    background-color: #cacaca
+}
