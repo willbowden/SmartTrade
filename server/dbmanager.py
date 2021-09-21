@@ -19,9 +19,11 @@ class DBManager: # Class to allow web app and server app to communicate with an 
         query = f"SELECT * FROM tblUsers WHERE {column}={value}"
         result = cursor.execute(query).fetchone()
         cursor.close()
-        print(result)
-        account = {'id': result[0], 'username': result[1], 'password': result[2], 'nickname': result[3]}
-        return account
+        if result != None:
+            account = {'id': result[0], 'username': result[1], 'password': result[2], 'nickname': result[3]}
+            return account
+        else:
+            return None
 
     def create_account(self, username: str, password: str, nickname: str): # Creates new account entry by checking if randomly generated ID already exists
         uniqueIDFound = False
@@ -31,19 +33,20 @@ class DBManager: # Class to allow web app and server app to communicate with an 
             if self.get_account_by_column('userID', id) == None:
                 uniqueIDFound = True
     
-        query = f"INSERT INTO tblUsers VALUES ({id}, '{username}', '{password}', '{nickname}')"
+        query = f"INSERT INTO tblUsers VALUES ({id}, '{username}', '{password}', '{nickname}', '')"
         cursor.execute(query)
         conn.commit()
         cursor.close()
 
     # def create_table(self):
-    #     cursor = self.__get_cursor()
+    #     conn, cursor = self.__get_conn_and_cursor()
     #     query = """
     #     CREATE TABLE tblUsers (
     #         userID INT PRIMARY KEY,
     #         username VARCHAR(20) NOT NULL,
     #         password VARCHAR(20) NOT NULL,
-    #         nickname VARCHAR(20)
+    #         nickname VARCHAR(20),
+    #         binanceKey VARCHAR(64)
     #     )
     #     """
     #     cursor.execute(query)

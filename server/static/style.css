@@ -1,3 +1,7 @@
+* {
+    font-family: Verdana, sans-serif;
+}
+
 body {
     background-color: #2a2a2a;
 }
@@ -14,21 +18,43 @@ button:hover {
     box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
 
+h1 {
+    color:#71eeff;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+li {
+    float: left;
+  }
+  
+li a {
+display: block;
+color: white;
+text-align: center;
+padding: 14px 16px;
+text-decoration: none;
+}
+
+li a.focus:link {
+    background-color: #111;
+}
+  
+li a:hover {
+background-color: #111;
+}
+
 .centered-div {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-}
-
-h1 {
-    color: #71eeff;
-    text-align: center;
-    font-size: large;
-}
-
-* {
-    font-family: Verdana, sans-serif;
 }
 
 .error-message {

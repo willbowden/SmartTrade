@@ -18,7 +18,7 @@ def main():
             if dbmanager.user_exists(request.form['username']):
                 account = dbmanager.get_account_by_column(column="username", value=request.form['username'])
                 if account['username'] == request.form['username']:
-                    if account['password'] == request.form['password']:
+                    if account['password'] == request.form['password']: # If login details correct
                         # Create session data
                         session['loggedIn'] = True
                         session['id'] = account['id']
@@ -73,7 +73,7 @@ def main():
 
 
 
-    app.run()
+    app.run(debug=True)
 
 if __name__=='__main__':
     main()
