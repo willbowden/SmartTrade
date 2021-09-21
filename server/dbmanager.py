@@ -17,10 +17,11 @@ class DBManager: # Class to allow web app and server app to communicate with an 
         if type(value) == str:
             value = f"'{value}'"
         query = f"SELECT * FROM tblUsers WHERE {column}={value}"
-        result = cursor.execute(query).fetchall()
+        result = cursor.execute(query).fetchone()
         cursor.close()
         print(result)
-        return result
+        account = {'id': result[0], 'username': result[1], 'password': result[2], 'nickname': result[3]}
+        return account
 
     def create_account(self, username: str, password: str, nickname: str): # Creates new account entry by checking if randomly generated ID already exists
         uniqueIDFound = False
