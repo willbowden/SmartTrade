@@ -1,7 +1,7 @@
 # Module to retrieve public price data from the exchange
 
 import datetime
-import constants, configs, conversions
+from SmartTrade.app import constants, configs, conversions
 import pandas as pd
 
 config = configs.load_config()
@@ -9,7 +9,7 @@ config = configs.load_config()
 # LOAD EXCHANGE IN CONTROLLER
 
 def get_current_price(exchange, symbol: str) -> float: # Just return most recent close price from ticker
-    return fetch_ticker(exchange, symbol)['close']
+    return fetch_ticker(exchange, symbol)[-1]['price']
 
 def fetch_ticker(exchange, symbol: str): # Fetches current data for a symbol, only ~50 datapoints
     return exchange.fetch_ticker(symbol)

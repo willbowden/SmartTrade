@@ -1,7 +1,6 @@
 from threading import Timer
-import datetime
 
-class Looper(object):
+class Looper():
     def __init__(self, interval, function, *args, **kwargs):
         self._timer = None
         self.interval = interval
@@ -18,7 +17,7 @@ class Looper(object):
 
     def start(self):
         if not self.is_running:
-            self._timer = Timer(self.interval - datetime.datetime.now().second, self._run)
+            self._timer = Timer(self.interval, self._run)
             self._timer.start()
             self.is_running = True
     

@@ -1,11 +1,10 @@
 import ccxt
 import datetime
 import pandas as pd
-import conversions
+from SmartTrade.app import conversions
 
 class Exchange:
-
-    def __init__(self, id, apiKey, secret):
+    def __init__(self, id, apiKey, secret=''):
         self.exchange_class = getattr(ccxt, id)
         self.last_request = datetime.datetime.now()
         self.exchange = self.exchange_class({
@@ -15,6 +14,12 @@ class Exchange:
             'enableRateLimit': True,
         })
         self.exchange.load_markets()
+
+    def fetch_balance(self):
+        if self.exchange.has['fetchBalance']:
+            return self.exchange.fetchBalance()
+        else:
+            raise Exception('Exchange does not support fetching balance!')
 
     def fetch_ticker(self, symbol):
         if self.exchange.has['fetchTicker']:

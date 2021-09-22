@@ -1,28 +1,68 @@
 window.addEventListener('DOMContentLoaded', (event) => {
-    load_graph()
+    first_time_load()
+    setInterval(reload_graph, 5000);
 })
 
-function load_graph() {
-    const labels = [1, 2, 3, 4, 5, 6, 7];
-        
-        const data = {
-        labels: labels,
-        datasets: [{
-            label: 'My First dataset',
-            backgroundColor: 'rgb(255, 99, 132)',
-            borderColor: 'rgb(255, 99, 132)',
-            data: [0, 10, 5, 2, 20, 30, 45],
-        }]
-        };
-    
-        const config = {
-            type: 'line',
-            data: data,
-            options: {}
-        };
-        
-        var myChart = new Chart(
-            document.getElementById('profileChart'),
-            config
-          );
+var profileValueChart;
+
+function first_time_load() {
+    $.getJSON('/account_value_data', {
+        userID: 2194
+    }, function(data) {
+        const values = data['values'];
+        const dates = data['dates'];
+
+        const graphData = {
+            labels: dates,
+            datasets: [{
+                label: 'Account Value',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: values
+            }]
+            };
+            
+            const config = {
+                type: 'line',
+                data: graphData,
+                options: {
+                    elements: {
+                        point: {
+                            radius: 0
+                        }
+                    },
+                    animation: {
+                        duration: 0
+                    }
+                }
+            };
+                
+            profileValueChart = new Chart(
+                document.getElementById('profileValueChart'),
+                config
+                );
+    })
+}
+
+function reload_graph() {
+    $.getJSON('/account_value_data', {
+        userID: 2194
+    }, function(data) {
+        const values = data['values'];
+        const dates = data['dates'];
+
+        const graphData = {
+            labels: dates,
+            datasets: [{
+                label: 'Account Value',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: values
+            }]
+            };
+            
+        profileValueChart.data = graphData;
+        profileValueChart.options.animation = false;
+        profileValueChart.update()
+    })
 }

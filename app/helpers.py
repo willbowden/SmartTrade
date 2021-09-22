@@ -6,6 +6,10 @@ import numpy as np
 
 config = configs.load_config()
 
+def get_user_filepath(userID):
+    fname = constants.USER_ACCOUNT_PATH + str(userID) + "_values.json"
+    return fname
+
 def get_symbol_filepath(symbol, timeframe):
     script_dir = os.path.dirname(__file__)
     symbol_filename = symbol.replace("/", "_")
@@ -18,7 +22,7 @@ def get_ohlcv_filepath(symbol, timeframe):
     fname = os.path.join(script_dir, (constants.OHLCV_PATH + symbol_filename + "_" + timeframe + ".json"))
     return fname
 
-def generate_model_path(symbol=config['symbol'], timeframe=config['timeframe']):
+def get_model_path(symbol=config['symbol'], timeframe=config['timeframe']):
     model_name = generate_model_name(symbol, timeframe)
     model_path = constants.MODELS_PATH + model_name
     return model_path

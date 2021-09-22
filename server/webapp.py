@@ -1,8 +1,10 @@
 import os
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template, redirect, url_for, request, session, jsonify
 import dbmanager
+from SmartTrade.app.controller import Controller
 
 def main():
+    controller = Controller()
     SECRET_KEY = os.urandom(32)
 
     app = Flask(__name__)
@@ -20,7 +22,7 @@ def main():
                     if account['password'] == request.form['password']: # If login details correct
                         # Create session data
                         session['loggedIn'] = True
-                        session['id'] = account['id']
+                        session['userID'] = account['userID']
                         session['username'] = account['username']
                         return redirect(url_for('home'))
                     else:
@@ -40,7 +42,7 @@ def main():
                 dbmanager.create_account(request.form['username'], request.form['password'], request.form['nickname'])
                 account = dbmanager.get_account_by_column('username', request.form['username'])
                 session['loggedIn'] = True
-                session['id'] = account['id']
+                session['userID'] = account['userID']
                 session['username'] = account['username']
                 return redirect(url_for('home'))
             else:
@@ -70,7 +72,11 @@ def main():
     def strategy_editor():
         return render_template("strategy_editor.html")
 
-
+    @app.route("/account_value_data")
+    def get_account_value_data():
+        userID = request.args.get('userID')
+        valueData = controller.get_user_value_data(userID)
+        return jsonify(valueData)
 
     app.run(debug=True)
 

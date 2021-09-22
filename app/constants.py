@@ -13,6 +13,7 @@ STRATEGY_PATH = dirname + "strategies/"
 RESULTS_PATH = dirname + "results/"
 MODEL_PATH = dirname + "models/"
 SAVE_PATH = dirname + "saves/"
+USER_DATA_PATH = dirname + "user_data/"
 
 CRYPTO_EXCHANGES = ['aax', 'binance', 'bitfinex', 'bittrex', 'bitvavo', 'bytetrade', 'currencycom', 'eterbase', 'ftx', 'gopax', 'idex', 'kraken', 'wavesexchange', 'xena']
 
