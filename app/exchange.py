@@ -5,12 +5,12 @@ import conversions
 
 class Exchange:
 
-    def __init__(self, config):
-        self.exchange_class = getattr(ccxt, config["exchange_id"])
+    def __init__(self, id, apiKey, secret):
+        self.exchange_class = getattr(ccxt, id)
         self.last_request = datetime.datetime.now()
         self.exchange = self.exchange_class({
-            'apiKey': config["api_key"],
-            'secret': config["secret"],
+            'apiKey': apiKey,
+            'secret': secret,
             'timeout': 30000,
             'enableRateLimit': True,
         })

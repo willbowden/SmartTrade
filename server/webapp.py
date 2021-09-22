@@ -1,9 +1,8 @@
 import os
 from flask import Flask, render_template, redirect, url_for, request, session
-from dbmanager import DBManager
+import dbmanager
 
 def main():
-    dbmanager = DBManager()
     SECRET_KEY = os.urandom(32)
 
     app = Flask(__name__)
