@@ -3,6 +3,7 @@ from SmartTrade.app import account_data
 from SmartTrade.app.exchange import Exchange
 import json
 from SmartTrade.app import constants
+from datetime import datetime
 
 class User:
     def __init__(self, infoDict):
@@ -10,37 +11,40 @@ class User:
         self.username = infoDict['username']
         self.exchange = Exchange(infoDict['exchangeID'], infoDict['binanceKey'], infoDict['secretKey'])
         self.isLoggedIn = False
+        self.lastActivity = datetime.now()
         self.valueData = account_data.load_account_value_data(self.id)
         if self.valueData == []:
-            account_data.update_account_value(self.id, self.exchange)
+            val = account_data.get_account_value(self.id, self.exchange)
+            account_data.save_account_value(self.id, val)
             self.valueData = account_data.load_account_value_data(self.id)
-            self.valueData.append({'userID': 0000, 'date': '', 'value': 0.0, 'currency': ''}) # Append fake data to end of list so it can be overwritten in update_value()
+            self.valueData.append({'date': '', 'value': 0.0, 'currency': ''}) # Append fake data to end of list so it can be overwritten in update_value()
         self.load_data()
 
-    def load_data(self):
+    def load_data(self) -> None:
         fname = constants.USER_DATA_PATH + str(self.id) + "_data.json"
         with open(fname) as infile:
             data = json.load(infile)
 
         self.isLive = data['isLive'] # Is currently running a live strategy (fake and/or real money)
 
-    def update_value(self):
-        newValue = account_data.get_account_value(self.id)
+    def update_value(self) -> None:
+        newValue = account_data.get_account_value(self.id, self.exchange)
         self.valueData[-1] = newValue
 
-    def save_updated_value(self):
-        account_data.save_account_value(self.valueData[-1])
+    def save_updated_value(self) -> None:
+        account_data.save_account_value(self.id, self.valueData[-1])
+        self.valueData.append({'date': '', 'value': 0.0, 'currency': ''}) # Append empty value to be replaced
 
     def update_holdings(self):
         pass
 
-    def login(self):
+    def login(self) -> None:
         self.isLoggedIn = True
 
-    def logout(self):
+    def logout(self) -> None:
         self.isLoggedIn = True
 
-    def save_data(self):
+    def save_data(self) -> None:
         fname = constants.USER_DATA_PATH + str(self.id) + "_data.json"
 
         output = {'isLive': self.isLive}

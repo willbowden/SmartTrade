@@ -78,6 +78,7 @@ def main():
     def get_account_value_data():
         userID = request.args.get('userID')
         valueData = controller.get_user_value_data(userID)
+        controller.update_activity(userID)
         return jsonify(valueData)
 
     app.run(debug=True)

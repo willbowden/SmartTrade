@@ -17,6 +17,11 @@ class Controller:
                 l = Looper(5, self.update)
                 synced = True
 
+    def update_activity(self, userID: int):
+        for user in self.users:
+            if str(user.id) == str(userID):
+                user.last_activity = datetime.now()
+
     def login_user(self, userID: int) -> None:
         for user in self.users:
             if str(user.id) == str(userID):
@@ -52,6 +57,11 @@ class Controller:
 
     def update(self) -> None:
         self.save_users()
+
+        for user in self.users:
+            if (datetime.now() - user.lastActivity).minutes > 0:
+                print(f"LOGGING OUT USER {user.id}")
+                user.logout()
 
         if datetime.now().second % 5 == 0: # Every 5 seconds, update user account value to display on page
             for user in self.users:
