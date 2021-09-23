@@ -17,7 +17,17 @@ class Controller:
                 l = Looper(5, self.update)
                 synced = True
 
-    def load_users(self):
+    def login_user(self, userID: int) -> None:
+        for user in self.users:
+            if str(user.id) == str(userID):
+                user.login()
+
+    def logout_user(self, userID: int) -> None:
+        for user in self.users:
+            if str(user.id) == str(userID):
+                user.logout()
+
+    def load_users(self) -> None:
         self.users = []
         accountDicts = dbmanager.get_all_accounts()
         for item in accountDicts:
@@ -26,11 +36,11 @@ class Controller:
         for user in self.users:
             user.load_data()
 
-    def save_users(self):
+    def save_users(self) -> None:
         for user in self.users:
             user.save_data()
 
-    def get_user_value_data(self, userID):
+    def get_user_value_data(self, userID: int) -> dict:
         result = {}
         for user in self.users:
             if str(user.id) == str(userID):
@@ -40,12 +50,22 @@ class Controller:
         
         return result
 
-    def update(self):
+    def update(self) -> None:
         self.save_users()
 
-        if datetime.now().second % 5 == 0:
+        if datetime.now().second % 5 == 0: # Every 5 seconds, update user account value to display on page
             for user in self.users:
-                th = threading.Thread(target=user.update_value)
+                if user.isLoggedIn: # Only live update users who are currently viewing their account, this prevents wasting processing power
+                    th = threading.Thread(target=user.update_value)
+                    th.start()
+
+        if datetime.now().second == 0: # Every minute, save account value to database 
+            for user in self.users:
+                if not user.isLoggedIn: # If user not logged in, get a new value before we save as their value won't have updated above
+                    th = threading.Thread(target=user.update_value)
+                    th.start()
+                
+                th = threading.Thread(target=user.save_updated_value)
                 th.start()
 
 if __name__ == '__main__':

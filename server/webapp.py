@@ -24,6 +24,7 @@ def main():
                         session['loggedIn'] = True
                         session['userID'] = account['userID']
                         session['username'] = account['username']
+                        controller.login_user(account['userID'])
                         return redirect(url_for('home'))
                     else:
                         msg = 'Incorrect username/password'
@@ -44,6 +45,7 @@ def main():
                 session['loggedIn'] = True
                 session['userID'] = account['userID']
                 session['username'] = account['username']
+                controller.login_user(account['userID'])
                 return redirect(url_for('home'))
             else:
                 msg = 'Account already exists! Please log in.'

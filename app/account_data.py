@@ -5,7 +5,7 @@ from SmartTrade.app import constants
 from SmartTrade.app import exchange_data
 import asyncio
 
-def update_account_value(userID: int, exchange) -> None: # Calculate user's total account value in USD and save as a new record
+def get_account_value(userID: int, exchange) -> None: # Calculate user's total account value in USD and save as a new record
     totalValue = 0
     freeBalanceWithZeros = get_account_balances(exchange)
     freeBalance = {x:y for x,y in freeBalanceWithZeros.items() if y!=0} # See comments section in document
@@ -17,7 +17,11 @@ def update_account_value(userID: int, exchange) -> None: # Calculate user's tota
             value = freeBalance[key]
         totalValue += value
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-    dbmanager.add_account_value(userID, date, totalValue, 'USDT')
+    result = {'userID': userID, 'date': date, 'value': totalValue, 'currency': 'USDT'}
+    return result
+
+def save_account_value(value) -> None:
+    dbmanager.add_account_value(value['userID'], value['date'], value['value'], value['currency'])
 
 def load_account_value_data(userID: int) -> list:
     return dbmanager.load_account_values(userID)
