@@ -3,6 +3,7 @@
   <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ccxt@1.56.86/dist/ccxt.browser.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -16,14 +17,14 @@
       <li><a href="{{ url_for('backtest') }}">Backtesting</a></li>
     </ul>
     <div style="height: 100vh;">
-      <div class="container d-flex justify-content-center">
-        <div class="row align-items-center">
-          <div class="col my-auto">
-            <div id="chartDiv" style="position: relative; height:40vh; width:80vw">
+      <div class="container d-flex">
+        <div class="row align-items-start">
+          <div class="col">
+            <div id="chartDiv" style="height:50vh; width:60vw">
               <canvas id="profileValueChart"></canvas>
             </div>
           </div>
-          <div class="col my-auto">
+          <div class="col" style="height:50vh; width:40vw;">
             <h1>Portfolio Value:</h1> 
             <h1 id="profileValue" >$0.00</h1>
           </div>

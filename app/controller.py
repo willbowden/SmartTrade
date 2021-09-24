@@ -17,10 +17,15 @@ class Controller:
                 l = Looper(5, self.update)
                 synced = True
 
-    def update_activity(self, userID: int):
+    def update_activity(self, userID: int) -> None:
         for user in self.users:
             if str(user.id) == str(userID):
-                user.last_activity = datetime.now()
+                user.lastActivity = datetime.now()
+
+    def get_api_key(self, userID: int) -> str:
+        account = dbmanager.get_account_by_column('userID', userID)
+        key = account['binanceKey']
+        return key
 
     def login_user(self, userID: int) -> None:
         for user in self.users:
