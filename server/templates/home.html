@@ -15,13 +15,17 @@
       <li><a href="{{ url_for('strategy_editor') }}">Strategy Editor</a></li>
       <li><a href="{{ url_for('backtest') }}">Backtesting</a></li>
     </ul>
-    <div class="centered-div">
+    <div style="height: 100vh;">
       <div class="container d-flex justify-content-center">
         <div class="row align-items-center">
           <div class="col my-auto">
-            <div id="chartDiv">
-              <canvas id="profileValueChart" width="1000" height="600"></canvas>
+            <div id="chartDiv" style="position: relative; height:40vh; width:80vw">
+              <canvas id="profileValueChart"></canvas>
             </div>
+          </div>
+          <div class="col my-auto">
+            <h1>Portfolio Value:</h1> 
+            <h1 id="profileValue" >$0.00</h1>
           </div>
         </div>
       </div>

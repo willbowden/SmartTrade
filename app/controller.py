@@ -2,7 +2,7 @@
 
 import threading
 from SmartTrade.server import dbmanager
-from datetime import datetime
+from datetime import datetime, timedelta
 from SmartTrade.app.looper import Looper
 from SmartTrade.app.user import User
 
@@ -25,6 +25,7 @@ class Controller:
     def login_user(self, userID: int) -> None:
         for user in self.users:
             if str(user.id) == str(userID):
+                print(f"LOGGING IN USER {userID}")
                 user.login()
 
     def logout_user(self, userID: int) -> None:
@@ -59,9 +60,10 @@ class Controller:
         self.save_users()
 
         for user in self.users:
-            if (datetime.now() - user.lastActivity).minutes > 0:
-                print(f"LOGGING OUT USER {user.id}")
-                user.logout()
+            if user.isLoggedIn:
+                if (datetime.now() - user.lastActivity).total_seconds() > 180:
+                    print(f"TIMING OUT USER {user.id}")
+                    user.logout()
 
         if datetime.now().second % 5 == 0: # Every 5 seconds, update user account value to display on page
             for user in self.users:

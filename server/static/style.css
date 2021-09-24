@@ -50,13 +50,6 @@ li a:hover {
 background-color: #111;
 }
 
-.centered-div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
 .error-message {
     color:black;
     padding: 10px;

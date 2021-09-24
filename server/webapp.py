@@ -1,6 +1,7 @@
 import os
 from flask import Flask, render_template, redirect, url_for, request, session, jsonify
 import dbmanager
+from datetime import timedelta
 from SmartTrade.app.controller import Controller
 
 def main():
@@ -9,6 +10,11 @@ def main():
 
     app = Flask(__name__)
     app.config['SECRET_KEY'] = SECRET_KEY
+
+    @app.before_request
+    def make_session_permanent():
+        session.permanent = True
+        app.permanent_session_lifetime = timedelta(minutes=1)
 
     @app.route("/", methods=['GET', 'POST'])
     def login(): # Login page
@@ -79,7 +85,7 @@ def main():
         userID = request.args.get('userID')
         valueData = controller.get_user_value_data(userID)
         controller.update_activity(userID)
-        return jsonify(valueData)
+        return jsonify(valueData) 
 
     app.run(debug=True)
 

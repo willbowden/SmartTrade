@@ -42,7 +42,7 @@ class User:
         self.isLoggedIn = True
 
     def logout(self) -> None:
-        self.isLoggedIn = True
+        self.isLoggedIn = False
 
     def save_data(self) -> None:
         fname = constants.USER_DATA_PATH + str(self.id) + "_data.json"
