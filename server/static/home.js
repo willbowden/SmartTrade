@@ -4,6 +4,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 })
 
 var profileValueChart;
+var lastTotal = 0;
 
 function first_time_load() {
     $.getJSON('/account_value_data', {
@@ -49,28 +50,27 @@ function first_time_load() {
 function reload_page() {
     $.getJSON('/account_value_data', {
         userID: 2194
-    }, function(data) {
-        reload_graph(data);
-        const values = data['values'];
-        set_value_text(values)
+        }, function(data) {
+            reload_graph(data);
+            const values = data['values'];
+            set_value_text(values);
     })
 }
 
 function set_value_text(values) {
-    console.log(values)
-    const lastValue = values.at(-1);
-    const roundedValue = Math.round((lastValue + Number.EPSILON) * 100) / 100
+    const roundedValue = Math.round((values.at(-1) + Number.EPSILON) * 100) / 100
     const valueText = document.getElementById("profileValue");
-    if (lastValue > values.at(-2)) {
+    if (roundedValue > lastTotal) {
         valueText.innerHTML = ("$" + roundedValue);
         valueText.style.color = "green";
-    } else if (lastValue < values.at(-2)) {
+    } else if (roundedValue < lastTotal) {
         valueText.innerHTML = ("$" + roundedValue);
         valueText.style.color = "red";
     } else {
         valueText.innerHTML = ("$" + roundedValue);
         valueText.style.color = "white";
     }
+    lastTotal = roundedValue;  
 }
 
 function reload_graph(data) {

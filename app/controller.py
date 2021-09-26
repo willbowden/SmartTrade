@@ -7,6 +7,13 @@ from SmartTrade.app.looper import Looper
 from SmartTrade.app.user import User
 
 class Controller:
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
+
     def __init__(self):
         self.load_users()
 
@@ -67,7 +74,7 @@ class Controller:
         for user in self.users:
             if user.isLoggedIn:
                 if (datetime.now() - user.lastActivity).total_seconds() > 180: # When user times out, save their last recorded value and log them out
-                    print(f"TIMING OUT USER {user.id}"
+                    print(f"TIMING OUT USER {user.id}")
                     th = threading.Thread(target=user.save_updated_value)
                     th.start()
                     user.logout()
