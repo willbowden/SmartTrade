@@ -41,7 +41,14 @@ def main():
 
     @app.route("/first_time_login", methods=['GET', 'POST'])
     def first_time_login():
-        pass
+        if session.get('loggedIn') == True:
+            return redirect(url_for('home'))
+        elif request.method == 'POST' and 'publicKey' in request.form and 'privateKey' in request.form and 'currency' in request.form and 'exchange' in request.form:
+            # Do login logic
+            session['loggedIn'] = True
+            controller.login_user(session.get('userID'))
+        else:
+            return render_template("firsttimelogin.html")
 
     @app.route("/register", methods=['GET', 'POST'])
     def register():
@@ -52,11 +59,9 @@ def main():
             if not dbmanager.user_exists(request.form['username']):
                 dbmanager.create_account(request.form['username'], request.form['password'], request.form['nickname'])
                 account = dbmanager.get_account_by_column('username', request.form['username'])
-                session['loggedIn'] = True
                 session['userID'] = account['userID']
                 session['username'] = account['username']
-                controller.login_user(account['userID'])
-                return redirect(url_for('home'))
+                return redirect(url_for('first_time_login'))
             else:
                 msg = 'Account already exists! Please log in.'
 
