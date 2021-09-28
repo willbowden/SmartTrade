@@ -33,10 +33,16 @@ def get_account_by_column(column: str, value) -> dict: # Returns user account by
     result = cursor.execute(query).fetchone()
     cursor.close()
     if result != None: # Map result to dict if we find an account
-        account = {'userID': result[0], 'username': result[1], 'password': result[2], 'nickname': result[3]}
+        account = map_account_to_dict(result)
         return account
     else:
         return None
+
+def map_account_to_dict(accountTuple):
+    account = {'userID': accountTuple[0], 'username': accountTuple[1], 'password': accountTuple[2],
+         'nickname': accountTuple[3], 'binanceKey': accountTuple[4],
+         'secretKey': accountTuple[5], 'exchangeID': accountTuple[6]}
+    return account
 
 def get_all_accounts() -> list:
     accounts = []
@@ -44,9 +50,7 @@ def get_all_accounts() -> list:
     query = "SELECT * FROM tblUsers"
     result = cursor.execute(query).fetchall()
     for item in result:
-        account = {'userID': item[0], 'username': item[1], 'password': item[2],
-         'nickname': item[3], 'binanceKey': item[4],
-         'secretKey': item[5], 'exchangeID': item[6]}
+        account = map_account_to_dict(item)
         accounts.append(account)
 
     return accounts
@@ -96,7 +100,6 @@ def create_table():
         userID INT,
         date VARCHAR(20),
         value REAL,
-        currency VARCHAR(6),
         FOREIGN KEY(userID) REFERENCES tblUsers(userID)
     )
     """
@@ -123,3 +126,4 @@ def clear_table(tblName: str) -> None:
 
 if __name__ == '__main__':
     print(f"Please do not run {__file__} directly.")
+    print(get_account_by_column('userID', 2194))

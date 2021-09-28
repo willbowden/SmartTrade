@@ -39,6 +39,10 @@ def main():
 
         return render_template("index.html", msg=msg)
 
+    @app.route("/first_time_login", methods=['GET', 'POST'])
+    def first_time_login():
+        pass
+
     @app.route("/register", methods=['GET', 'POST'])
     def register():
         msg = False
