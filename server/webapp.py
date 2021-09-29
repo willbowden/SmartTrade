@@ -44,9 +44,13 @@ def main():
         if session.get('loggedIn') == True:
             return redirect(url_for('home'))
         elif request.method == 'POST' and 'publicKey' in request.form and 'privateKey' in request.form and 'currency' in request.form and 'exchange' in request.form:
-            # Do login logic
+            dbmanager.update_account_by_column(session['userID'], 'binanceKey', request.form['publicKey'])
+            dbmanager.update_account_by_column(session['userID'], 'secretKey', request.form['privateKey'])
+            dbmanager.update_account_by_column(session['userID'], 'exchangeID', request.form['exchange'])
+            dbmanager.update_account_by_column(session['userID'], 'currency', request.form['currency'])
             session['loggedIn'] = True
             controller.login_user(session.get('userID'))
+            return redirect(url_for('home'))
         else:
             return render_template("firsttimelogin.html")
 

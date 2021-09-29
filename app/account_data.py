@@ -17,11 +17,11 @@ def get_account_value(userID: int, exchange) -> None: # Calculate user's total a
             value = balances[key]
         totalValue += value
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-    result = {'userID': userID, 'date': date, 'value': totalValue, 'currency': 'USDT'}
+    result = {'userID': userID, 'date': date, 'value': totalValue}
     return result
 
 def save_account_value(userID: int, value) -> None:
-    dbmanager.add_account_value(userID, value['date'], value['value'], value['currency'])
+    dbmanager.add_account_value(userID, value['date'], value['value'])
 
 def load_account_value_data(userID: int) -> list:
     return dbmanager.load_account_values(userID)

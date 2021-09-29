@@ -16,10 +16,20 @@ def create_account(username: str, password: str, nickname: str) -> None: # Creat
         if get_account_by_column('userID', id) == None:
             uniqueIDFound = True
 
-    query = f"INSERT INTO tblUsers VALUES ({id}, '{username}', '{password}', '{nickname}', '')"
+    query = f"INSERT INTO tblUsers VALUES ({id}, '{username}', '{password}', '{nickname}', '', '', '', '')"
     cursor.execute(query)
     conn.commit()
     cursor.close()
+
+def delete_account(userID: int) -> None:
+    conn, cursor = __get_conn_and_cursor()
+    try:
+        query = f"DELETE FROM tblUsers WHERE userID={userID}"
+        cursor.execute(query)
+        conn.commit()
+        cursor.close()
+    except:
+        print("(delete_account): User not found!")
 
 def user_exists(username: str) -> bool: # Return true if user data is found in database
     result = get_account_by_column('username', username) # Gets account row from other function
@@ -41,7 +51,7 @@ def get_account_by_column(column: str, value) -> dict: # Returns user account by
 def map_account_to_dict(accountTuple):
     account = {'userID': accountTuple[0], 'username': accountTuple[1], 'password': accountTuple[2],
          'nickname': accountTuple[3], 'binanceKey': accountTuple[4],
-         'secretKey': accountTuple[5], 'exchangeID': accountTuple[6]}
+         'secretKey': accountTuple[5], 'exchangeID': accountTuple[6], 'currency': accountTuple[7]}
     return account
 
 def get_all_accounts() -> list:
@@ -64,9 +74,9 @@ def update_account_by_column(id:int, column: str, value) -> None: # Update a use
     conn.commit()
     cursor.close()
 
-def add_account_value(userID: int, date: str, value: float, currency: str) -> None:
+def add_account_value(userID: int, date: str, value: float) -> None:
     conn, cursor = __get_conn_and_cursor()
-    query = f"INSERT INTO tblAccountValue VALUES ({userID}, '{date}', {value}, '{currency}')"
+    query = f"INSERT INTO tblAccountValue VALUES ({userID}, '{date}', {value})"
     cursor.execute(query)
     conn.commit()
     cursor.close()
@@ -77,7 +87,7 @@ def load_account_values(userID: int) -> list:
     query = f"SELECT * FROM tblAccountValue WHERE userID={userID}"
     result = cursor.execute(query).fetchall()
     for item in result:
-        value = {'date': item[1], 'value': item[2], 'currency': item[3]}
+        value = {'date': item[1], 'value': item[2]}
         values.append(value)
 
     return values
@@ -126,4 +136,5 @@ def clear_table(tblName: str) -> None:
 
 if __name__ == '__main__':
     print(f"Please do not run {__file__} directly.")
-    print(get_account_by_column('userID', 2194))
+    #print(get_account_by_column('userID', 2194))
+    #print(get_all_accounts())
