@@ -4,7 +4,7 @@ import pandas as pd
 from SmartTrade.app import conversions
 
 class Exchange:
-    def __init__(self, id, apiKey, secret=''):
+    def __init__(self, id, apiKey, secret):
         self.exchange_class = getattr(ccxt, id)
         self.last_request = datetime.datetime.now()
         self.exchange = self.exchange_class({

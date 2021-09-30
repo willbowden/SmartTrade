@@ -1,12 +1,19 @@
 window.addEventListener('DOMContentLoaded', (event) => {
     first_time_load()
     setInterval(reload_page, 5000);
+    setInterval(update_balances, 10000);
 })
+
+function set_user_id(id) {
+    userID = id;
+}
 
 var profileValueChart;
 var lastTotal = 0;
+var userID = 0;
 
 function first_time_load() {
+    update_balances()
     $.getJSON('/account_value_data', {
         userID: 2194
     }, function(data) {
@@ -49,11 +56,32 @@ function first_time_load() {
 
 function reload_page() {
     $.getJSON('/account_value_data', {
-        userID: 2194
+        userID: userID
         }, function(data) {
             reload_graph(data);
             const values = data['values'];
             set_value_text(values);
+    })
+}
+
+function update_balances() {
+    $.getJSON('/account_holdings', {
+        userID: userID
+    }, function(data) {
+        var table = document.getElementById("holdingTable");
+        for(var i = table.rows.length - 1; i > 0; i--) {
+            table.deleteRow(i);
+        }
+        data.sort(function(first, second) {return second.value - first.value;});
+        data.forEach(function(holding) {
+            var row = table.insertRow(-1);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            cell1.innerHTML = holding['asset']
+            cell2.innerHTML = holding['balance']
+            cell3.innerHTML = holding['value']
+        })
     })
 }
 

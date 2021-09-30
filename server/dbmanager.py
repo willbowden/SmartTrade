@@ -138,3 +138,4 @@ if __name__ == '__main__':
     print(f"Please do not run {__file__} directly.")
     #print(get_account_by_column('userID', 2194))
     #print(get_all_accounts())
+    clear_table('tblAccountValue')

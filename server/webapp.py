@@ -73,17 +73,10 @@ def main():
 
     @app.route("/home", methods=['GET', 'POST'])
     def home():
-        if request.method == "POST":
-            for item in request.form.listvalues():
-                buttonPressed = item[0]
-            
-            if buttonPressed == "backtest":
-                return redirect(url_for('backtest'))
-            elif buttonPressed == "strategy_editor":
-                return redirect(url_for('strategy_editor'))
-            return redirect(url_for('home'))
+        if session.get('loggedIn'):
+            return render_template("home.html", userID = session.get('userID'))
         else:
-            return render_template("home.html")
+            return redirect(url_for('login'))
 
     @app.route("/backtest")
     def backtest():
@@ -99,6 +92,13 @@ def main():
         valueData = controller.get_user_value_data(userID)
         controller.update_activity(userID)
         return jsonify(valueData) 
+
+    @app.route("/account_holdings")
+    def get_account_holdings():
+        userID = request.args.get('userID')
+        holdings = controller.get_user_holdings(userID)
+        controller.update_activity(userID)
+        return jsonify(holdings)
 
     app.run(debug=True)
 

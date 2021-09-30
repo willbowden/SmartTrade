@@ -1,5 +1,6 @@
 # Class that coordinates other classes, updating data regularly and running live strategies.
 
+from SmartTrade.app import account_data
 import threading
 from SmartTrade.server import dbmanager
 from datetime import datetime, timedelta
@@ -67,6 +68,12 @@ class Controller:
                 result['dates'] = [item['date'] for item in valueData]
         
         return result
+    
+    def get_user_holdings(self, userID: int) -> list:
+        for user in self.users:
+            if str(user.id) == str(userID):
+                holdings = account_data.get_account_holdings(user.exchange)
+                return holdings
 
     def update(self) -> None:
         self.save_users()

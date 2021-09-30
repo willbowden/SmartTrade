@@ -8,6 +8,9 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src=" {{ url_for('static', filename='home.js') }}"></script>
+    <script>
+      set_user_id({{userID|tojson}});
+    </script>
     <title>SmartTrade Home</title>
   </head>
   <body>
@@ -16,17 +19,34 @@
       <li><a href="{{ url_for('strategy_editor') }}">Strategy Editor</a></li>
       <li><a href="{{ url_for('backtest') }}">Backtesting</a></li>
     </ul>
-    <div style="height: 100vh;">
-      <div class="container d-flex">
+    <div>
+      <div class="container-fluid">
         <div class="row align-items-start">
           <div class="col">
-            <div id="chartDiv" style="height:50vh; width:60vw">
+            <div id="chartDiv" style="height: 100vh; width: 60vw;">
               <canvas id="profileValueChart"></canvas>
             </div>
           </div>
-          <div class="col" style="height:50vh; width:40vw;">
-            <h1>Portfolio Value:</h1> 
-            <h1 id="profileValue" >$0.00</h1>
+          <div class="col" style="height: 100vh; width: 40vw;">
+            <div class="row align-items-center">
+              <h1>Portfolio Value:</h1> 
+              <h1 id="profileValue" >$0.00</h1>
+            </div>
+            <div class="row align-items-center">
+              <h1>Asset Holdings</h1> 
+              <table class="table table-striped table-dark" id="holdingTable">
+                <thead>
+                  <tr>
+                    <th scope="col">Asset</th>
+                    <th scope="col">Balance</th>
+                    <th scope="col">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
