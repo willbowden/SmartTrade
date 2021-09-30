@@ -106,11 +106,10 @@ def __add_column_to_table(table:str, columnName:str, datatype:str) -> None: # Ad
 def create_table():
     conn, cursor = __get_conn_and_cursor()
     query = """
-    CREATE TABLE tblAccountValue (
+    CREATE TABLE tblStrategies (
+        strategyID INT,
         userID INT,
-        date VARCHAR(20),
-        value REAL,
-        FOREIGN KEY(userID) REFERENCES tblUsers(userID)
+        PRIMARY KEY (strategyID, userID)
     )
     """
     cursor.execute(query)
@@ -136,6 +135,3 @@ def clear_table(tblName: str) -> None:
 
 if __name__ == '__main__':
     print(f"Please do not run {__file__} directly.")
-    #print(get_account_by_column('userID', 2194))
-    #print(get_all_accounts())
-    clear_table('tblAccountValue')

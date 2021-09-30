@@ -72,8 +72,7 @@ class Controller:
     def get_user_holdings(self, userID: int) -> list:
         for user in self.users:
             if str(user.id) == str(userID):
-                holdings = account_data.get_account_holdings(user.exchange)
-                return holdings
+                return user.holdings
 
     def update(self) -> None:
         self.save_users()

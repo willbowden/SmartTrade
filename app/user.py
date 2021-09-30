@@ -12,6 +12,7 @@ class User:
         self.exchange = Exchange(infoDict['exchangeID'], infoDict['binanceKey'], infoDict['secretKey'])
         self.isLoggedIn = False
         self.lastActivity = datetime.now()
+        self.holdings = account_data.get_account_holdings(self.exchange)
         self.valueData = account_data.load_account_value_data(self.id)
         if self.valueData == []:
             val = account_data.get_account_value(self.id, self.exchange)
@@ -36,7 +37,7 @@ class User:
         self.valueData.append({'date': '', 'value': 0.0, 'currency': ''}) # Append empty value to be replaced
 
     def update_holdings(self):
-        pass
+        self.holdings = account_data.get_account_holdings(self.exchange)
 
     def login(self) -> None:
         self.isLoggedIn = True

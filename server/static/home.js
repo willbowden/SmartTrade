@@ -1,21 +1,19 @@
+var userID = 0;
+
 window.addEventListener('DOMContentLoaded', (event) => {
+    userID = parseInt(document.getElementById('userIDElement').innerHTML);
     first_time_load()
     setInterval(reload_page, 5000);
     setInterval(update_balances, 10000);
 })
 
-function set_user_id(id) {
-    userID = id;
-}
-
 var profileValueChart;
 var lastTotal = 0;
-var userID = 0;
 
 function first_time_load() {
     update_balances()
     $.getJSON('/account_value_data', {
-        userID: 2194
+        userID: userID
     }, function(data) {
         const values = data['values'];
         const dates = data['dates'];

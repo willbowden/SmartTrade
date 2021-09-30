@@ -8,9 +8,6 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}"/>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src=" {{ url_for('static', filename='home.js') }}"></script>
-    <script>
-      set_user_id({{userID|tojson}});
-    </script>
     <title>SmartTrade Home</title>
   </head>
   <body>
@@ -28,6 +25,7 @@
             </div>
           </div>
           <div class="col" style="height: 100vh; width: 40vw;">
+            <a id="userIDElement" hidden>{{userID}}</a>
             <div class="row align-items-center">
               <h1>Portfolio Value:</h1> 
               <h1 id="profileValue" >$0.00</h1>
