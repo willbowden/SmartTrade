@@ -1,3 +1,7 @@
+#######################################################################################################
+#    Flask application that serves webpages to users and provides HTML endpoints for getting data.    #
+#######################################################################################################
+
 import os
 from flask import Flask, render_template, redirect, url_for, request, session, jsonify
 import dbmanager
@@ -12,7 +16,7 @@ def main():
     app.config['SECRET_KEY'] = SECRET_KEY
 
     @app.before_request
-    def make_session_permanent():
+    def make_session_permanent(): # Allows us to do session timeouts
         session.permanent = True
         app.permanent_session_lifetime = timedelta(minutes=1)
 
@@ -37,10 +41,10 @@ def main():
             else:
                 msg = 'Account does not exist. Please register.'
 
-        return render_template("index.html", msg=msg)
+        return render_template("index.html", msg=msg) # Return the web page and any error message to the user
 
     @app.route("/first_time_login", methods=['GET', 'POST'])
-    def first_time_login():
+    def first_time_login(): # A secondary page to enter more necessary info when the user has just signed up
         if session.get('loggedIn') == True:
             return redirect(url_for('home'))
         elif request.method == 'POST' and 'publicKey' in request.form and 'privateKey' in request.form and 'currency' in request.form and 'exchange' in request.form:
@@ -55,7 +59,7 @@ def main():
             return render_template("firsttimelogin.html")
 
     @app.route("/register", methods=['GET', 'POST'])
-    def register():
+    def register(): # Signup page  
         msg = False
         if session.get('loggedIn') == True: # If already logged in just go to home page
             return redirect(url_for('home'))
@@ -72,29 +76,29 @@ def main():
         return render_template("register.html", msg=msg)
 
     @app.route("/home", methods=['GET', 'POST'])
-    def home():
+    def home(): # Home page featuring the user's portfolio overview
         if session.get('loggedIn'):
             return render_template("home.html", userID = session.get('userID'))
         else:
             return redirect(url_for('login'))
 
     @app.route("/backtest")
-    def backtest():
+    def backtest(): # Strategy backtesting page
         return render_template("backtest.html")
 
     @app.route("/strategy_editor")
-    def strategy_editor():
+    def strategy_editor(): # Strategy editing page
         return render_template("strategy_editor.html")
 
     @app.route("/account_value_data")
-    def get_account_value_data():
+    def get_account_value_data(): # Endpoint for getting user account value JSON data
         userID = request.args.get('userID')
         valueData = controller.get_user_value_data(userID)
         controller.update_activity(userID)
         return jsonify(valueData) 
 
     @app.route("/account_holdings")
-    def get_account_holdings():
+    def get_account_holdings(): # Endpoint for getting user asset holdings JSON datas
         userID = request.args.get('userID')
         holdings = controller.get_user_holdings(userID)
         controller.update_activity(userID)

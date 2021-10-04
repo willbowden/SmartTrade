@@ -1,4 +1,7 @@
-# Module to allow web app and server app to communicate with an SQLite database
+########################################################################################
+#    Module to allow web app and server app to communicate with an SQLite database.    #
+########################################################################################
+
 import sqlite3
 import random
 from sqlite3.dbapi2 import connect
@@ -48,13 +51,13 @@ def get_account_by_column(column: str, value) -> dict: # Returns user account by
     else:
         return None
 
-def map_account_to_dict(accountTuple):
+def map_account_to_dict(accountTuple): # Convert a tuple, which is returned by SQL, into a dict so we can access account data with a key
     account = {'userID': accountTuple[0], 'username': accountTuple[1], 'password': accountTuple[2],
          'nickname': accountTuple[3], 'binanceKey': accountTuple[4],
          'secretKey': accountTuple[5], 'exchangeID': accountTuple[6], 'currency': accountTuple[7]}
     return account
 
-def get_all_accounts() -> list:
+def get_all_accounts() -> list: # Get all accounts in database as a dictionary
     accounts = []
     cursor = __get_conn_and_cursor()[1]
     query = "SELECT * FROM tblUsers"
@@ -74,14 +77,14 @@ def update_account_by_column(id:int, column: str, value) -> None: # Update a use
     conn.commit()
     cursor.close()
 
-def add_account_value(userID: int, date: str, value: float) -> None:
+def add_account_value(userID: int, date: str, value: float) -> None: # Save account value datapoint
     conn, cursor = __get_conn_and_cursor()
     query = f"INSERT INTO tblAccountValue VALUES ({userID}, '{date}', {value})"
     cursor.execute(query)
     conn.commit()
     cursor.close()
 
-def load_account_values(userID: int) -> list:
+def load_account_values(userID: int) -> list: # Load historical account value data for a user
     values = []
     cursor = __get_conn_and_cursor()[0]
     query = f"SELECT * FROM tblAccountValue WHERE userID={userID}"
@@ -92,7 +95,7 @@ def load_account_values(userID: int) -> list:
 
     return values
     
-def __add_column_to_table(table:str, columnName:str, datatype:str) -> None: # Add new column to tables
+def __add_column_to_table(table:str, columnName:str, datatype:str) -> None:
     conn, cursor = __get_conn_and_cursor()
     query = f"ALTER TABLE {table} ADD COLUMN {columnName} {datatype}"
     try:
@@ -103,7 +106,7 @@ def __add_column_to_table(table:str, columnName:str, datatype:str) -> None: # Ad
     except:
         print("Failed adding column to table.")
 
-def create_table():
+def create_table() -> None:
     conn, cursor = __get_conn_and_cursor()
     query = """
     CREATE TABLE tblStrategies (

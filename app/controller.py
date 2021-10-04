@@ -1,4 +1,6 @@
-# Class that coordinates other classes, updating data regularly and running live strategies.
+####################################################################################################
+#    Class that coordinates other classes, updating data regularly and running live strategies.    #
+####################################################################################################
 
 from SmartTrade.app import account_data
 import threading
@@ -15,22 +17,22 @@ class Controller:
             cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.load_users()
 
         synced = False
-        while not synced:
+        while not synced: # Start a repeating process that calls self.update() every 5 seconds.
             if datetime.now().second % 5 == 0:
                 print("STARTING!")
                 l = Looper(5, self.update)
                 synced = True
 
-    def update_activity(self, userID: int) -> None:
+    def update_activity(self, userID: int) -> None: # Set the user's last action timestamp, to prevent timeout
         for user in self.users:
             if str(user.id) == str(userID):
                 user.lastActivity = datetime.now()
 
-    def get_api_key(self, userID: int) -> str:
+    def get_api_key(self, userID: int) -> str: # Get binance API key for user
         account = dbmanager.get_account_by_column('userID', userID)
         key = account['binanceKey']
         return key
@@ -46,7 +48,7 @@ class Controller:
             if str(user.id) == str(userID):
                 user.logout()
 
-    def load_users(self) -> None:
+    def load_users(self) -> None: # Load saved user data like live trading status
         self.users = []
         accountDicts = dbmanager.get_all_accounts()
         for item in accountDicts:
@@ -55,11 +57,11 @@ class Controller:
         for user in self.users:
             user.load_data()
 
-    def save_users(self) -> None:
+    def save_users(self) -> None: # Save user data like live trading status
         for user in self.users:
             user.save_data()
 
-    def get_user_value_data(self, userID: int) -> dict:
+    def get_user_value_data(self, userID: int) -> dict: # Get a matrix of dates and values to be plotted on the graph on home.html
         result = {}
         for user in self.users:
             if str(user.id) == str(userID):
@@ -69,16 +71,16 @@ class Controller:
         
         return result
     
-    def get_user_holdings(self, userID: int) -> list:
+    def get_user_holdings(self, userID: int) -> list: # Get the user's balances and their individual
         for user in self.users:
             if str(user.id) == str(userID):
                 return user.holdings
 
-    def update(self) -> None:
-        self.save_users()
+    def update(self) -> None: # Save data about users
+        self.save_users() 
 
         for user in self.users:
-            if user.isLoggedIn:
+            if user.isLoggedIn: # Only run these functions on logged-in users
                 if (datetime.now() - user.lastActivity).total_seconds() > 180: # When user times out, save their last recorded value and log them out
                     print(f"TIMING OUT USER {user.id}")
                     th = threading.Thread(target=user.save_updated_value)
