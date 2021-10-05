@@ -1,16 +1,15 @@
-"""
-Constants for the program
-"""
+####################################
+#    Constants for the program.    #
+####################################
 import os
 import talib
 
 dirname = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/save_data/'
 
-DEFAULT_CONFIG_PATH = dirname + "config/config.json"
-CONFIG_PATH = dirname + "config/"
+CONFIG_PATH = dirname + "strategy_configs/"
 DATASET_PATH = dirname + "datasets/dataset_"
 STRATEGY_PATH = dirname + "strategies/"
-RESULTS_PATH = dirname + "results/"
+RESULTS_PATH = dirname + "backtest_results/"
 MODEL_PATH = dirname + "models/"
 SAVE_PATH = dirname + "saves/"
 USER_DATA_PATH = dirname + "user_data/"
