@@ -8,9 +8,11 @@ import json
 from datetime import datetime
 import pandas as pd
 from SmartTrade.app import constants
+from SmartTrade.app import account_data
 
 class Bot:
-    def __init__(self, strategyName, config, saveData=None) -> None:
+    def __init__(self, owner, strategyName, config, saveData=None) -> None:
+        self.owner = owner
         self.config = config
         if saveData is not None:
             self.__load_from_save(saveData)
@@ -23,6 +25,9 @@ class Bot:
         self.balance = data['balance']
         self.accountValue = data['value']
         self.dryRun = data['dryRun']
+
+    def get_tick_frequency(self) -> int:
+        return self.config['tickFrequency']
 
     def __first_time_setup(self) -> None:
         self.__generic_setup(self.config)
@@ -41,12 +46,12 @@ class Bot:
         self.assetHoldings = saveData['assetHoldings']
         self.orderHistory = pd.DataFrame(saveData['orderHistory'], columns=['date', 'side', 'quantity', 'value', 'price'])
 
-
-    def load_strategy(self, name) -> None:
+    def __load_strategy(self, name) -> None:
         pass
 
-    def tick(self):
-        pass
+    def tick(self, data):
+        self.strategy.check_buy(self, data)
+        self.strategy.check_sell(self, data)
 
     def __save_progress(self):
         pass
