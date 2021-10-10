@@ -19,7 +19,7 @@ class Bot:
         else:
             self.__first_time_setup()
 
-        self.load_strategy(strategyName)
+        self.__load_strategy(strategyName)
 
     def __generic_setup(self, data) -> None:
         self.balance = data['balance']
@@ -35,26 +35,25 @@ class Bot:
         self.startDate = datetime.now()
         self.daysRunning = 1
         self.assetHoldings = []
-        self.orderHistory = []
 
     def __load_from_save(self, saveData) -> None:
         self.__generic_setup(saveData)
         self.startingBalance = saveData['startingBalance']
         self.startDate = datetime.strptime(saveData['startDate'], '%Y-%m-%d %H:%M:%S')
-        self.yesterday = saveData['yesterday']
         self.daysRunning = saveData['daysRunning']
         self.assetHoldings = saveData['assetHoldings']
         self.orderHistory = pd.DataFrame(saveData['orderHistory'], columns=['date', 'side', 'quantity', 'value', 'price'])
 
     def __load_strategy(self, name) -> None:
-        pass
+        sys.path.append(constants.STRATEGY_PATH)
+        self.strategy = importlib.import_module(name)
 
-    def tick(self, data):
+    def tick(self, data) -> None:
         self.strategy.check_buy(self, data)
         self.strategy.check_sell(self, data)
 
-    def __save_progress(self):
+    def __save_progress(self) -> None:
         pass
 
-    def __update_balances_and_pnl(self):
+    def __update_balances_and_pnl(self) -> None:
         pass

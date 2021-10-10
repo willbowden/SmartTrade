@@ -6,6 +6,7 @@ import talib
 
 dirname = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/save_data/'
 
+# FILE PATH CONSTANTS
 CONFIG_PATH = dirname + "strategy_configs/"
 DATASET_PATH = dirname + "datasets/dataset_"
 STRATEGY_PATH = dirname + "strategies/"
@@ -38,3 +39,7 @@ DATASET_INDICATORS = ['rsi', 'sma', 'ema', 'ma', 'bb', 'adx', 'adxr', 'apo', 'ar
 'linearreg_intercept', 'linearreg_slope', 'stddev', 'tsf', 'var']
 
 INDICATORS_REQUIRED_DATA = {'rsi': 'c'}
+
+# CONSTANTS FOR STRATEGY BUILDER
+INDENT = "    "
+CUSTOM_COMPARATORS = ['wre', 'wri', 'cmc']
