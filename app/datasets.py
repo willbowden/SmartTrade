@@ -10,14 +10,14 @@ import joblib
 import datetime
 
 
-def load_dataset(symbol: str, timeframe: str, startDate: int) -> pd.DataFrame: 
+def load_dataset(symbol: str, timeframe: str, startDate: int, config: dict) -> pd.DataFrame: 
     fname = helpers.get_dataset_filepath(symbol, timeframe)
     if dataset_exists(symbol, timeframe, startDate):
         with open(fname, 'r') as infile:
             dataset = pd.read_json(infile)
     else:
-        print(f"Dataset for {symbol} does not exist or does not contain start date! Please create one before continuing.")
-        raise FileNotFoundError
+        print(f"Dataset for {symbol} does not exist or does not contain start date! Creating...")
+        create_new_dataset(symbol, timeframe, startDate, config)
     return dataset
 
 def save_dataset(symbol: str, timeframe: str, dataset: pd.DataFrame): # Saves dataset to file
@@ -102,7 +102,7 @@ def create_new_dataset(symbol: str, timeframe: str, starttimestamp: int, config:
     dataset = dataset.dropna(0)
     dataset.reset_index(inplace=True)
     del dataset['index']
-    return dataset
+    save_dataset(symbol, timeframe, dataset)
 
 if __name__ == '__main__':
     print(f"Please do not run {__file__} directly.")
