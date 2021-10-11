@@ -10,16 +10,9 @@ def get_user_filepath(userID):
     fname = constants.USER_ACCOUNT_PATH + str(userID) + "_values.json"
     return fname
 
-def get_symbol_filepath(symbol, timeframe):
-    script_dir = os.path.dirname(__file__)
+def get_dataset_filepath(symbol, timeframe):
     symbol_filename = symbol.replace("/", "_")
-    fname = os.path.join(script_dir, (constants.DEFAULT_DATASET_PATH + symbol_filename + "_" + timeframe + ".json"))
-    return fname
-
-def get_ohlcv_filepath(symbol, timeframe):
-    script_dir = os.path.dirname(__file__)
-    symbol_filename = symbol.replace("/", "_")
-    fname = os.path.join(script_dir, (constants.OHLCV_PATH + symbol_filename + "_" + timeframe + ".json"))
+    fname = constants.OHLCV_PATH + symbol_filename + "_" + timeframe + ".json"
     return fname
 
 def get_model_path(symbol=config['symbol'], timeframe=config['timeframe']):

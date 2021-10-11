@@ -34,8 +34,8 @@ def download_historical(symbol: str, timeframe: str, since: int=None) -> pd.Data
         progress = ((len(whole) / leftToFetch) * 100)
         print(f'{conversions.unix_to_date(oldest)} | {str(round(progress, 1))}% | {len(whole)} points downloaded.')
         #print(f'{round(progress, 2)}% Complete ({len(whole)} fetched)')
-    whole.set_indexchange(['date', 'open', 'high', 'low', 'close', 'volume'])
-    whole.reset_indexchange(inplace=True)
+    whole.set_index(['date', 'open', 'high', 'low', 'close', 'volume'])
+    whole.reset_index(inplace=True)
     del whole['indexchange']
     return whole
 
