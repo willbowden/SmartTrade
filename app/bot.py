@@ -34,7 +34,8 @@ class Bot:
         self.startingBalance = self.balance
         self.startDate = datetime.now()
         self.daysRunning = 1
-        self.assetHoldings = []
+        self.assetHoldings = {}
+        self.orderHistory = pd.DataFrame(columns=['date', 'symbol', 'side', 'quantity', 'value', 'price'])
 
     def __load_from_save(self, saveData) -> None:
         self.__generic_setup(saveData)
@@ -42,7 +43,7 @@ class Bot:
         self.startDate = datetime.strptime(saveData['startDate'], '%Y-%m-%d %H:%M:%S')
         self.daysRunning = saveData['daysRunning']
         self.assetHoldings = saveData['assetHoldings']
-        self.orderHistory = pd.DataFrame(saveData['orderHistory'], columns=['date', 'side', 'quantity', 'value', 'price'])
+        self.orderHistory = pd.DataFrame(saveData['orderHistory'], columns=['date', 'symbol', 'side', 'quantity', 'value', 'price'])
 
     def __load_strategy(self, name) -> None:
         sys.path.append(constants.STRATEGY_PATH)
@@ -52,9 +53,23 @@ class Bot:
         self.strategy.check_buy(self, data)
         self.strategy.check_sell(self, data)
 
-    def place_order(self, side, quantity, value, price):
-        pass
-
+    def place_order(self, symbol, side, quantity, value, price):
+        if side == "sell":
+            self.__sell(symbol, quantity, value, price)
+        elif side == "buy":
+            self.__buy(symbol, quantity, value, price)
+    
+    def __sell(self, symbol, quantity, value, price):
+        if not self.dryRun:
+            valid = self.owner.place_sell_order(quantity, value, price)
+            if valid:
+                self.balance += (value * 0.999)
+                self.assetHoldings[symbol]['balance'] -= quantity
+                if self.assetHoldings[symbol]['outstandingSpend'] < value:
+                    self.assetHoldings[symbol]['outstandingSpend'] = 0
+                else:
+                    self.assetHoldings[symbol]['outstandingSpend'] -= value
+                    
     def __save_progress(self) -> None:
         pass
 
