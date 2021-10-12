@@ -52,6 +52,9 @@ class Bot:
         self.strategy.check_buy(self, data)
         self.strategy.check_sell(self, data)
 
+    def place_order(self, side, quantity, value, price):
+        pass
+
     def __save_progress(self) -> None:
         pass
 

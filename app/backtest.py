@@ -17,8 +17,9 @@ class Backtest:
         self.strategy = importlib.import_module(strategyName)
         self.startingBalance, self.balance = startingBalance
         self.config = configs.load_config(strategyName, userID)
+        self.symbols = symbols
         self.data = {}
-        for item in symbols:
+        for item in self.symbols:
             self.data[item] = datasets.load_dataset(item, timeframe, startDate)
 
     def __run(self):
