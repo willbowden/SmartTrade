@@ -14,10 +14,16 @@ def load_dataset(symbol: str, timeframe: str, startDate: int, config: dict) -> p
     fname = helpers.get_dataset_filepath(symbol, timeframe)
     if dataset_exists(symbol, timeframe, startDate):
         with open(fname, 'r') as infile:
-            dataset = pd.read_json(infile)
+            datasetWithoutIndicators = pd.read_json(infile)
     else:
         print(f"Dataset for {symbol} does not exist or does not contain start date! Creating...")
-        create_new_dataset(symbol, timeframe, startDate, config)
+        datasetWithoutIndicators = create_new_dataset(symbol, timeframe, startDate, config)
+
+    dataset = populate_dataset(datasetWithoutIndicators, config['indicators'])
+    dataset = dataset.dropna(0)
+    dataset.reset_index(inplace=True)
+    del dataset['index']
+
     return dataset
 
 def save_dataset(symbol: str, timeframe: str, dataset: pd.DataFrame): # Saves dataset to file
@@ -97,12 +103,12 @@ def dataset_exists(symbol: str, timeframe: str, startDate: int) -> bool: # Check
 
 def create_new_dataset(symbol: str, timeframe: str, starttimestamp: int, config: dict) -> pd.DataFrame:
     ohlcv = exchange_data.download_historical(symbol, timeframe, starttimestamp)
-    dataset = populate_dataset(ohlcv)
-    dataset = calculate_futures(dataset, config)
+    dataset = calculate_futures(ohlcv, config)
     dataset = dataset.dropna(0)
     dataset.reset_index(inplace=True)
     del dataset['index']
     save_dataset(symbol, timeframe, dataset)
+    return dataset
 
 if __name__ == '__main__':
     print(f"Please do not run {__file__} directly.")
