@@ -4,8 +4,8 @@
 
 import sys
 import importlib
-import json
 from datetime import datetime
+from numpy import save
 import pandas as pd
 from SmartTrade.app import constants
 from SmartTrade.app import account_data
@@ -35,6 +35,8 @@ class Bot:
         self.startDate = datetime.now()
         self.daysRunning = 1
         self.assetHoldings = {}
+        self.profit = 0
+        self.profitPercent = 0
         self.orderHistory = pd.DataFrame(columns=['date', 'symbol', 'side', 'quantity', 'value', 'price'])
 
     def __load_from_save(self, saveData) -> None:
@@ -43,6 +45,8 @@ class Bot:
         self.startDate = datetime.strptime(saveData['startDate'], '%Y-%m-%d %H:%M:%S')
         self.daysRunning = saveData['daysRunning']
         self.assetHoldings = saveData['assetHoldings']
+        self.profit = saveData['profit']
+        self.profitPercent = saveData['profitPercent']
         self.orderHistory = pd.DataFrame(saveData['orderHistory'], columns=['date', 'symbol', 'side', 'quantity', 'value', 'price'])
 
     def __load_strategy(self, name) -> None:
@@ -112,8 +116,21 @@ class Bot:
     def __save_progress(self) -> None:
         pass
 
-    def __update_balances_and_pnl(self) -> None:
+    def __update_balances_and_pnl(self, data: dict) -> None:
         pass
 
     def get_info(self) -> dict:
-        pass
+        results = {}
+        results['holdings'] = {}
+        for symbol in self.assetHoldings.keys():
+            holding = {'balance': self.assetHoldings[symbol]['balance'], 'value': self.assetHoldings[symbol]['value']}
+            results['holdings'][symbol] = holding
+        
+        results['balance'] = self.balance
+        results['profit'] = self.profit
+        results['profitPercent'] = self.profitPercent
+        results['orderHistory'] = self.orderHistory 
+        numOrders = len(self.orderHistory.index)
+        results['numOrders'] = numOrders
+
+        return results
