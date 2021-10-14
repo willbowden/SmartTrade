@@ -19,15 +19,15 @@ def load_dataset(symbol: str, timeframe: str, startDate: int, config: dict) -> p
         print(f"Dataset for {symbol} does not exist or does not contain start date! Creating...")
         datasetWithoutIndicators = create_new_dataset(symbol, timeframe, startDate, config)
 
-    dataset = populate_dataset(datasetWithoutIndicators, config['indicators'])
+    dataset = populate_dataset(datasetWithoutIndicators, config['requiredIndicators'])
     dataset = dataset.dropna(0)
     dataset.reset_index(inplace=True)
     del dataset['index']
 
     return dataset
 
-def save_dataset(symbol: str, timeframe: str, dataset: pd.DataFrame): # Saves dataset to file
-    fname = helpers.get_symbol_filepath(symbol, timeframe)
+def save_dataset(symbol: str, timeframe: str, dataset: pd.DataFrame) -> None: # Saves dataset to file
+    fname = helpers.get_dataset_filepath(symbol, timeframe)
     with open(fname, "w") as outfile:
         jsonified = dataset.to_json()
         outfile.write(jsonified)
@@ -77,8 +77,8 @@ def calculate_futures(dataset: pd.DataFrame, config: dict) -> pd.DataFrame:
     futures = []
     datasetLength = len(dataset.index)
     for index, row in dataset.iterrows():
-        if index <= datasetLength - config['lookup_step']:
-            futureIndex = (index + config['lookup_step']) - 1
+        if index <= datasetLength - config['lookupStep']:
+            futureIndex = (index + config['lookupStep']) - 1
             futures.append(dataset.at[futureIndex, 'close'])
         else:
             futures.append(None)
@@ -88,10 +88,11 @@ def calculate_futures(dataset: pd.DataFrame, config: dict) -> pd.DataFrame:
 def dataset_exists(symbol: str, timeframe: str, startDate: int) -> bool: # Check if a dataset exists and if it contains the start date specified by the user.
     okay = True
     fname = helpers.get_dataset_filepath(symbol, timeframe)
+    startDatePandas = pd.Timestamp(startDate, unit='ms')
     try:
         with open(fname, 'r') as infile:
             dataset = pd.read_json(infile)
-            if startDate in dataset['date']:
+            if startDatePandas in set(dataset['date']):
                 return okay
             else:
                 okay = False

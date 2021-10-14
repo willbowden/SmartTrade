@@ -1,10 +1,7 @@
 import os
 import constants
 import time
-import configs
 import numpy as np
-
-config = configs.load_config()
 
 def get_user_filepath(userID):
     fname = constants.USER_ACCOUNT_PATH + str(userID) + "_values.json"
@@ -12,15 +9,15 @@ def get_user_filepath(userID):
 
 def get_dataset_filepath(symbol, timeframe):
     symbol_filename = symbol.replace("/", "_")
-    fname = constants.OHLCV_PATH + symbol_filename + "_" + timeframe + ".json"
+    fname = constants.DATASET_PATH + symbol_filename + "_" + timeframe + ".json"
     return fname
 
-def get_model_path(symbol=config['symbol'], timeframe=config['timeframe']):
+def get_model_path(symbol, timeframe):
     model_name = generate_model_name(symbol, timeframe)
     model_path = constants.MODELS_PATH + model_name
     return model_path
 
-def generate_model_name(symbol, timeframe):
+def generate_model_name(symbol, timeframe, config):
     model_name = f"{time.strftime('%Y-%m-%d-%H-%M')}_{symbol}_{timeframe}_lookup_{config['lookup_step']}_dropout_{config['dropout']}_units_{config['units']}_layers_{config['n_layers']}_features_{config['n_features']}_loss_{config['loss']}_optimizer_{config['optimizer']}"
     return model_name
 
