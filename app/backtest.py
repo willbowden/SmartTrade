@@ -30,10 +30,14 @@ class Backtest:
     def __run(self):
         for symbol in self.symbols:
             ds = self.data[symbol]
-            for _, row in ds.iterrows():
-                self.bot.tick(row, symbol)
+            for index, row in ds.iterrows():
+                data = self.__prepare_row(row, index)
+                self.bot.tick(data, symbol)
         
         self.__get_results()
+
+    def __prepare_row(self, row, index):
+        pass
         
     def __get_results(self):
         results = self.bot.get_info()
