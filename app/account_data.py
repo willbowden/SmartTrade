@@ -9,7 +9,7 @@ from SmartTrade.app import exchange_data
 import asyncio
 
 def get_account_value(userID: int, exchange) -> dict: # Calculate and return user's total account value in USD
-    totalValue = 0
+    totalValue = 0.0
     balances = get_account_balances(exchange)
     for key in balances.keys(): # Iterate through non-zero balances
         if key != 'USDT':
@@ -18,7 +18,7 @@ def get_account_value(userID: int, exchange) -> dict: # Calculate and return use
             value = balances[key]
         totalValue += value
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    result = {'userID': userID, 'date': date, 'value': totalValue}
+    result = {'date': date, 'value': totalValue}
     return result
 
 def get_account_holdings(exchange) ->  list: # Return a list of the user's cryptocurrency balances and their individual value

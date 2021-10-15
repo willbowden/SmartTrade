@@ -137,5 +137,5 @@ def clear_table(tblName: str) -> None:
     print("Success.")
 
 if __name__ == '__main__':
-    print(get_all_accounts())
+    print(load_account_values(2194))
     print(f"Please do not run {__file__} directly.")
