@@ -19,25 +19,25 @@ class Backtest:
         self.balance = startingBalance
         self.config = configs.load_config(strategyName, userID)
         self.config['startingBalance'] = startingBalance
-        self.symbols = symbols
+        self.config['symbols'] = symbols
         self.data = {}
         self.bot = bot.Bot(self, strategyName, True, self.config)
-        for item in self.symbols:
+        for item in self.config['symbols']:
             self.data[item] = datasets.load_dataset(item, timeframe, startDate, self.config)
         
         self.__run()
 
     def __run(self):
-        for symbol in self.symbols:
+        for symbol in self.config['symbols']:
             ds = self.data[symbol]
             for index, row in ds.iterrows():
-                data = self.__prepare_row(row, index)
-                self.bot.tick(data, symbol)
+                self.bot.tick(row, symbol)
         
         self.__get_results()
 
-    def __prepare_row(self, row, index):
-        pass
+    # def __prepare_row(self, symbol, index):
+    #     row = self.data[symbol].iat[index]
+    #     return row
         
     def __get_results(self):
         results = self.bot.get_info()
@@ -47,4 +47,4 @@ class Backtest:
 
 
 if __name__ == '__main__':
-    b = Backtest(['ETH/USDT'], '1h', 1602630000000, 1000, 'testStrategy', 2194)
+    b = Backtest(['ETH/USDT', 'BTC/USDT'], '1h', 1602630000000, 1000, 'testStrategy', 2194)

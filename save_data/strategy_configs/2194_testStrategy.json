@@ -1,7 +1,6 @@
 {
     "name": "testStrategy",
 
-    "symbols": ["ETH/USDT"],
     "timeframe": "1h",
     "exchangeID": "binance",
     "lookupStep": 12,
