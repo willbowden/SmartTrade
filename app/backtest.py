@@ -41,10 +41,10 @@ class Backtest:
         
     def __get_results(self):
         results = self.bot.get_info()
-        print(f"Balance: ${results['balance']}. Profit: ${results['profit']}. Number of Trades: {results['numOrders']}.")
+        print(f"Balance: ${round(results['balance'], 2)}. Profit: ${round(results['profit'], 2)}, {round(results['profitPercent'], 2)}%. Number of Trades: {results['numOrders']}.")
         print(self.bot.assetHoldings)
         print(self.bot.orderHistory)
 
 
 if __name__ == '__main__':
-    b = Backtest(['ETH/USDT', 'BTC/USDT'], '1h', 1602630000000, 1000, 'testStrategy', 2194)
+    b = Backtest(['ETH/USDT'], '1h', 1617231600000, 6875, 'testStrategy', 2194)

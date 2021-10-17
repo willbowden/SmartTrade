@@ -1,0 +1,13 @@
+{
+    "name": "dca",
+
+    "timeframe": "1h",
+    "exchangeID": "binance",
+    "lookupStep": 12,
+    "fees": 0.001,
+    "spendPercent": 0.2,
+    "dailyProfitTarget": 1.5,
+    "sellBalancePercent": 0.05,
+    "takeProfit": 1.1,
+    "requiredIndicators": ["rsi"]
+}

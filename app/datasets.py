@@ -8,6 +8,7 @@ import joblib
 import pandas as pd
 import joblib
 import datetime
+import numpy as np
 
 
 def load_dataset(symbol: str, timeframe: str, startDate: int, config: dict) -> pd.DataFrame: 
@@ -18,8 +19,9 @@ def load_dataset(symbol: str, timeframe: str, startDate: int, config: dict) -> p
     else:
         print(f"Dataset for {symbol} does not exist or does not contain start date! Creating...")
         datasetWithoutIndicators = create_new_dataset(symbol, timeframe, startDate, config)
-
-    dataset = populate_dataset(datasetWithoutIndicators, config['requiredIndicators'])
+    indexOfStartDate = np.where(datasetWithoutIndicators['date'] == pd.to_datetime(startDate, unit='ms'))[0][0]
+    dataset = datasetWithoutIndicators.iloc[indexOfStartDate:] # Select only parts of the dataset from the start date onwards
+    dataset = populate_dataset(dataset, config['requiredIndicators'])
     dataset = dataset.dropna(0)
     dataset.reset_index(inplace=True)
     del dataset['index']
