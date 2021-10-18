@@ -47,4 +47,4 @@ class Backtest:
 
 
 if __name__ == '__main__':
-    b = Backtest(['ETH/USDT'], '1h', 1617231600000, 6875, 'testStrategy', 2194)
+    b = Backtest(['ETH/USDT'], '1h', 1602975600000, 1000, 'testStrategy', 2194)
