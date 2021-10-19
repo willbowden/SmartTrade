@@ -121,7 +121,7 @@ class Bot:
     def __update_balances_and_pnl(self, data: dict, symbol: str) -> None:
         totalValue = 0
         for symbol in self.assetHoldings.keys():
-            newValue = (self.assetHoldings[symbol]['balance'] * data['close'])
+            newValue = (self.assetHoldings[symbol]['balance'] * data['close'].iat[-1])
             self.assetHoldings[symbol]['value'] = newValue
             totalValue += newValue
 

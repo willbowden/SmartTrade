@@ -4,6 +4,7 @@
     "timeframe": "1h",
     "exchangeID": "binance",
     "lookupStep": 12,
+    "pastDataSteps": 3,
     "fees": 0.001,
     "spendPercent": 0.2,
     "dailyProfitTarget": 1.5,
