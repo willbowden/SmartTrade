@@ -34,6 +34,14 @@ class Backtest:
                 self.bot.tick(ds, index, symbol)
         
         self.__get_results()
+
+    # def __prepare_block(self, symbol, index):
+    #     block = self.data[symbol].iloc[[index]]
+    #     if index >= (self.config['pastDataSteps'] - 1):
+    #         for i in range(1, self.config['pastDataSteps']):
+    #             block = block.append(self.data[symbol].iloc[[index-i]])
+
+    #     return block
         
     def __get_results(self):
         results = self.bot.get_info()
