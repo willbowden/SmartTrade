@@ -5,9 +5,9 @@
 from SmartTrade.app import constants
 
 def build(jsonData, strategyName) -> None:
-    pyString = "def check_buy(bot, data, symbol):\n"
+    pyString = "def check_buy(bot, data, index, symbol):\n"
     pyString += __build_conditions(jsonData['buy'], 'buy')
-    pyString += "\n\ndef check_sell(bot, data, symbol):\n"
+    pyString += "\n\ndef check_sell(bot, data, index, symbol):\n"
     pyString += __build_conditions(jsonData['sell'], 'sell')
     
     with open(constants.STRATEGY_PATH + strategyName + ".py", 'w') as outfile:
@@ -34,15 +34,15 @@ def __build_conditions(rawString, side) -> str:
         outString += comparison
         outString += constants.INDENT * 2
         if side == "buy":
-            outString += f"bot.place_order('{side}', ({quantityBoughtOrSold}*bot.balance)/data['close'].iat[-1], {quantityBoughtOrSold}*bot.balance, data['close'].iat[-1], data['date'].iat[-1])"
+            outString += f"bot.place_order('{side}', ({quantityBoughtOrSold}*bot.balance)/data['close'].iat[index], {quantityBoughtOrSold}*bot.balance, data['close'].iat[index], data['date'].iat[index])"
         elif side == "sell":
-            outString += f"bot.place_order('{side}', ({quantityBoughtOrSold}*bot.assetHoldings[symbol]['balance']), ({quantityBoughtOrSold}*bot.assetHoldings[symbol]['balance']*data['close'].iat[-1]), data['close'].iat[-1], data['date'].iat[-1])"
+            outString += f"bot.place_order('{side}', ({quantityBoughtOrSold}*bot.assetHoldings[symbol]['balance']), ({quantityBoughtOrSold}*bot.assetHoldings[symbol]['balance']*data['close'].iat[index]), data['close'].iat[index], data['date'].iat[index])"
 
     return outString
 
 def __construct_comparison(indicator, comparator, value) -> str:
     if comparator not in constants.CUSTOM_COMPARATORS:
-        outString = f"if data['{indicator}'].iat[-1] "
+        outString = f"if data['{indicator}'].iat[index] "
         outString += f"{comparator} {value}:\n"
     elif comparator == "wre":
         outString = f"if {__within_range_excluding(value, indicator)}:\n"
@@ -53,12 +53,12 @@ def __construct_comparison(indicator, comparator, value) -> str:
 
 def __within_range_excluding(valueString, indicator) -> str:
     values = valueString.split(",")
-    outString = f"data['{indicator}'].iat[-1] > {values[0]} and data['{indicator}'].iat[-1] < {values[1]}"
+    outString = f"data['{indicator}'].iat[index] > {values[0]} and data['{indicator}'].iat[index] < {values[1]}"
     return outString
 
 def __within_range_including(valueString, indicator) -> str:
     values = valueString.split(",")
-    outString = f"data['{indicator}'].iat[-1] >= {values[0]} and data['{indicator}'].iat[-1] <= {values[1]}"
+    outString = f"data['{indicator}'].iat[index] >= {values[0]} and data['{indicator}'].iat[index] <= {values[1]}"
     return outString
 
 if __name__ == '__main__':

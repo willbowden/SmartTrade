@@ -53,10 +53,10 @@ class Bot:
         sys.path.append(constants.STRATEGY_PATH)
         self.strategy = importlib.import_module(name)
 
-    def tick(self, data, symbol) -> None:
+    def tick(self, data, index, symbol) -> None:
         self.currentSymbol = symbol
-        self.strategy.check_buy(self, data, symbol)
-        self.strategy.check_sell(self, data, symbol)
+        self.strategy.check_buy(self, data, index, symbol)
+        self.strategy.check_sell(self, data, index, symbol)
 
         self.__update_balances_and_pnl(data, symbol)
 
