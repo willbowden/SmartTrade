@@ -35,6 +35,7 @@ class Backtest:
         
         self.__get_results()
 
+    # NO LONGER USED FOR PERFORMANCE REASONS
     # def __prepare_block(self, symbol, index):
     #     block = self.data[symbol].iloc[[index]]
     #     if index >= (self.config['pastDataSteps'] - 1):

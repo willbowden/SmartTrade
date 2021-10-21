@@ -18,7 +18,7 @@ def load_dataset(symbol: str, timeframe: str, startDate: int, config: dict) -> p
             datasetWithoutIndicators = pd.read_json(infile)
     else:
         print(f"Dataset for {symbol} does not exist or does not contain start date! Creating...")
-        datasetWithoutIndicators = create_new_dataset(symbol, timeframe, startDate, config)
+        datasetWithoutIndicators = create_new_dataset(symbol, timeframe, startDate)
     indexOfStartDate = np.where(datasetWithoutIndicators['date'] == pd.to_datetime(startDate, unit='ms'))[0][0]
     dataset = datasetWithoutIndicators.iloc[indexOfStartDate:] # Select only parts of the dataset from the start date onwards
     dataset = populate_dataset(dataset, config['requiredIndicators'])
@@ -75,17 +75,17 @@ def populate_dataset(dataset: pd.DataFrame, indicators) -> pd.DataFrame:
     return dataset
 
 
-def calculate_futures(dataset: pd.DataFrame, config: dict) -> pd.DataFrame:
-    futures = []
-    datasetLength = len(dataset.index)
-    for index, row in dataset.iterrows():
-        if index <= datasetLength - config['lookupStep']:
-            futureIndex = (index + config['lookupStep']) - 1
-            futures.append(dataset.at[futureIndex, 'close'])
-        else:
-            futures.append(None)
-    dataset['future'] = futures
-    return dataset
+# def calculate_futures(dataset: pd.DataFrame, config: dict) -> pd.DataFrame:
+#     futures = []
+#     datasetLength = len(dataset.index)
+#     for index, row in dataset.iterrows():
+#         if index <= datasetLength - config['lookupStep']:
+#             futureIndex = (index + config['lookupStep']) - 1
+#             futures.append(dataset.at[futureIndex, 'close'])
+#         else:
+#             futures.append(None)
+#     dataset['future'] = futures
+#     return dataset
 
 def dataset_exists(symbol: str, timeframe: str, startDate: int) -> bool: # Check if a dataset exists and if it contains the start date specified by the user.
     okay = True
@@ -104,9 +104,10 @@ def dataset_exists(symbol: str, timeframe: str, startDate: int) -> bool: # Check
     return okay
 
 
-def create_new_dataset(symbol: str, timeframe: str, starttimestamp: int, config: dict) -> pd.DataFrame:
-    ohlcv = exchange_data.download_historical(symbol, timeframe, starttimestamp)
-    dataset = calculate_futures(ohlcv, config)
+def create_new_dataset(symbol: str, timeframe: str, startTimeStamp: int) -> pd.DataFrame:
+    newStartTimeStamp = startTimeStamp + (2 * constants.TIMEFRAME_MILLISECONDS[timeframe])
+    dataset = exchange_data.download_historical(symbol, timeframe, newStartTimeStamp)
+    # dataset = calculate_futures(ohlcv, config)
     dataset = dataset.dropna(0)
     dataset.reset_index(inplace=True)
     del dataset['index']

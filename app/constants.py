@@ -39,8 +39,15 @@ DATASET_INDICATORS = ['rsi', 'sma', 'ema', 'ma', 'bb', 'adx', 'adxr', 'apo', 'ar
 'ht_trendmode', 'avgprice', 'medprice', 'typprice', 'wclprice', 'atr', 'natr', 'trange', 'beta', 'correl', 'linearreg', 'linearreg_angle', 
 'linearreg_intercept', 'linearreg_slope', 'stddev', 'tsf', 'var']
 
-INDICATORS_REQUIRED_DATA = {'rsi': 'c'}
+INDICATORS_REQUIRED_DATA = {'adx': 'hlc', 'adxr': 'hlc', 'aroon': 'hl', 'aroonosc': 'hl', 'bop': 'ohlc', 'cci': 'hlc', 'dx': 'hlc', 'mfi': 'hlcv',
+ 'minus_di': 'hlc', 'minus_dm': 'hl', 'plus_di': 'hlc', 'plus_dm': 'hl', 'stoch': 'hlc', 'stochf': 'hlc', 'ultosc': 'hlc', 'willr': 'hlc',
+ 'ad': 'hlcv', 'adosc': 'hlcv', 'obv': 'cv', 'avgprice': 'ohlc', 'medprice': 'hl', 'typprice': 'hlc', 'wclprice': 'hlc',
+ 'atr': 'hlc', 'natr': 'hlc', 'trange': 'hlc', 'beta': 'hl', 'correl': 'hl'}
 
 # CONSTANTS FOR STRATEGY BUILDER
 INDENT = "    "
 CUSTOM_COMPARATORS = ['wre', 'wri', 'cmc']
+
+# CONSTANTS FOR MACHINE LEARNING
+TRAININGSET_INDICATORS = ['rsi']
+TRAININGSET_SPLIT = 0.8
