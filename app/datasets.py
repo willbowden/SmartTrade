@@ -12,6 +12,7 @@ import numpy as np
 
 
 def load_dataset(symbol: str, timeframe: str, startDate: int, config: dict) -> pd.DataFrame: 
+    startDate = startDate - (5 * constants.TIMEFRAME_MILLISECONDS[timeframe]) # So that the start date is actually included in the data. Prevents errors.
     fname = helpers.get_dataset_filepath(symbol, timeframe)
     if dataset_exists(symbol, timeframe, startDate):
         with open(fname, 'r') as infile:
