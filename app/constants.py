@@ -9,9 +9,10 @@ dirname = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/save_d
 # FILE PATH CONSTANTS
 CONFIG_PATH = dirname + "strategy_configs/"
 DATASET_PATH = dirname + "datasets/dataset_"
+TRAININGSET_PATH = dirname + "trainingsets/trainingset_"
 STRATEGY_PATH = dirname + "strategies/"
 RESULTS_PATH = dirname + "backtest_results/"
-MODEL_PATH = dirname + "models/"
+MODELS_PATH = dirname + "models/"
 SAVE_PATH = dirname + "saves/"
 USER_DATA_PATH = dirname + "user_data/"
 

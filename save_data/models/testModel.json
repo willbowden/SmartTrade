@@ -1,0 +1,21 @@
+{
+    "name": "testModel",
+
+    "training_symbols": ["ETH/USDT", "BTC/USDT", "ADA/USDT", "SOL/USDT"],
+    "timeframe": "1h",
+    "split_dataset": true,
+    "sequence_length": 50,
+    "lookup_step": 0,
+    "test_ratio": 0.2,
+    "n_layers": 2,
+    "units": 256,
+    "dropout": 0.4,
+    "bidirectional": false,
+    "loss": "mean_absolute_error",
+    "optimizer": "rmsprop",
+    "batch_size": 64,
+    "epochs": 500,
+    "n_features": 6,
+    "feature_columns": ["open", "high", "low", "close", "volume", "rsi", "score"],
+    "trainingset_indicators": ["rsi"]
+}
