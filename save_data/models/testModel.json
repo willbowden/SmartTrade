@@ -1,7 +1,7 @@
 {
     "name": "testModel",
 
-    "training_symbols": ["ETH/USDT", "BTC/USDT", "ADA/USDT", "SOL/USDT"],
+    "training_symbols": ["ETH/USDT"],
     "timeframe": "1h",
     "split_dataset": true,
     "sequence_length": 50,

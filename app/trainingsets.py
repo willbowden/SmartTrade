@@ -120,6 +120,7 @@ def split_train_and_test(ds, config):
         result['yTrain'] = y[:train_samples]
         result['xTest'] = x[train_samples:]
         result['testDates'] = result['date'][train_samples:]
+        result['testClose'] = result['originalDS']['close'][train_samples:]
         result['yTest'] = y[train_samples:]
     else:
         result['xTest'] = x

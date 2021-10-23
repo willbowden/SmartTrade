@@ -2,7 +2,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout, Bidirectional
 from collections import deque
 
-import joblib
+import statistics
 import plotly.graph_objects as go
 import tensorflow as tf
 import numpy as np
@@ -79,14 +79,33 @@ def train_model(dataset, model, modelName):
 
 def get_final_dataset(ds):
     np.savetxt('predicted.txt', ds['predicted'])
-
+    clampedList = []
+    asList = ds['predicted'].tolist()
+    asList = [x[0] for x in asList]
+    modalValue = statistics.mode(asList)
+    for i in range(len(ds['predicted'])):
+        if ds['predicted'][i] > modalValue:
+            clampedList.append(1)
+        elif ds['predicted'][i] < modalValue:
+            clampedList.append(-1)
+        else:
+            clampedList.append(0)
+            
+    ds['clamped'] = clampedList
     return ds
 
 def test_model(model, dataset):
     dataset['predicted'] = predict(model, dataset['xTest'])
     final = get_final_dataset(dataset)
+    final['dataset'] = final['originalDS']
+    markers = []
+    for i in range(len(final['clamped'])):
+        marker = {'date': dataset['testDates'].iat[i], 'price': dataset['testClose'].iat[i], 'score': final['clamped'][i]}
+        markers.append(marker)
+    
+    final['markers'] = markers
+    trainingsets.plot_scores(final)
 
-    #plot_graph(final)
 
 def predict(model, data):
     yPred = model.predict(data)
