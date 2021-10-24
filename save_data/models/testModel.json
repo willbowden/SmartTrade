@@ -14,7 +14,7 @@
     "loss": "mean_absolute_error",
     "optimizer": "rmsprop",
     "batch_size": 64,
-    "epochs": 500,
+    "epochs": 10,
     "n_features": 6,
     "feature_columns": ["open", "high", "low", "close", "volume", "rsi", "score"],
     "trainingset_indicators": ["rsi"]

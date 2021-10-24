@@ -1,5 +1,6 @@
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, LSTM, Dropout, Bidirectional
+from tensorflow.keras.layers import Dense, LSTM, Dropout
+from tensorflow.keras.optimizers import SGD
 from collections import deque
 
 import statistics
@@ -21,31 +22,16 @@ def load_model(modelName):
     model = tf.keras.models.load_model(constants.MODELS_PATH + modelName)
     return model
 
-def create_model(modelName: str, cell=LSTM):
+def create_model(modelName: str):
     config = configs.load_ai_config(modelName)
+
     model = Sequential()
-    for i in range(config['n_layers']):
-        if i == 0:
-            # first layer
-            if config['bidirectional']:
-                model.add(Bidirectional(cell(config['units'], return_sequences=True), batch_input_shape=(None, config['sequence_length'], config['n_features'])))
-            else:
-                model.add(cell(config['units'], return_sequences=True, batch_input_shape=(None, config['sequence_length'], config['n_features'])))
-        elif i == config['n_layers'] - 1:
-            # last layer
-            if config['bidirectional']:
-                model.add(Bidirectional(cell(config['units'], return_sequences=False)))
-            else:
-                model.add(cell(config['units'], return_sequences=False))
-        else:
-            # hidden layers
-            if config['bidirectional']:
-                model.add(Bidirectional(cell(config['units'], return_sequences=True)))
-            else:
-                model.add(cell(config['units'], return_sequences=True))
-        # add dropout after each layer
-        model.add(Dropout(config['dropout']))
-    model.add(Dense(1, activation="linear"))
+    model.add(LSTM(config['units'], return_sequences=True, batch_input_shape=(None, config['sequence_length'], config['n_features'])))
+    model.add(Dropout(config['dropout']))
+    model.add(LSTM(config['units'], return_sequences=False))
+    model.add(Dropout(config['dropout']))
+    model.add(Dense(3, activation="linear"))
+
     model.compile(loss=config['loss'], metrics=["accuracy", "mean_absolute_error"], optimizer=config['optimizer'])
     symbolName = "_".join(config['training_symbols']).replace("/", "_")
     model_path = helpers.get_model_path(symbolName, config)
@@ -79,32 +65,32 @@ def train_model(dataset, model, modelName):
 
 def get_final_dataset(ds):
     np.savetxt('predicted.txt', ds['predicted'])
-    clampedList = []
-    asList = ds['predicted'].tolist()
-    asList = [x[0] for x in asList]
-    modalValue = statistics.mode(asList)
-    for i in range(len(ds['predicted'])):
-        if ds['predicted'][i] > modalValue:
-            clampedList.append(1)
-        elif ds['predicted'][i] < modalValue:
-            clampedList.append(-1)
-        else:
-            clampedList.append(0)
+    # clampedList = []
+    # asList = ds['predicted'].tolist()
+    # asList = [x[0] for x in asList]
+    # modalValue = statistics.mode(asList)
+    # for i in range(len(ds['predicted'])):
+    #     if ds['predicted'][i] > modalValue:
+    #         clampedList.append(1)
+    #     elif ds['predicted'][i] < modalValue:
+    #         clampedList.append(-1)
+    #     else:
+    #         clampedList.append(0)
             
-    ds['clamped'] = clampedList
+    # ds['clamped'] = clampedList
     return ds
 
 def test_model(model, dataset):
     dataset['predicted'] = predict(model, dataset['xTest'])
     final = get_final_dataset(dataset)
-    final['dataset'] = final['originalDS']
-    markers = []
-    for i in range(len(final['clamped'])):
-        marker = {'date': dataset['testDates'].iat[i], 'price': dataset['testClose'].iat[i], 'score': final['clamped'][i]}
-        markers.append(marker)
+    #final['dataset'] = final['originalDS']
+    #markers = []
+    #for i in range(len(final['clamped'])):
+    #    marker = {'date': dataset['testDates'].iat[i], 'price': dataset['testClose'].iat[i], 'score': final['clamped'][i]}
+    #    markers.append(marker)
     
-    final['markers'] = markers
-    trainingsets.plot_scores(final)
+    #final['markers'] = markers
+    #trainingsets.plot_scores(final)
 
 
 def predict(model, data):
@@ -114,8 +100,8 @@ def predict(model, data):
 
 if __name__ == '__main__':
     modelPathName = "2021-10-23-14-27_ETH_USDT_BTC_USDT_ADA_USDT_SOL_USDT_1h_lookup_0_dropout_0.4_units_256_layers_2_features_6_loss_mean_absolute_error_optimizer_rmsprop"
-    #model = create_model('testModel')
-    model = load_model(modelPathName)
+    model = create_model('testModel')
+    #model = load_model(modelPathName)
     ds = trainingsets.create_training_set('testModel', 1603407600000)
-    #model = train_model(ds, model, 'testModel')
+    model = train_model(ds, model, 'testModel')
     test_model(model, ds)

@@ -63,11 +63,11 @@ def score_dataset(ds: pd.DataFrame) -> dict:
     scoredSells = [x['date'] for x in results['markers'] if x['score'] == -1]
     for index, row in ds.iterrows():
         if row['date'] in scoredBuys:
-            scores.append(1)
+            scores.append((1, 0, 0))
         elif row['date'] in scoredSells:
-            scores.append(-1)
+            scores.append((0, 0, 1))
         else:
-            scores.append(0)
+            scores.append((0, 1, 0))
 
     results['dataset']['score'] = scores
 
