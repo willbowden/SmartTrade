@@ -43,6 +43,10 @@ def populate_dataset(dataset: pd.DataFrame, indicators) -> pd.DataFrame:
     volume = dataset['volume'].to_numpy()
     to_calculate = indicators
     for item in to_calculate:
+        numArg = None
+        if helpers.split_letters_and_numbers(item)[1] != None:
+                numArg = helpers.split_letters_and_numbers(item)[1]
+                splitWord = helpers.split_letters_and_numbers(item)[0]
         if item in constants.INDICATORS_REQUIRED_DATA.keys():
             indicator_args = []
             for letter in constants.INDICATORS_REQUIRED_DATA[item]:
@@ -57,10 +61,16 @@ def populate_dataset(dataset: pd.DataFrame, indicators) -> pd.DataFrame:
                 elif letter == "v":
                     indicator_args.append(volume)
             indicator_args = tuple(indicator_args)
-            result = constants.INDICATOR_FUNCTIONS[item](*indicator_args)
+            if numArg:
+                result = constants.INDICATOR_FUNCTIONS[splitWord](*indicator_args, int(numArg))
+            else:
+                result = constants.INDICATOR_FUNCTIONS[item](*indicator_args)
         else:
             indicator_args = close
-            result = constants.INDICATOR_FUNCTIONS[item](indicator_args)
+            if numArg:
+                result = constants.INDICATOR_FUNCTIONS[splitWord](indicator_args, int(numArg))
+            else:
+                result = constants.INDICATOR_FUNCTIONS[item](indicator_args)
 
         if isinstance(result, tuple):
             j = 0

@@ -1,7 +1,7 @@
 {
     "name": "testModel",
 
-    "training_symbols": ["ETH/USDT"],
+    "training_symbols": ["ETH/USDT", "BTC/USDT", "ADA/USDT", "SOL/USDT", "LUNA/USDT"],
     "timeframe": "1h",
     "split_dataset": true,
     "sequence_length": 50,
@@ -11,11 +11,11 @@
     "units": 256,
     "dropout": 0.4,
     "bidirectional": false,
-    "loss": "mean_absolute_error",
+    "loss": "categorical_crossentropy",
     "optimizer": "rmsprop",
     "batch_size": 64,
-    "epochs": 10,
-    "n_features": 6,
-    "feature_columns": ["open", "high", "low", "close", "volume", "rsi", "score"],
-    "trainingset_indicators": ["rsi"]
+    "epochs": 1,
+    "n_features": 9,
+    "feature_columns": ["open", "high", "low", "close", "volume", "rsi", "bb", "ema20", "ema14", "score"],
+    "trainingset_indicators": ["rsi", "bb", "ema20", "ema14"]
 }

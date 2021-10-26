@@ -67,7 +67,7 @@ def score_dataset(ds: pd.DataFrame) -> dict:
         elif row['date'] in scoredSells:
             scores.append([0, 0, 1])
         else:
-            scores.append([0, 1, 0])
+            scores.append([0, 0, 0])
 
     results['dataset']['score'] = scores
 

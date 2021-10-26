@@ -1,6 +1,7 @@
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
 from tensorflow.keras.optimizers import SGD
+from tensorflow.keras.metrics import Precision
 from collections import deque
 
 import statistics
@@ -30,9 +31,10 @@ def create_model(modelName: str):
     model.add(Dropout(config['dropout']))
     model.add(LSTM(config['units'], return_sequences=False))
     model.add(Dropout(config['dropout']))
-    model.add(Dense(3, activation="linear"))
+    model.add(Dense(3, activation="sigmoid"))
 
-    model.compile(loss=config['loss'], metrics=["accuracy", "mean_absolute_error"], optimizer=config['optimizer'])
+    sgd = SGD(learning_rate=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+    model.compile(loss=config['loss'], metrics=[Precision()], optimizer=sgd)
     symbolName = "_".join(config['training_symbols']).replace("/", "_")
     model_path = helpers.get_model_path(symbolName, config)
     model.save(model_path)

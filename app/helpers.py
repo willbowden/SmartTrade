@@ -36,3 +36,8 @@ def money_round(value):
     if new > value:
         new -= 0.01
     return new
+
+def split_letters_and_numbers(inString: str) -> list:
+    head = inString.rstrip('0123456789')
+    tail = inString[len(head):]
+    return [head, tail]
