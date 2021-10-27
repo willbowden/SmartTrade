@@ -31,10 +31,9 @@ def create_model(modelName: str):
     model.add(Dropout(config['dropout']))
     model.add(LSTM(config['units'], return_sequences=False))
     model.add(Dropout(config['dropout']))
-    model.add(Dense(3, activation="sigmoid"))
+    model.add(Dense(1, activation="sigmoid"))
 
-    sgd = SGD(learning_rate=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-    model.compile(loss=config['loss'], metrics=[Precision()], optimizer=sgd)
+    model.compile(loss=config['loss'], metrics=[Precision(), 'accuracy'], optimizer=config['optimizer'])
     symbolName = "_".join(config['training_symbols']).replace("/", "_")
     model_path = helpers.get_model_path(symbolName, config)
     model.save(model_path)
@@ -67,19 +66,6 @@ def train_model(dataset, model, modelName):
 
 def get_final_dataset(ds):
     np.savetxt('predicted.txt', ds['predicted'])
-    # clampedList = []
-    # asList = ds['predicted'].tolist()
-    # asList = [x[0] for x in asList]
-    # modalValue = statistics.mode(asList)
-    # for i in range(len(ds['predicted'])):
-    #     if ds['predicted'][i] > modalValue:
-    #         clampedList.append(1)
-    #     elif ds['predicted'][i] < modalValue:
-    #         clampedList.append(-1)
-    #     else:
-    #         clampedList.append(0)
-            
-    # ds['clamped'] = clampedList
     return ds
 
 def test_model(model, dataset):

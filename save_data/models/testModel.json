@@ -14,7 +14,7 @@
     "loss": "categorical_crossentropy",
     "optimizer": "rmsprop",
     "batch_size": 64,
-    "epochs": 1,
+    "epochs": 200,
     "n_features": 9,
     "feature_columns": ["open", "high", "low", "close", "volume", "rsi", "bb", "ema20", "ema14", "score"],
     "trainingset_indicators": ["rsi", "bb", "ema20", "ema14"]
