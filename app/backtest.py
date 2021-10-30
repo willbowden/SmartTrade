@@ -4,14 +4,13 @@
 
 import sys
 import importlib
-import json
-import pandas as pd
-from datetime import datetime
+import plotly.graph_objects as go
 from SmartTrade.app import constants, configs, datasets, bot
 
 
 class Backtest:
-    def __init__(self, symbols, timeframe, startDate, startingBalance, strategyName, userID):
+    def __init__(self, symbols, timeframe, startDate, startingBalance, strategyName, userID, plotResults):
+        self.plotResults = plotResults
         self.info = {'strategyName': strategyName, 'userID': userID}
         sys.path.append(constants.STRATEGY_PATH)
         self.strategy = importlib.import_module(strategyName)
@@ -50,6 +49,59 @@ class Backtest:
         print(self.bot.assetHoldings)
         print(self.bot.orderHistory)
 
+        if self.plotResults:
+            self.__plot_results(results)
+
+
+    def __plot_results(self, results):
+        for item in self.config['symbols']:
+            buyMarkers = results['orderHistory'][results['orderHistory']['side'] == 'buy']
+            sellMarkers = results['orderHistory'][results['orderHistory']['side'] == 'sell']
+            fig = go.Figure()
+            fig.add_trace(go.Candlestick(x=self.data[item]['date'],
+            open=self.data[item]['open'],
+            high=self.data[item]['high'],
+            low=self.data[item]['low'],
+            close=self.data[item]['close'],
+            name="Price"))
+
+            fig.add_trace(go.Scatter(
+                x=self.data[item]['date'],
+                y=self.data[item]['ma7'],
+                mode='lines',
+                name='MA 7',
+                line_color="orange"
+            ))
+
+            fig.add_trace(go.Scatter(
+                x=self.data[item]['date'],
+                y=self.data[item]['ma99'],
+                mode='lines',
+                name='MA 99',
+                line_color="purple"
+            ))
+
+            fig.add_trace(go.Scatter(
+                    x=buyMarkers['date'],
+                    y=buyMarkers['price'],
+                    mode='markers',
+                    name='Scores',
+                    text = "Buy",
+                    line_color='yellow'))
+
+            fig.add_trace(go.Scatter(
+                    x=sellMarkers['date'],
+                    y=sellMarkers['price'],
+                    mode='markers',
+                    name='Scores',
+                    text = "Sell",
+                    line_color='purple'))
+
+            fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
+
+            fig.show()
+
+
 
 if __name__ == '__main__':
-    b = Backtest(['ETH/USDT'], '1h', 1602975600000, 1000, 'testStrategy', 2194)
+    b = Backtest(['ETH/USDT'], '5m', 1632956400000, 1000, 'rsiStrategy', 2194, True)

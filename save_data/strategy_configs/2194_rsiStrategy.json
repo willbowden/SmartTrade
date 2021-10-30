@@ -1,0 +1,14 @@
+{
+    "name": "rsiStrategy",
+
+    "timeframe": "1m",
+    "exchangeID": "binance",
+    "lookupStep": 12,
+    "pastDataSteps": 3,
+    "fees": 0.001,
+    "spendPercent": 0.3,
+    "dailyProfitTarget": 1.5,
+    "sellBalancePercent": 0.05,
+    "takeProfit": 1.1,
+    "requiredIndicators": ["rsi", "ma7", "ma99"]
+}

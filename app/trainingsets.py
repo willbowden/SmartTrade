@@ -6,7 +6,6 @@ import pandas as pd
 import numpy as np
 from SmartTrade.app import constants, configs, datasets
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 from collections import deque
 
 def plot_scores(results):
