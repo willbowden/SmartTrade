@@ -18,27 +18,34 @@ def plot_scores(results):
      low=results['dataset']['low'],
      close=results['dataset']['close'],
      name="Price"))
-    fig.add_trace(go.Scatter(
-            x=[x['date'] for x in buyMarkers],
-            y=[x['price'] for x in buyMarkers],
-            mode='markers',
-            name='Scores',
-            text = "BUY",
-            line_color='yellow'))
 
-    fig.add_trace(go.Scatter(
-            x=[x['date'] for x in sellMarkers],
-            y=[x['price'] for x in sellMarkers],
-            mode='markers',
-            name='Scores',
-            text = "SELL",
-            line_color='purple'))
+    fig.add_trace(go.Scatter(x=results['dataset']['date'],
+     y=results['dataset']['close'],
+     mode='markers',
+     name="Score",
+     text=results['dataset']['score']))
+
+    # fig.add_trace(go.Scatter(
+    #         x=[x['date'] for x in buyMarkers],
+    #         y=[x['price'] for x in buyMarkers],
+    #         mode='markers',
+    #         name='Scores',
+    #         text = "BUY",
+    #         line_color='yellow'))
+
+    # fig.add_trace(go.Scatter(
+    #         x=[x['date'] for x in sellMarkers],
+    #         y=[x['price'] for x in sellMarkers],
+    #         mode='markers',
+    #         name='Scores',
+    #         text = "SELL",
+    #         line_color='purple'))
 
     fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
 
     fig.show()
 
-def score_dataset(ds: pd.DataFrame) -> dict:
+def score_dataset(ds: pd.DataFrame, config) -> dict:
     results = {'markers': [], 'dataset': ds}
     scores = []
     highest = {'date': '', 'price': 0}
@@ -60,13 +67,34 @@ def score_dataset(ds: pd.DataFrame) -> dict:
     
     scoredBuys = [x['date'] for x in results['markers'] if x['score'] == 1]
     scoredSells = [x['date'] for x in results['markers'] if x['score'] == -1]
+    numMarkers = len(scoredBuys)
+    padding = 0
     for index, row in ds.iterrows():
-        if row['date'] in scoredBuys:
-            scores.append(1)
-        elif row['date'] in scoredSells:
-            scores.append(-1)
+        if row['date'] in scoredBuys or row['date'] in scoredSells:
+            break
         else:
-            scores.append(0)
+            padding += 1
+
+    scores += [0 for x in range(padding)]
+    for i in range(numMarkers):
+        timeDifference = int(pd.Timedelta(scoredSells[i] - scoredBuys[i]).seconds / (constants.TIMEFRAME_MILLISECONDS[config['timeframe']] / 1000))
+        print(timeDifference)
+        if timeDifference % 2 == 0:
+            startScore = 1
+            halfNumber = int(timeDifference / 2)
+            for j in range(halfNumber):
+                scores.append(startScore - (j * 0.15))
+            endScore = -1 + (halfNumber * 0.15)
+            for k in range(halfNumber):
+                scores.append(endScore - (k * 0.15))
+        elif timeDifference % 2 != 0:
+            startScore = 1
+            halfNumber = int((timeDifference+1) / 2)
+            for j in range(halfNumber):
+                scores.append(startScore - (j * 0.15))
+            endScore = -1 + (halfNumber * 0.15)
+            for k in range(halfNumber):
+                scores.append(endScore - (k * 0.15))
 
     results['dataset']['score'] = scores
 
@@ -92,7 +120,8 @@ def create_sequences(ds, config):
 def score_and_condense_datasets(ds, config):
     total = {}
     for symbol in config['training_symbols']:
-        scoredDataset = score_dataset(ds[symbol])['dataset']
+        scoredDataset = score_dataset(ds[symbol], config)['dataset']
+        plot_scores(score_dataset(ds[symbol]))
         splitDataset = split_train_and_test(scoredDataset, config)
         for key in splitDataset.keys():
             try:
