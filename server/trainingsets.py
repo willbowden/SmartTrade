@@ -4,7 +4,7 @@
 
 import pandas as pd
 import numpy as np
-from SmartTrade.app import constants, configs, datasets
+from SmartTrade.server import constants, configs, datasets
 import plotly.graph_objects as go
 from collections import deque
 
@@ -19,33 +19,34 @@ def plot_scores(results):
      close=results['dataset']['close'],
      name="Price"))
 
-    fig.add_trace(go.Scatter(x=results['dataset']['date'],
-     y=results['dataset']['close'],
-     mode='markers',
-     name="Score",
-     text=results['dataset']['score']))
+    # fig.add_trace(go.Scatter(x=results['dataset']['date'],
+    #  y=results['dataset']['close'],
+    #  mode='markers',
+    #  name="Score",
+    #  text=results['dataset']['score']))
 
-    # fig.add_trace(go.Scatter(
-    #         x=[x['date'] for x in buyMarkers],
-    #         y=[x['price'] for x in buyMarkers],
-    #         mode='markers',
-    #         name='Scores',
-    #         text = "BUY",
-    #         line_color='yellow'))
+    fig.add_trace(go.Scatter(
+            x=[x['date'] for x in buyMarkers],
+            y=[x['price'] for x in buyMarkers],
+            mode='markers',
+            name='Scores',
+            text = "BUY",
+            line_color='yellow'))
 
-    # fig.add_trace(go.Scatter(
-    #         x=[x['date'] for x in sellMarkers],
-    #         y=[x['price'] for x in sellMarkers],
-    #         mode='markers',
-    #         name='Scores',
-    #         text = "SELL",
-    #         line_color='purple'))
+    fig.add_trace(go.Scatter(
+            x=[x['date'] for x in sellMarkers],
+            y=[x['price'] for x in sellMarkers],
+            mode='markers',
+            name='Scores',
+            text = "SELL",
+            line_color='purple'))
 
     fig.update_layout(template='plotly_dark', xaxis_rangeslider_visible=False)
 
     fig.show()
 
 def score_dataset(ds: pd.DataFrame, config) -> dict:
+    # Add the 1 and -1 strong buy/sell markers to the dataset based on optimal points of entry.
     results = {'markers': [], 'dataset': ds}
     scores = []
     highest = {'date': '', 'price': 0}
@@ -64,37 +65,41 @@ def score_dataset(ds: pd.DataFrame, config) -> dict:
             highest = {'date': row['date'], 'price': row['close']}
         if row['close'] < lowest['price']:
             lowest = {'date': row['date'], 'price': row['close']}
-    
+
     scoredBuys = [x['date'] for x in results['markers'] if x['score'] == 1]
     scoredSells = [x['date'] for x in results['markers'] if x['score'] == -1]
-    numMarkers = len(scoredBuys)
-    padding = 0
-    for index, row in ds.iterrows():
-        if row['date'] in scoredBuys or row['date'] in scoredSells:
-            break
-        else:
-            padding += 1
 
-    scores += [0 for x in range(padding)]
+    # Cut the ends off the dataset that don't have scores because we don't know the optimal points of entry for non-existent data
+    startIndex = results['dataset'].index[results['dataset']['date'] == scoredBuys[0]].tolist()[0]
+    endIndex = results['dataset'].index[results['dataset']['date'] == scoredSells[-1]].tolist()[0]
+    results['dataset'] = results['dataset'].loc[startIndex:endIndex, :].reset_index(drop=True)
+    print(results['dataset'])
+    
+ 
+    # Create a gradient of scores in between the optimal values. (Score as a range from 1 to -1, rather than filling the gaps with zeros)
+    numMarkers = len(scoredBuys)
     for i in range(numMarkers):
+        # This section does the gradient between a buy and a sell
         timeDifference = int(pd.Timedelta(scoredSells[i] - scoredBuys[i]).seconds / (constants.TIMEFRAME_MILLISECONDS[config['timeframe']] / 1000))
-        print(timeDifference)
-        if timeDifference % 2 == 0:
-            startScore = 1
-            halfNumber = int(timeDifference / 2)
-            for j in range(halfNumber):
-                scores.append(startScore - (j * 0.15))
-            endScore = -1 + (halfNumber * 0.15)
-            for k in range(halfNumber):
-                scores.append(endScore - (k * 0.15))
-        elif timeDifference % 2 != 0:
-            startScore = 1
-            halfNumber = int((timeDifference+1) / 2)
-            for j in range(halfNumber):
-                scores.append(startScore - (j * 0.15))
-            endScore = -1 + (halfNumber * 0.15)
-            for k in range(halfNumber):
-                scores.append(endScore - (k * 0.15))
+        candleDifference = timeDifference - 1
+        scores.append(1.0)
+        if candleDifference > 0:
+            increment = 2 / timeDifference
+            startingValue = 1-increment
+            for j in range(candleDifference):
+                scores.append(round((startingValue-(j * increment)), 2))
+        scores.append(-1.0)
+
+        # This section does the gradient between the previous sell and the next buy, before the cycle repeats.
+        if i < numMarkers-1:
+            timeDifference = int(pd.Timedelta(scoredBuys[i+1] - scoredSells[i]).seconds / (constants.TIMEFRAME_MILLISECONDS[config['timeframe']] / 1000))
+            candleDifference = timeDifference - 1
+            if candleDifference > 0:
+                increment = 2 / timeDifference
+                startingValue = (-1) + increment
+                for j in range(candleDifference):
+                    scores.append(round((startingValue+(j * increment)), 2))
+
 
     results['dataset']['score'] = scores
 
@@ -121,13 +126,13 @@ def score_and_condense_datasets(ds, config):
     total = {}
     for symbol in config['training_symbols']:
         scoredDataset = score_dataset(ds[symbol], config)['dataset']
-        plot_scores(score_dataset(ds[symbol]))
+        plot_scores(score_dataset(ds[symbol], config))
         splitDataset = split_train_and_test(scoredDataset, config)
         for key in splitDataset.keys():
             try:
-                total[key] = total[key].append(splitDataset[key])
+                total.loc[:, key] = total.loc[:, key].append(splitDataset[key])
             except:
-                total[key] = splitDataset[key]
+                total.loc[:, key] = splitDataset.loc[:, key]
 
     return total
 

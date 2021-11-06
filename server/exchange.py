@@ -5,7 +5,7 @@
 import ccxt
 import datetime
 import pandas as pd
-from SmartTrade.app import conversions
+from SmartTrade.server import conversions
 
 class Exchange: # Class to represent an exchange object. This is necessary as each user has their own unique exchange object linked to their API key
     def __init__(self, id, apiKey, secret):

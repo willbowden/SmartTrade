@@ -1,5 +1,5 @@
 import json
-from SmartTrade.app import constants
+from SmartTrade.server import constants
 
 def load_config(strategyName: str, userID: int) -> dict:
     filename = constants.CONFIG_PATH + str(userID) + "_" + strategyName.replace(" ", "_") + ".json"

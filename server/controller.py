@@ -2,12 +2,12 @@
 #    Class that coordinates other classes, updating data regularly and running live strategies.    #
 ####################################################################################################
 
-from SmartTrade.app import account_data
+from SmartTrade.server import account_data
 import threading
 from SmartTrade.server import dbmanager
 from datetime import datetime, timedelta
-from SmartTrade.app.looper import Looper
-from SmartTrade.app.user import User
+from SmartTrade.server.looper import Looper
+from SmartTrade.server.user import User
 
 class Controller:
     _instance = None

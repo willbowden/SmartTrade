@@ -6,7 +6,7 @@ import os
 from flask import Flask, render_template, redirect, url_for, request, session, jsonify
 import dbmanager
 from datetime import timedelta
-from SmartTrade.app.controller import Controller
+from SmartTrade.server.controller import Controller
 
 def main():
     controller = Controller()

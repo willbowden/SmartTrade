@@ -2,7 +2,7 @@
 #    Module for converting JSON strings in to python strategy files.    #
 #########################################################################
 
-from SmartTrade.app import constants
+from SmartTrade.server import constants
 
 def build(jsonData, strategyName) -> None:
     pyString = "def check_buy(bot, data, index, symbol):\n"

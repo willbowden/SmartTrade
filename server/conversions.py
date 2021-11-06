@@ -1,5 +1,5 @@
 import datetime
-from SmartTrade.app import constants
+from SmartTrade.server import constants
 
 def unix_to_date(unix):
     dt = datetime.datetime.fromtimestamp(unix/1000)

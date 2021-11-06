@@ -2,10 +2,10 @@
 #    Class to represent user that is being managed by the system.    #
 ######################################################################
 
-from SmartTrade.app import account_data
-from SmartTrade.app.exchange import Exchange
+from SmartTrade.server import account_data
+from SmartTrade.server.exchange import Exchange
 import json
-from SmartTrade.app import constants
+from SmartTrade.server import constants
 from datetime import datetime
 
 class User: # Class to represent a user in the system, containing their account balances and active strategies

@@ -2,7 +2,7 @@
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from SmartTrade.app import datasets, constants
+from SmartTrade.server import datasets, constants
 
 def score_dataset(ds: pd.DataFrame, timeframe: str) -> None:
     results = {'markers': [], 'dataset': ds}

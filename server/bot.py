@@ -7,8 +7,8 @@ import importlib
 from datetime import datetime
 from numpy import save
 import pandas as pd
-from SmartTrade.app import constants
-from SmartTrade.app import account_data
+from SmartTrade.server import constants
+from SmartTrade.server import account_data
 
 class Bot:
     def __init__(self, owner, strategyName, dryRun, config, saveData=None) -> None:

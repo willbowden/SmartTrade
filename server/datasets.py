@@ -2,7 +2,7 @@
 #    Module to download, process and retrieve datasets containing price data.    #
 ##################################################################################
 
-from SmartTrade.app import configs, constants, helpers, exchange_data
+from SmartTrade.server import configs, constants, helpers, exchange_data
 
 import joblib
 import pandas as pd
@@ -79,10 +79,10 @@ def populate_dataset(dataset: pd.DataFrame, indicators) -> pd.DataFrame:
                     name = item
                 else:
                     name = item + str(j)
-                dataset[name] = column
+                dataset.loc[:, name] = column
                 j += 1
         else:
-            dataset[item] = result
+            dataset.loc[:, item] = result
     return dataset
 
 

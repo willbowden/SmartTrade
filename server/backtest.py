@@ -5,7 +5,7 @@
 import sys
 import importlib
 import plotly.graph_objects as go
-from SmartTrade.app import constants, configs, datasets, bot
+from SmartTrade.server import constants, configs, datasets, bot
 
 
 class Backtest:

@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 import tensorflow as tf
 import numpy as np
 import datasets
-from SmartTrade.app import configs, constants, helpers, trainingsets
+from SmartTrade.server import configs, constants, helpers, trainingsets
 
 def model_exists(modelName):
     try:
@@ -69,7 +69,7 @@ def get_final_dataset(ds):
     return ds
 
 def test_model(model, dataset):
-    dataset['predicted'] = predict(model, dataset['xTest'])
+    dataset.loc[:, 'predicted'] = predict(model, dataset['xTest'])
     final = get_final_dataset(dataset)
     #final['dataset'] = final['originalDS']
     #markers = []

@@ -3,7 +3,7 @@
 #################################################################################################################
 
 import pandas as pd
-from SmartTrade.app import constants, configs, datasets
+from SmartTrade.server import constants, configs, datasets
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
