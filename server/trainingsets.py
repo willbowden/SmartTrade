@@ -9,8 +9,8 @@ import plotly.graph_objects as go
 from collections import deque
 
 def plot_scores(results):
-    buyMarkers = [x for x in results['markers'] if x['score'] == 1]
-    sellMarkers = [x for x in results['markers'] if x['score'] == -1]
+    buyMarkers = [x for x in results['markers'] if x['score'] == 2]
+    sellMarkers = [x for x in results['markers'] if x['score'] == 0]
     fig = go.Figure()
     fig.add_trace(go.Candlestick(x=results['dataset']['date'],
      open=results['dataset']['open'],
@@ -19,11 +19,12 @@ def plot_scores(results):
      close=results['dataset']['close'],
      name="Price"))
 
-    # fig.add_trace(go.Scatter(x=results['dataset']['date'],
-    #  y=results['dataset']['close'],
-    #  mode='markers',
-    #  name="Score",
-    #  text=results['dataset']['score']))
+    fig.add_trace(go.Scatter(x=results['dataset']['date'],
+     y=results['dataset']['close'],
+     mode='markers',
+     name="Score",
+     text=results['dataset']['score'],
+     line_color='blue'))
 
     fig.add_trace(go.Scatter(
             x=[x['date'] for x in buyMarkers],
@@ -52,10 +53,10 @@ def score_dataset(ds: pd.DataFrame, config) -> dict:
     highest = {'date': '', 'price': 0}
     lowest = {'date': '', 'price': 1000000}
     for index, row in ds.iterrows():
-        if row['close'] < 0.995 * highest['price'] and highest['price'] != 0 and lowest['price'] != 1000000 and highest['price'] >= 1.007 * lowest['price']:
+        if row['close'] < 0.995 * highest['price'] and highest['price'] != 0 and lowest['price'] != 1000000 and highest['price'] >= config['profit_aim'] * lowest['price']:
             if highest['date'] > lowest['date']:
-                results['markers'].append({'date': lowest['date'], 'price': lowest['price'], 'score': 1})
-                results['markers'].append({'date': highest['date'], 'price': highest['price'], 'score': -1})
+                results['markers'].append({'date': lowest['date'], 'price': lowest['price'], 'score': 2})
+                results['markers'].append({'date': highest['date'], 'price': highest['price'], 'score': 0})
                 highest = {'date': '', 'price': 0}
                 lowest = {'date': '', 'price': 1000000}
             else:
@@ -66,40 +67,40 @@ def score_dataset(ds: pd.DataFrame, config) -> dict:
         if row['close'] < lowest['price']:
             lowest = {'date': row['date'], 'price': row['close']}
 
-    scoredBuys = [x['date'] for x in results['markers'] if x['score'] == 1]
-    scoredSells = [x['date'] for x in results['markers'] if x['score'] == -1]
+    scoredBuys = [x['date'] for x in results['markers'] if x['score'] == 2]
+    scoredSells = [x['date'] for x in results['markers'] if x['score'] == 0]
 
     # Cut the ends off the dataset that don't have scores because we don't know the optimal points of entry for non-existent data
     startIndex = results['dataset'].index[results['dataset']['date'] == scoredBuys[0]].tolist()[0]
     endIndex = results['dataset'].index[results['dataset']['date'] == scoredSells[-1]].tolist()[0]
     results['dataset'] = results['dataset'].loc[startIndex:endIndex, :].reset_index(drop=True)
-    print(results['dataset'])
     
  
     # Create a gradient of scores in between the optimal values. (Score as a range from 1 to -1, rather than filling the gaps with zeros)
     numMarkers = len(scoredBuys)
     for i in range(numMarkers):
         # This section does the gradient between a buy and a sell
-        timeDifference = int(pd.Timedelta(scoredSells[i] - scoredBuys[i]).seconds / (constants.TIMEFRAME_MILLISECONDS[config['timeframe']] / 1000))
+        timeDifference = int(pd.Timedelta(scoredSells[i] - scoredBuys[i]).total_seconds() / (constants.TIMEFRAME_MILLISECONDS[config['timeframe']] / 1000))
         candleDifference = timeDifference - 1
-        scores.append(1.0)
+        scores.append(2)
         if candleDifference > 0:
             increment = 2 / timeDifference
-            startingValue = 1-increment
+            startingValue = 2-increment
             for j in range(candleDifference):
                 scores.append(round((startingValue-(j * increment)), 2))
-        scores.append(-1.0)
+        scores.append(0)
 
         # This section does the gradient between the previous sell and the next buy, before the cycle repeats.
         if i < numMarkers-1:
-            timeDifference = int(pd.Timedelta(scoredBuys[i+1] - scoredSells[i]).seconds / (constants.TIMEFRAME_MILLISECONDS[config['timeframe']] / 1000))
+            timeDifference = int(pd.Timedelta(scoredBuys[i+1] - scoredSells[i]).total_seconds() / (constants.TIMEFRAME_MILLISECONDS[config['timeframe']] / 1000))
             candleDifference = timeDifference - 1
             if candleDifference > 0:
                 increment = 2 / timeDifference
-                startingValue = (-1) + increment
+                startingValue = increment
                 for j in range(candleDifference):
                     scores.append(round((startingValue+(j * increment)), 2))
 
+    scores.pop(-1)
 
     results['dataset']['score'] = scores
 
@@ -126,13 +127,12 @@ def score_and_condense_datasets(ds, config):
     total = {}
     for symbol in config['training_symbols']:
         scoredDataset = score_dataset(ds[symbol], config)['dataset']
-        plot_scores(score_dataset(ds[symbol], config))
         splitDataset = split_train_and_test(scoredDataset, config)
         for key in splitDataset.keys():
             try:
-                total.loc[:, key] = total.loc[:, key].append(splitDataset[key])
+                total[key] = total[key].append(splitDataset[key])
             except:
-                total.loc[:, key] = splitDataset.loc[:, key]
+                total[key] = splitDataset[key]
 
     return total
 

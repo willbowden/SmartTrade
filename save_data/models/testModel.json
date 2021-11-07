@@ -1,6 +1,7 @@
 {
     "name": "testModel",
 
+    "profit_aim": 1.01,
     "training_symbols": ["ETH/USDT"],
     "timeframe": "1h",
     "split_dataset": true,
@@ -11,10 +12,10 @@
     "units": 256,
     "dropout": 0.4,
     "bidirectional": false,
-    "loss": "categorical_crossentropy",
+    "loss": "mean_absolute_error",
     "optimizer": "rmsprop",
     "batch_size": 64,
-    "epochs": 200,
+    "epochs": 50,
     "n_features": 9,
     "feature_columns": ["open", "high", "low", "close", "volume", "rsi", "bb", "ema20", "ema14", "score"],
     "trainingset_indicators": ["rsi", "bb", "ema20", "ema14"]

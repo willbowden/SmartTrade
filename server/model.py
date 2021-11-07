@@ -31,9 +31,9 @@ def create_model(modelName: str):
     model.add(Dropout(config['dropout']))
     model.add(LSTM(config['units'], return_sequences=False))
     model.add(Dropout(config['dropout']))
-    model.add(Dense(1, activation="sigmoid"))
+    model.add(Dense(1, activation="linear"))
 
-    model.compile(loss=config['loss'], metrics=[Precision(), 'accuracy'], optimizer=config['optimizer'])
+    model.compile(loss=config['loss'], metrics=["accuracy", "mean_absolute_error"], optimizer=config['optimizer'])
     symbolName = "_".join(config['training_symbols']).replace("/", "_")
     model_path = helpers.get_model_path(symbolName, config)
     model.save(model_path)
@@ -69,7 +69,7 @@ def get_final_dataset(ds):
     return ds
 
 def test_model(model, dataset):
-    dataset.loc[:, 'predicted'] = predict(model, dataset['xTest'])
+    dataset['predicted'] = predict(model, dataset['xTest'])
     final = get_final_dataset(dataset)
     #final['dataset'] = final['originalDS']
     #markers = []
@@ -87,7 +87,7 @@ def predict(model, data):
     return yPred
 
 if __name__ == '__main__':
-    modelPathName = "2021-10-23-14-27_ETH_USDT_BTC_USDT_ADA_USDT_SOL_USDT_1h_lookup_0_dropout_0.4_units_256_layers_2_features_6_loss_mean_absolute_error_optimizer_rmsprop"
+    modelPathName = "2021-11-07-21-48_ETH_USDT_1h"
     model = create_model('testModel')
     #model = load_model(modelPathName)
     ds = trainingsets.create_training_set('testModel', 1603407600000)

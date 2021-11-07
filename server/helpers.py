@@ -18,7 +18,7 @@ def get_model_path(symbol, config):
     return model_path
 
 def generate_model_name(symbol, config):
-    model_name = f"{time.strftime('%Y-%m-%d-%H-%M')}_{symbol}_{config['timeframe']}_lookup_{config['lookup_step']}_dropout_{config['dropout']}_units_{config['units']}_layers_{config['n_layers']}_features_{config['n_features']}_loss_{config['loss']}_optimizer_{config['optimizer']}"
+    model_name = f"{time.strftime('%Y-%m-%d-%H-%M')}_{symbol}_{config['timeframe']}"
     return model_name
 
 def shift_array(array, value, filler):
