@@ -16,6 +16,8 @@ MODELS_PATH = dirname + "models/"
 SAVE_PATH = dirname + "saves/"
 USER_DATA_PATH = dirname + "user_data/"
 
+BLACKLISTED_COINS = ['LDBNB']
+
 CRYPTO_EXCHANGES = ['aax', 'binance', 'bitfinex', 'bittrex', 'bitvavo', 'bytetrade', 'currencycom', 'eterbase', 'ftx', 'gopax', 'idex', 'kraken', 'wavesexchange', 'xena']
 
 INDICATOR_FUNCTIONS = {'rsi': talib.RSI, 'sma': talib.SMA, 'ema': talib.EMA, 'ma': talib.MA, 'bb': talib.BBANDS, 'dema': talib.DEMA, 'ht_trendline': talib.HT_TRENDLINE,

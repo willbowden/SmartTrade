@@ -5,11 +5,12 @@
 import os
 from flask import Flask, render_template, redirect, url_for, request, session, jsonify
 import dbmanager
+import time
 from datetime import timedelta
 from SmartTrade.server.controller import Controller
 
 def main():
-    controller = Controller()
+    #controller = Controller()
     SECRET_KEY = os.urandom(32)
 
     app = Flask(__name__)
@@ -19,6 +20,11 @@ def main():
     def make_session_permanent(): # Allows us to do session timeouts
         session.permanent = True
         app.permanent_session_lifetime = timedelta(minutes=1)
+
+    @app.route('/time')
+    def get_current_time():
+        return {'time': time.time()}
+
 
     @app.route("/", methods=['GET', 'POST'])
     def login(): # Login page

@@ -34,6 +34,8 @@ def get_account_holdings(exchange) ->  list: # Return a list of the user's crypt
 def get_asset_value(exchange, asset:str, quantity:float) -> float: # Calculates the value of a given asset based on its most recent price
     if asset == 'USDT':
         value = quantity
+    elif asset in constants.BLACKLISTED_COINS:
+        value = 0
     else:
         price = exchange_data.get_current_price(exchange, f"{asset}/USDT")
         value = quantity * price
