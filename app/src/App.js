@@ -1,33 +1,18 @@
 import React from 'react';
 import './App.css';
-import {
-  Route,
-  Routes,
-  NavLink,
-  HashRouter
-} from "react-router-dom";
-import Home from "./Home.js";
+import {Outlet, Link} from "react-router-dom";
 
 function App() {
   return (
-    <HashRouter>
-      <div>
-        <div class="navbar">
-          <ul>
-            <li><NavLink to="/">Home</NavLink></li>
-            <li><NavLink to="/strategies">Strategy Editor</NavLink></li>
-            <li><NavLink to="/backtest">Backtesting</NavLink></li>
-          </ul>
-        </div>
-        <body>
-          <div class="page">
-            <Routes>
-              <Route path="/" component={Home}/>
-            </Routes>
-          </div>
-        </body>
+    <div class="fullsize">
+      <div class="navbar">
+        <ul>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/backtest">Backtesting</Link></li>
+        </ul>
       </div>
-    </HashRouter>
+      <Outlet />
+    </div>
   );
 }
 
