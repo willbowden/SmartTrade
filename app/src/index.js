@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import Backtest from './routes/Backtest';
 import Dashboard from './routes/Dashboard';
+import Login from './routes/Login';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
@@ -16,6 +17,7 @@ ReactDOM.render(
     <Routes>
       <Route path="/" element={<App />}>
         <Route path="/" element={<Dashboard />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/backtest" element={<Backtest />} />
       </Route>
     </Routes>

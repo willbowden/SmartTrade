@@ -77,30 +77,31 @@ class Controller:
                 return user.holdings
 
     def update(self) -> None: # Save data about users
-        self.save_users() 
+        pass
+        # self.save_users() 
 
-        for user in self.users:
-            if user.isLoggedIn: # Only run these functions on logged-in users
-                if (datetime.now() - user.lastActivity).total_seconds() > 180: # When user times out, save their last recorded value and log them out
-                    print(f"TIMING OUT USER {user.id}")
-                    th = threading.Thread(target=user.save_updated_value)
-                    th.start()
-                    user.logout()
+        # for user in self.users:
+        #     if user.isLoggedIn: # Only run these functions on logged-in users
+        #         if (datetime.now() - user.lastActivity).total_seconds() > 180: # When user times out, save their last recorded value and log them out
+        #             print(f"TIMING OUT USER {user.id}")
+        #             th = threading.Thread(target=user.save_updated_value)
+        #             th.start()
+        #             user.logout()
 
-        if datetime.now().second % 5 == 0: # Every 5 seconds, update user account value to display on page
-            for user in self.users:
-                if user.isLoggedIn: # Only live update users who are currently viewing their account, this prevents wasting processing power
-                    th = threading.Thread(target=user.update_value)
-                    th.start()
+        # if datetime.now().second % 5 == 0: # Every 5 seconds, update user account value to display on page
+        #     for user in self.users:
+        #         if user.isLoggedIn: # Only live update users who are currently viewing their account, this prevents wasting processing power
+        #             th = threading.Thread(target=user.update_value)
+        #             th.start()
 
-        if datetime.now().minute == 0: # Every hour, save account value to database 
-            for user in self.users:
-                if not user.isLoggedIn: # If user not logged in, get a new value before we save as their value won't have updated above
-                    th = threading.Thread(target=user.update_value)
-                    th.start()
+        # if datetime.now().minute == 0: # Every hour, save account value to database 
+        #     for user in self.users:
+        #         if not user.isLoggedIn: # If user not logged in, get a new value before we save as their value won't have updated above
+        #             th = threading.Thread(target=user.update_value)
+        #             th.start()
                 
-                th = threading.Thread(target=user.save_updated_value)
-                th.start()
+        #         th = threading.Thread(target=user.save_updated_value)
+        #         th.start()
 
 if __name__ == '__main__':
     pass
