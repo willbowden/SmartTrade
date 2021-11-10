@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { authFetch } from "../auth"
 import '../App.css';
 
 function Clock() {
@@ -6,7 +7,7 @@ function Clock() {
     const [currentTime, setCurrentTime] = useState(0);
 
     const sendRequest = useCallback(() => {
-        fetch('/time').then(res => res.json()).then(data => {
+        authFetch('/time').then(res => res.json()).then(data => {
         setCurrentTime(data.time);
     });
     }, []);

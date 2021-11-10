@@ -10,15 +10,16 @@ import {
 import Backtest from './routes/Backtest';
 import Dashboard from './routes/Dashboard';
 import Login from './routes/Login';
+import PrivateRoute from './auth/privateRoute.jsx';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <BrowserRouter>
     <Routes>
-      <Route path="/" element={<App />}>
-        <Route path="/" element={<Dashboard />} />
+      <Route exact path="/" element={<App />}>
+        <Route exact path='/dashboard' element={<PrivateRoute><Dashboard/></PrivateRoute>}/>
+        <Route path="/backtest" element={<PrivateRoute><Backtest /></PrivateRoute>} />
         <Route path="/login" element={<Login />} />
-        <Route path="/backtest" element={<Backtest />} />
       </Route>
     </Routes>
   </BrowserRouter>,

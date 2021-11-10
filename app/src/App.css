@@ -57,3 +57,9 @@ li a {
 li a:hover {
   background-color: #111;
 }
+
+#error-message {
+  color:rgb(212, 40, 40);
+  text-align: center;
+  
+}

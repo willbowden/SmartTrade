@@ -1,30 +1,33 @@
 import React, {useState} from "react";
-import Clock from "../components/clock.jsx";
+import { useNavigate } from "react-router-dom";
+import {login} from "../auth"
 import '../App.css';
 
 function Login() {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [errorMessage, setErrorMessage] = useState('')
+    const navigate = useNavigate();
   
     const onSubmitClick = (e)=>{
       e.preventDefault()
-      console.log("You pressed login")
       let payload = {
         'username': username,
         'password': password
       }
-      //console.log(payload)
       fetch('/auth', {
         method: 'post',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(payload)
       }).then(r => r.json())
-        .then(token => {
-          if (token.access_token){
-            console.log(token)          
+        .then(result => {
+          if (result.access_token){
+            console.log(result);
+            login(result);
+            navigate('/dashboard');
           }
           else {
-            console.log("Please type in correct username/password")
+            setErrorMessage('Wrong username/password');
           }
         })
     }
@@ -38,28 +41,31 @@ function Login() {
     }
   
     return (
-      <div>
+      <div className="centered-div">
         <h2>Login</h2>
         <form action="#">
-          <div>
-            <input type="text" 
-              placeholder="Username" 
-              onChange={handleUsernameChange}
-              value={username} 
-            />
-          </div>
-          <div>
-            <input
-              type="password"
-              placeholder="Password"
-              onChange={handlePasswordChange}
-              value={password}
-            />
-          </div>
-          <button onClick={onSubmitClick} type="submit">
-            Login
-          </button>
-        </form>
+        <div>
+          <input type="text" 
+            placeholder="Username" 
+            onChange={handleUsernameChange}
+            value={username} 
+          />
+        </div>
+        <div>
+          <input
+            type="password"
+            placeholder="Password"
+            onChange={handlePasswordChange}
+            value={password}
+          />
+        </div>
+        <button onClick={onSubmitClick} type="submit">
+          Login Now
+        </button>
+      </form>
+        <div id="error-message">
+          <p>{errorMessage}</p>
+        </div>
       </div>
     )
   }
