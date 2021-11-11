@@ -11,6 +11,7 @@ import {
 import Backtest from './routes/Backtest';
 import Dashboard from './routes/Dashboard';
 import Login from './routes/Login';
+import ProtectedRoute from './auth/protectedRoute';
 
 ReactDOM.render(
   <BrowserRouter>
