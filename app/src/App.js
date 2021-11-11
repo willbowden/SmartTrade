@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
-import LogoutButton from './components/logoutButton.jsx';
-import {Outlet, Link} from "react-router-dom";
+import {Link, Outlet} from 'react-router-dom'
+import LogoutButton from './components/logoutButton'
 
 function App() {
   return (

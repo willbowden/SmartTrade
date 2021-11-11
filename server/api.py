@@ -50,7 +50,6 @@ def main():
 
     @app.route('/time')
     def get_current_time():
-        print(request.headers)
         return jsonify({'time': time.time()})
 
     app.run(debug=True)

@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
+import './index.css';
+import reportWebVitals from './reportWebVitals';
 import {
   BrowserRouter,
   Routes,
@@ -10,15 +11,13 @@ import {
 import Backtest from './routes/Backtest';
 import Dashboard from './routes/Dashboard';
 import Login from './routes/Login';
-import RequireAuth from './auth/requireAuth.jsx';
-import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <BrowserRouter>
     <Routes>
       <Route exact path="/" element={<App />}>
-        <Route path='/dashboard' element={<RequireAuth><Dashboard/></RequireAuth>}/>
-        <Route path="/backtest" element={<RequireAuth><Backtest /></RequireAuth>} />
+        <Route path='/dashboard' element={<Dashboard/>}/>
+        <Route path="/backtest" element={<Backtest />} />
         <Route path="/login" element={<Login />} />
       </Route>
     </Routes>
