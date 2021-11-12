@@ -116,7 +116,7 @@ def dataset_exists(symbol: str, timeframe: str, startDate: int) -> bool: # Check
 
 
 def create_new_dataset(symbol: str, timeframe: str, startTimeStamp: int) -> pd.DataFrame:
-    newStartTimeStamp = startTimeStamp + (2 * constants.TIMEFRAME_MILLISECONDS[timeframe])
+    newStartTimeStamp = startTimeStamp - (2 * constants.TIMEFRAME_MILLISECONDS[timeframe])
     dataset = exchange_data.download_historical(symbol, timeframe, newStartTimeStamp)
     # dataset = calculate_futures(ohlcv, config)
     dataset = dataset.dropna(0)

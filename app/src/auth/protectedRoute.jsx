@@ -1,15 +1,10 @@
 import React from 'react';
-import { Navigate, Route } from 'react-router-dom'
-import { useAuth } from './index';
+import { Navigate, Outlet } from 'react-router-dom';
 
-const ProtectedRoute = ({ component: Component, ...rest }) => {
-  const [logged] = useAuth();
-
-  return <Route {...rest} render={(props) => (
-    logged
-      ? <Component {...props} />
-      : <Navigate to='/login' />
-  )} />
+const PrivateRoute = () => {
+  let logged = (localStorage.getItem('REACT_TOKEN_AUTH_KEY') != null) ? true : false;
+  
+  return logged ? (<Outlet />) : (<Navigate to="/login" />)
 }
 
-export default ProtectedRoute;
+export default PrivateRoute;

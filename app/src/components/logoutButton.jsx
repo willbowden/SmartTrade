@@ -9,7 +9,7 @@ function LogoutButton() {
     const onLogoutClick = (e) => {
         e.preventDefault();
         logout();
-        navigate("/dashboard");
+        navigate("/login")
     }
 
     return (

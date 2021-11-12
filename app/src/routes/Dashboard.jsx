@@ -1,11 +1,11 @@
 import React from "react";
-import Clock from "../components/clock.jsx";
 import '../App.css';
  
 function Dashboard() {
-  return (
-    <div class="centered-div">
-        <Clock />
+  return ( 
+    <div className="centered-div">
+        <h1>Dashboard</h1>
+        <p>i hate everything</p>
     </div>
   );
 }

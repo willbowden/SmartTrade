@@ -55,8 +55,8 @@ def score_dataset(ds: pd.DataFrame, config) -> dict:
     for index, row in ds.iterrows():
         if row['close'] < 0.995 * highest['price'] and highest['price'] != 0 and lowest['price'] != 1000000 and highest['price'] >= config['profit_aim'] * lowest['price']:
             if highest['date'] > lowest['date']:
-                results['markers'].append({'date': lowest['date'], 'price': lowest['price'], 'score': 2})
-                results['markers'].append({'date': highest['date'], 'price': highest['price'], 'score': 0})
+                results['markers'].append({'date': lowest['date'], 'price': lowest['price'], 'score': 1})
+                results['markers'].append({'date': highest['date'], 'price': highest['price'], 'score': -1})
                 highest = {'date': '', 'price': 0}
                 lowest = {'date': '', 'price': 1000000}
             else:
@@ -67,8 +67,8 @@ def score_dataset(ds: pd.DataFrame, config) -> dict:
         if row['close'] < lowest['price']:
             lowest = {'date': row['date'], 'price': row['close']}
 
-    scoredBuys = [x['date'] for x in results['markers'] if x['score'] == 2]
-    scoredSells = [x['date'] for x in results['markers'] if x['score'] == 0]
+    scoredBuys = [x['date'] for x in results['markers'] if x['score'] == 1]
+    scoredSells = [x['date'] for x in results['markers'] if x['score'] == -1]
 
     # Cut the ends off the dataset that don't have scores because we don't know the optimal points of entry for non-existent data
     startIndex = results['dataset'].index[results['dataset']['date'] == scoredBuys[0]].tolist()[0]

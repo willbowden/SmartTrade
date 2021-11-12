@@ -5,8 +5,8 @@ import LogoutButton from './components/logoutButton'
 
 function App() {
   return (
-    <div class="fullsize">
-      <div class="navbar">
+    <div className="fullsize">
+      <div className="navbar">
         <ul>
           <li><Link to="/dashboard">Home</Link></li>
           <li><Link to="/backtest">Backtesting</Link></li>
