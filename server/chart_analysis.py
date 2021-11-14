@@ -22,18 +22,18 @@ def mark_swings(ds: pd.DataFrame, config) -> dict:
             else:
                 highest = {'date': row['date'], 'price': row['close']}
 
-        if row['close'] > highest['price']:
-            highest = {'date': row['date'], 'price': row['close']}
-        if row['close'] < lowest['price']:
-            lowest = {'date': row['date'], 'price': row['close']}
+        if row['high'] > highest['price']:
+            highest = {'date': row['date'], 'price': row['high']}
+        if row['low'] < lowest['price']:
+            lowest = {'date': row['date'], 'price': row['low']}
 
     return results
 
 def mark_structure(ds: dict):
     ds['structures'] = []
     for start in ds['markers']:
-        topLimit = (1.02 * start['price'])
-        bottomLimit = (0.98 * start['price'])
+        topLimit = (1.01 * start['price'])
+        bottomLimit = (0.99 * start['price'])
         closeCount = 1
         lastTestDate = None
         for point in ds['markers']:
@@ -42,16 +42,18 @@ def mark_structure(ds: dict):
                     closeCount += 1
                     lastTestDate = point['date']
 
-        if closeCount > 2:
-            ds['structures'].append({'start': start['date'], 'end': lastTestDate, 'top': topLimit, 'bottom': bottomLimit})
+        if closeCount > 4:
+            alreadyFoundDates = [x['start'] for x in ds['structures']]
+            if start['date'] not in alreadyFoundDates:
+                ds['structures'].append({'start': start['date'], 'end': lastTestDate, 'top': topLimit, 'bottom': bottomLimit})
                     
     return ds
 
 
 if __name__ == "__main__":
-    config = {'requiredIndicators': ['rsi'], 'profit_aim': 1.02}
+    config = {'requiredIndicators': ['rsi'], 'profit_aim': 1.1}
     ds = datasets.load_dataset("ETH/USDT", "4h", 1620777600000,  config)
     swings = mark_swings(ds, config)
-    out = mark_structure(swings)
+    #out = mark_structure(swings)
 
-    chart_plot.plot_structure(out)    
+    chart_plot.plot_swings(swings).show()    
