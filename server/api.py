@@ -4,7 +4,7 @@
 
 import os
 from re import I
-from flask import Flask, json, render_template, redirect, url_for, request, session, jsonify
+from flask import Flask, jsonify
 from flask_jwt import JWT, jwt_required, current_identity
 import dbmanager
 import time
@@ -39,6 +39,7 @@ def main():
     @app.route('/time')
     @jwt_required()
     def get_current_time():
+        print(current_identity.id)
         return jsonify({'time': time.time()})
 
     app.run(debug=True)

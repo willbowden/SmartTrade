@@ -12,7 +12,7 @@ function Clock() {
     }, []);
 
     return(
-        <div class="centered-div">
+        <div className="centered-div">
             <p>The current time is {currentTime}</p>
             <input class="button" type="button" value="Test" onClick={sendRequest}></input>
         </div>
