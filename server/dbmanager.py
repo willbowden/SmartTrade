@@ -16,7 +16,7 @@ def create_account(username: str, password: str, nickname: str) -> None: # Creat
     conn, cursor = __get_conn_and_cursor()
     while not uniqueIDFound:
         id = random.randrange(1, 10**4)
-        if get_account_by_column('userID', id) == None:
+        if get_account_by_column('id', id) == None:
             uniqueIDFound = True
 
     query = f"INSERT INTO tblUsers VALUES ({id}, '{username}', '{password}', '{nickname}', '', '', '', '')"
@@ -24,10 +24,10 @@ def create_account(username: str, password: str, nickname: str) -> None: # Creat
     conn.commit()
     cursor.close()
 
-def delete_account(userID: int) -> None:
+def delete_account(id: int) -> None:
     conn, cursor = __get_conn_and_cursor()
     try:
-        query = f"DELETE FROM tblUsers WHERE userID={userID}"
+        query = f"DELETE FROM tblUsers WHERE id={id}"
         cursor.execute(query)
         conn.commit()
         cursor.close()
@@ -52,7 +52,7 @@ def get_account_by_column(column: str, value) -> dict: # Returns user account by
         return None
 
 def map_account_to_dict(accountTuple): # Convert a tuple, which is returned by SQL, into a dict so we can access account data with a key
-    account = {'userID': accountTuple[0], 'username': accountTuple[1], 'password': accountTuple[2],
+    account = {'id': accountTuple[0], 'username': accountTuple[1], 'password': accountTuple[2],
          'nickname': accountTuple[3], 'binanceKey': accountTuple[4],
          'secretKey': accountTuple[5], 'exchangeID': accountTuple[6], 'currency': accountTuple[7]}
     return account
@@ -72,22 +72,22 @@ def update_account_by_column(id:int, column: str, value) -> None: # Update a use
     conn, cursor = __get_conn_and_cursor()
     if type(value) == str: 
         value = f"'{value}'" # Add quotes to value if string so we can put in database
-    query = f"UPDATE tblUsers SET {column}={value} WHERE userID={id}"
+    query = f"UPDATE tblUsers SET {column}={value} WHERE id={id}"
     cursor.execute(query)
     conn.commit()
     cursor.close()
 
-def add_account_value(userID: int, date: str, value: float) -> None: # Save account value datapoint
+def add_account_value(id: int, date: str, value: float) -> None: # Save account value datapoint
     conn, cursor = __get_conn_and_cursor()
-    query = f"INSERT INTO tblAccountValue VALUES ({userID}, '{date}', {value})"
+    query = f"INSERT INTO tblAccountValue VALUES ({id}, '{date}', {value})"
     cursor.execute(query)
     conn.commit()
     cursor.close()
 
-def load_account_values(userID: int) -> list: # Load historical account value data for a user
+def load_account_values(id: int) -> list: # Load historical account value data for a user
     values = []
     cursor = __get_conn_and_cursor()[0]
-    query = f"SELECT * FROM tblAccountValue WHERE userID={userID}"
+    query = f"SELECT * FROM tblAccountValue WHERE id={id}"
     result = cursor.execute(query).fetchall()
     for item in result:
         value = {'date': item[1], 'value': item[2]}
@@ -111,8 +111,8 @@ def create_table() -> None:
     query = """
     CREATE TABLE tblStrategies (
         strategyID INT,
-        userID INT,
-        PRIMARY KEY (strategyID, userID)
+        id INT,
+        PRIMARY KEY (strategyID, id)
     )
     """
     cursor.execute(query)
@@ -136,6 +136,16 @@ def clear_table(tblName: str) -> None:
     cursor.close()
     print("Success.")
 
+def bappaty():
+    conn, cursor = __get_conn_and_cursor()
+    query = """
+    ALTER TABLE tblUsers
+    RENAME COLUMN id TO id"""
+    cursor.execute(query)
+    conn.commit()
+    cursor.close()
+
 if __name__ == '__main__':
-    print(load_account_values(2194))
+    #bappaty()
+    print(get_all_accounts())
     print(f"Please do not run {__file__} directly.")
