@@ -29,37 +29,12 @@ a {
   color: #61dafb;
 }
 
-.button {
-  padding: 5px;
-}
-
-ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  width: 100vw;
-  background-color: #333;
-}
-
-li {
-  float: left;
-}
-
-li a {
-  display: block;
-  color: white;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-}
-
-li a:hover {
-  background-color: #111;
-}
-
 #error-message {
   color:rgb(212, 40, 40);
   text-align: center;
   
+}
+
+.page-container {
+  min-height: 80vh;
 }

@@ -39,7 +39,7 @@ def main():
     @app.route('/time')
     @jwt_required()
     def get_current_time():
-        print(current_identity.id)
+        print(current_identity)
         return jsonify({'time': time.time()})
 
     app.run(debug=True)

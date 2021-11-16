@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import './Navbar.css';
 import {Link, Outlet} from 'react-router-dom'
 import LogoutButton from './components/logoutButton'
 

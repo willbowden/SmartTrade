@@ -1,6 +1,5 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-var jwt = require('jsonwebtoken');
 
 const PrivateRoute = () => {
   const keyJSON = JSON.parse(localStorage.getItem('REACT_TOKEN_AUTH_KEY'));
