@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
 import {login} from "../auth"
 import '../App.css';
+import './Login.css';
 
 function Login() {
     const [username, setUsername] = useState('')
@@ -42,32 +43,33 @@ function Login() {
   
     return (
       <div className="centered-div">
+        <div id="login-div">
         <h2>Login</h2>
-        <form action="#">
+        <form action="#" className="login-form">
         <div>
-          <input type="text" 
+          <input id="usernameInput" type="text" 
             placeholder="Username" 
             onChange={handleUsernameChange}
-            value={username} 
-          />
+            value={username} />
         </div>
         <div>
           <input
+            id="passwordInput"
             type="password"
             placeholder="Password"
             onChange={handlePasswordChange}
-            value={password}
-          />
+            value={password}/>
         </div>
         <button onClick={onSubmitClick} type="submit">
-          Login Now
+          Login
         </button>
       </form>
         <div id="error-message">
           <p>{errorMessage}</p>
         </div>
       </div>
+      </div>
     )
   }
 
-  export default Login
+  export default Login;

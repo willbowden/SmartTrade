@@ -36,7 +36,7 @@ def main():
     app.config['JWT_AUTH_PASSWORD_KEY'] = 'password'
     jwt = JWT(app, authenticate_user, get_user_by_id)
 
-    @app.route('/time')
+    @app.route('/time', methods=["GET"])
     @jwt_required()
     def get_current_time():
         print(current_identity)
