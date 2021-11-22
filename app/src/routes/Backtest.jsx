@@ -5,7 +5,7 @@ class Backtest extends React.Component {
   render() {
     return (
       <div className="centered-div">
-          <p>LIGMA BALLS</p>
+          <h1>BACKTESTING PAGE</h1>
       </div>
     );
   }
