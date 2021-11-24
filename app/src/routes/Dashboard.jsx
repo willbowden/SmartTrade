@@ -6,7 +6,6 @@ function Dashboard() {
   return ( 
     <div className="centered-div">
         <h1>Dashboard</h1>
-        <Clock></Clock>
     </div>
   );
 }
