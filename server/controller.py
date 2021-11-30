@@ -12,7 +12,7 @@ from SmartTrade.server.user import User
 class Controller:
     _instance = None
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs): # Return already existing instance if trying to initialise a new one
         if cls._instance is None:
             cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
