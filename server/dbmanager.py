@@ -34,10 +34,6 @@ def delete_account(id: int) -> None:
     except:
         print("(delete_account): User not found!")
 
-def user_exists(username: str) -> bool: # Return true if user data is found in database
-    result = get_account_by_column('username', username) # Gets account row from other function
-    return result != None
-    
 def get_account_by_column(column: str, value) -> dict: # Returns user account by looking up a given field
     cursor = __get_conn_and_cursor()[1]
     if type(value) == str:
@@ -51,11 +47,24 @@ def get_account_by_column(column: str, value) -> dict: # Returns user account by
     else:
         return None
 
+def update_account_by_column(id:int, column: str, value) -> None: # Update a user's info 
+    conn, cursor = __get_conn_and_cursor()
+    if type(value) == str: 
+        value = f"'{value}'" # Add quotes to value if string so we can put in database
+    query = f"UPDATE tblUsers SET {column}={value} WHERE id={id}"
+    cursor.execute(query)
+    conn.commit()
+    cursor.close()
+
 def map_account_to_dict(accountTuple): # Convert a tuple, which is returned by SQL, into a dict so we can access account data with a key
     account = {'id': accountTuple[0], 'username': accountTuple[1], 'password': accountTuple[2],
          'nickname': accountTuple[3], 'binanceKey': accountTuple[4],
          'secretKey': accountTuple[5], 'exchangeID': accountTuple[6], 'currency': accountTuple[7]}
     return account
+
+def user_exists(username: str) -> bool: # Return true if user data is found in database
+    result = get_account_by_column('username', username) # Gets account row from other function
+    return result != None
 
 def get_all_accounts() -> list: # Get all accounts in database as a dictionary
     accounts = []
@@ -67,33 +76,6 @@ def get_all_accounts() -> list: # Get all accounts in database as a dictionary
         accounts.append(account)
 
     return accounts
-
-def update_account_by_column(id:int, column: str, value) -> None: # Update a user's info 
-    conn, cursor = __get_conn_and_cursor()
-    if type(value) == str: 
-        value = f"'{value}'" # Add quotes to value if string so we can put in database
-    query = f"UPDATE tblUsers SET {column}={value} WHERE id={id}"
-    cursor.execute(query)
-    conn.commit()
-    cursor.close()
-
-def add_account_value(id: int, date: str, value: float) -> None: # Save account value datapoint
-    conn, cursor = __get_conn_and_cursor()
-    query = f"INSERT INTO tblAccountValue VALUES ({id}, '{date}', {value})"
-    cursor.execute(query)
-    conn.commit()
-    cursor.close()
-
-def load_account_values(id: int) -> list: # Load historical account value data for a user
-    values = []
-    cursor = __get_conn_and_cursor()[0]
-    query = f"SELECT * FROM tblAccountValue WHERE id={id}"
-    result = cursor.execute(query).fetchall()
-    for item in result:
-        value = {'date': item[1], 'value': item[2]}
-        values.append(value)
-
-    return values
     
 def __add_column_to_table(table:str, columnName:str, datatype:str) -> None:
     conn, cursor = __get_conn_and_cursor()
@@ -136,16 +118,5 @@ def clear_table(tblName: str) -> None:
     cursor.close()
     print("Success.")
 
-def bappaty():
-    conn, cursor = __get_conn_and_cursor()
-    query = """
-    ALTER TABLE tblUsers
-    RENAME COLUMN id TO id"""
-    cursor.execute(query)
-    conn.commit()
-    cursor.close()
-
 if __name__ == '__main__':
-    #bappaty()
-    print(get_all_accounts())
     print(f"Please do not run {__file__} directly.")

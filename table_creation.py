@@ -1,8 +1,10 @@
-connection = sqlite3.connect('smarttrade.db')
-cursor = connection.cursor()
+import sqlite3
+
+conn = sqlite3.connect('smarttrade.db')
+cursor = conn.cursor()
 
 query = """
-    CREATE TABLE tblUsers (
+    CREATE TABLE IF NOT EXISTS tblUsers (
         id INT PRIMARY KEY NOT NULL,
         username VARCHAR(20) NOT NULL,
         password VARCHAR(20) NOT NULL,
@@ -71,10 +73,10 @@ conn.commit()
 query = """
     CREATE TABLE tblTrades (
         tradeID INT PRIMARY KEY NOT NULL,
-        type ENUM("user", "botDry", "botLive", "backtest") NOT NULL,
+        type TEXT CHECK( type IN ("user", "botDry", "botLive", "backtest") ) NOT NULL,
         date BIGINT NOT NULL,
         symbol VARCHAR(15) NOT NULL,
-        side ENUM("buy", "sell") NOT NULL,
+        side TEXT CHECK (side IN ("buy", "sell") ) NOT NULL,
         quantity FLOAT NOT NULL,
         value FLOAT NOT NULL,
         price FLOAT NOT NULL,
@@ -102,7 +104,7 @@ query = """
         tradeID INT,
         FOREIGN KEY (backtestID) REFERENCES tblBacktests(backtestID),
         FOREIGN KEY (tradeID) REFERENCES tblTrades(tradeID),
-        PRIMARY KEY(userID, tradeID)
+        PRIMARY KEY(backtestID, tradeID)
     )
     """
 cursor.execute(query)

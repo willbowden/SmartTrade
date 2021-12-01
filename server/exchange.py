@@ -9,9 +9,9 @@ from SmartTrade.server import conversions
 
 class Exchange: # Class to represent an exchange object. This is necessary as each user has their own unique exchange object linked to their API key
     def __init__(self, id, apiKey, secret):
-        self.exchange_class = getattr(ccxt, id)
+        exchange_class = getattr(ccxt, id)
         self.last_request = datetime.datetime.now()
-        self.exchange = self.exchange_class({
+        self.exchange = exchange_class({
             'apiKey': apiKey,
             'secret': secret,
             'timeout': 30000,
