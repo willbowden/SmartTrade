@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Backtest from './routes/Backtest';
 import Dashboard from './routes/Dashboard';
 import Login from './routes/Login';
+import Register from './routes/Register';
 import PrivateRoute from './auth/protectedRoute';
 
 ReactDOM.render(
@@ -17,6 +18,7 @@ ReactDOM.render(
         </Route>
         <Route path="/backtest" element={<Backtest />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Route>
     </Routes>
   </BrowserRouter>,

@@ -4,13 +4,13 @@ conn = sqlite3.connect('smarttrade.db')
 cursor = conn.cursor()
 
 query = """
-    CREATE TABLE IF NOT EXISTS tblUsers (
+    CREATE TABLE tblUsers (
         id INT PRIMARY KEY NOT NULL,
         username VARCHAR(20) NOT NULL,
-        password VARCHAR(20) NOT NULL,
+        password CHAR(64) NOT NULL,
         nickname VARCHAR(20),
         binanceKey CHAR(64),
-        secretKey VARCHAR(20),
+        secretKey CHAR(64),
         exchangeID VARCHAR(10),
         currency VARCHAR(4)
     )
