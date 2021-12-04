@@ -7,6 +7,7 @@ import './Login.css';
 function Register() {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [nickname, setNickname] = useState('')
     const [errorMessage, setErrorMessage] = useState('')
     const navigate = useNavigate();
   
@@ -15,6 +16,7 @@ function Register() {
       let payload = {
         'username': username,
         'password': password,
+        'nickname': nickname,
         
       }
       fetch('/api/register', {
@@ -35,11 +37,15 @@ function Register() {
     }
   
     const handleUsernameChange = (e) => {
-      setUsername(e.target.value)
+      setUsername(e.target.value);
     }
   
     const handlePasswordChange = (e) => {
-      setPassword(e.target.value)
+      setPassword(e.target.value);
+    }
+
+    const handleNicknameChange = (e) => {
+      setNickname(e.target.value);
     }
   
     return (
@@ -52,6 +58,14 @@ function Register() {
             placeholder="Username" 
             onChange={handleUsernameChange}
             value={username} />
+        </div>
+        <div>
+          <input
+            id="nicknameInput"
+            type = "text"
+            placeholder="Nickname"
+            onChange={handleNicknameChange}
+            value={nickname}/>
         </div>
         <div>
           <input

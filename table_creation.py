@@ -7,7 +7,7 @@ query = """
     CREATE TABLE tblUsers (
         id INT PRIMARY KEY NOT NULL,
         username VARCHAR(20) NOT NULL,
-        password CHAR(64) NOT NULL,
+        password BLOB(96) NOT NULL,
         nickname VARCHAR(20),
         binanceKey CHAR(64),
         secretKey CHAR(64),

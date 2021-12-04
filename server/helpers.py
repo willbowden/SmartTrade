@@ -1,7 +1,19 @@
-import os
+import hashlib
 import constants
 import time
 import numpy as np
+
+def hash_password(password, salt):
+    key = hashlib.pbkdf2_hmac( # Hash the password we received from the client.
+            'sha256', # The hashing algorithm
+            password.encode('utf-8'), # Convert the password to bytes
+            salt,
+            100000 # Number of iterations of SHA-256
+        )
+
+    combo = key + salt # Combine new hash and old salt for comparison
+
+    return combo
 
 def get_user_filepath(userID):
     fname = constants.USER_ACCOUNT_PATH + str(userID) + "_values.json"

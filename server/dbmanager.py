@@ -119,4 +119,5 @@ def clear_table(tblName: str) -> None:
     print("Success.")
 
 if __name__ == '__main__':
+    delete_account(2094)
     print(f"Please do not run {__file__} directly.")

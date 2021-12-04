@@ -14,11 +14,11 @@ from datetime import timedelta
 from SmartTrade.server.controller import Controller
 from SmartTrade.server.user import User
 
-def authenticate_user(username, password):
+def authenticate_user(username, password): # Verify a user's credentials 
     print(f"Attempting Login: {username, password}")
     if dbmanager.user_exists(username):
         userInfo = dbmanager.get_account_by_column('username', username) # Get the prospective user's info.
-        salt = userInfo['password'][32:] # Retrieve the saved salt from the second half of the hashed key.
+        salt = userInfo['password'][-32:] # Retrieve the saved salt from the second half of the hashed key.
         key = hashlib.pbkdf2_hmac( # Hash the password we received from the client.
             'sha256', # The hashing algorithm
             password.encode('utf-8'), # Convert the password to bytes
@@ -30,8 +30,10 @@ def authenticate_user(username, password):
 
         if combo == userInfo['password']: # If the hashed combo matches the one in the database, the user entered the right password.
             user = User(userInfo) # Convert the dictionary of user info into a User object.
+        else:
+            user = None
     else:
-        user = None
+        user = None # If user login info is wrong, return no user.
     
     return user
 
@@ -60,7 +62,7 @@ def main():
     def register():
         payload = request.json
         if not dbmanager.user_exists(payload['username']):
-            salt = os.urandom(32)
+            salt = os.urandom(32) # Generate random salt
             key = hashlib.pbkdf2_hmac(
                 'sha256', # The hashing algorithm
                 payload['password'].encode('utf-8'), # Convert the password to bytes
@@ -68,12 +70,13 @@ def main():
                 100000 # Number of iterations of SHA-256
             )
 
-            combo = key + salt # Combine the salt and the key to be stored in the password column so we can re-use the salt
-
+            combo = key + salt # Combine key and salt for storage
+            # Store combo in database
             dbmanager.create_account(payload['username'], combo, payload['nickname'])
         
             requestObj = {'username': payload['username'], 'password': combo}
-            token = requests.post('/auth', data=requestObj)
+            token = requests.post('http://localhost:5000/auth', json=requestObj)
+            print(token)
             return jsonify({'access_token': token})
 
         else:
