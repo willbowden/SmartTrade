@@ -41,13 +41,7 @@ def get_asset_value(exchange, asset:str, quantity:float) -> float: # Calculates 
         value = quantity * price
     return round(value, 2)
 
-def save_account_value(userID: int, value) -> None: # Saves an account value data point to the database
-    dbmanager.add_account_value(userID, value['date'], value['value'])
-
-def load_account_value_data(userID: int) -> list : # Load account value data from the database
-    return dbmanager.load_account_values(userID)
-
 def get_account_balances(exchange) -> dict: # Get dict of total balances for every coin
     balanceJSON = exchange.fetch_balance()
-    balances = {x:y for x,y in balanceJSON['total'].items() if y!=0}  # See comments section in document
+    balances = {x:y for x,y in balanceJSON['total'].items() if y!=0}  # See coursework document
     return balances
