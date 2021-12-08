@@ -14,6 +14,9 @@ class User: # Class to represent a user in the system, containing their account 
         self.username = infoDict['username']
         self.exchange = Exchange(infoDict['exchangeID'], infoDict['binanceKey'], infoDict['secretKey'])
         self.isLoggedIn = False
+        self.transactionHistory = [] # Load from database
+        self.holdings = {} # Will be loaded in the load_data() function.
+        self.isLive = False
         self.lastActivity = datetime.now()
 
     def save_data(self) -> None: # Save info about self to a JSON file 
@@ -29,13 +32,19 @@ class User: # Class to represent a user in the system, containing their account 
         raise NotImplementedError
 
     def update_holdings(self) -> None: # Get new data about a user's balances and their value
-        self.holdings = account_data.get_account_holdings(self.exchange)
+        # As yet unimplemented.
+        # Will check for the user's currency holdings and update their stored value.
+        
+        raise NotImplementedError
+
+    def calculate_history(self) -> None: # Get a user's trade history and calculate profit etc.
+        # As yet unimplemented.
+        # Will download all of a user's past transactions, save them and calculate profits.
+
+        raise NotImplementedError
 
     def login(self) -> None:
         self.isLoggedIn = True
 
     def logout(self) -> None:
         self.isLoggedIn = False
-
-    
-

@@ -1,0 +1,31 @@
+// Example Indicator JSON Structure
+
+{
+    "config": {
+        "requiredIndicators": [
+            {
+                "name": "rsi",
+                "data": ["close"],
+                "arguments": {
+                    "timeperiod": 14
+                },
+                "output": []
+            },
+            {
+                "name": "bbands",
+                "data": ["close"],
+                "arguments": {
+                    "timeperiod": 5, 
+                    "nbdevup": 2, 
+                    "nbdevdn": 2,
+                    "matype": 0
+                },
+                "output": [
+                    "upperband",
+                    "middleband",
+                    "lowerband"
+                ]
+            }
+        ]
+    }
+}

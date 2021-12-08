@@ -16,7 +16,7 @@ def fetch_historical(exchange, symbol: str, timeframe: str, since: int=None) -> 
     return dataframe
 
 def download_historical(symbol: str, timeframe: str, since: int=None) -> pd.DataFrame: # Uses pagination to download backtesting/training data
-    ex = exchange.Exchange('binance', 'LsyXkKspvvpsPe7xHJFQB2hXr03iUdFMwCRi1BRgQgHGHILKkv8ETf07ESbCCwkK', '')
+    ex = exchange.Exchange('binance', 'LsyXkKspvvpsPe7xHJFQB2hXr03iUdFMwCRi1BRgQgHGHILKkv8ETf07ESbCCwkK', '') # Use my apiKey to access public info
     now = conversions.date_to_unix(datetime.datetime.now())
     date = now - ((constants.OHLCV_REQUEST_SIZE - 1) * constants.TIMEFRAME_MILLISECONDS[timeframe])
     leftToFetch = int(round(((now-since)/constants.TIMEFRAME_MILLISECONDS[timeframe]), 0))
@@ -30,9 +30,9 @@ def download_historical(symbol: str, timeframe: str, since: int=None) -> pd.Data
         date = oldest - ((constants.OHLCV_REQUEST_SIZE - 1) * constants.TIMEFRAME_MILLISECONDS[timeframe])
         progress = ((len(whole) / leftToFetch) * 100)
         print(f'{conversions.unix_to_date(oldest)} | {str(round(progress, 1))}% | {len(whole)} points downloaded.')
-    whole.set_index(['date', 'open', 'high', 'low', 'close', 'volume'])
-    whole.reset_index(inplace=True)
-    del whole['index']
+    whole.set_index(['date', 'open', 'high', 'low', 'close', 'volume']) # Set the column headers for the price data
+    whole.reset_index(inplace=True) # Reset the numerical index 
+    del whole['index'] # Remove it, as it's not needed.
     return whole
 
 if __name__ == '__main__':
