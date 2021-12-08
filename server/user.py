@@ -13,23 +13,34 @@ class User: # Class to represent a user in the system, containing their account 
         self.id = infoDict['id']
         self.username = infoDict['username']
         self.exchange = Exchange(infoDict['exchangeID'], infoDict['binanceKey'], infoDict['secretKey'])
-        self.isLoggedIn = False
-        self.transactionHistory = [] # Load from database
+        self.loggedIn = False
+        self.transactions = [] # Load from database
         self.holdings = {} # Will be loaded in the load_data() function.
         self.isLive = False
         self.lastActivity = datetime.now()
 
     def save_data(self) -> None: # Save info about self to a JSON file 
-        # As yet unimplemented. 
-        # Will load data from a .json file pertaining to the user.
+        fname = f"{constants.USER_DATA_PATH}{str(self.id)}_data.json"
 
-        raise NotImplementedError
+        result = {
+            'holdings': self.holdings,
+            'transactions': self.transactions,
+            'loggedIn': self.loggedIn,
+            'lastActivity': self.lastActivity,
+            'isLive': self.isLive
+        }
+
+        with open(fname, "w") as outfile:
+            json.dump(result, outfile)
 
     def load_data(self) -> None: # Load saved data from a JSON file
-        # As yet unimplemented. 
-        # Will load the data outlined above from the JSON file into instance attributes
+        fname = f"{constants.USER_DATA_PATH}{str(self.id)}_data.json"
 
-        raise NotImplementedError
+        with open(fname, "r") as infile:
+            inJSON = json.load(infile)
+
+        for key in inJSON.keys():
+            exec(f"self.{key} = {inJSON[key]}")
 
     def update_holdings(self) -> None: # Get new data about a user's balances and their value
         # As yet unimplemented.
@@ -44,7 +55,7 @@ class User: # Class to represent a user in the system, containing their account 
         raise NotImplementedError
 
     def login(self) -> None:
-        self.isLoggedIn = True
+        self.loggedIn = True
 
     def logout(self) -> None:
-        self.isLoggedIn = False
+        self.loggedIn = False
