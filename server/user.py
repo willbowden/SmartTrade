@@ -14,6 +14,7 @@ class User: # Class to represent a user in the system, containing their account 
         self.username = infoDict['username']
         self.exchange = Exchange(infoDict['exchangeID'], infoDict['binanceKey'], infoDict['secretKey'])
         self.loggedIn = False
+        self.tradedPairs = []
         self.transactions = [] # Load from database
         self.holdings = {} # Will be loaded in the load_data() function.
         self.isLive = False

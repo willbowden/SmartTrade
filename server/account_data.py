@@ -6,6 +6,7 @@ from SmartTrade.server import dbmanager
 from datetime import datetime
 from SmartTrade.server import constants
 from SmartTrade.server import exchange_data
+import time
 
 def get_account_value(user) -> dict: # Calculate and return user's total account value in USD
     totalValue = 0.0
@@ -44,3 +45,23 @@ def get_account_balances(user) -> dict: # Get dict of total balances for every c
     balanceJSON = user.exchange.fetch_balance()
     balances = {x:y for x,y in balanceJSON['total'].items() if y!=0}  # See coursework document
     return balances
+
+def get_traded_pairs(user):
+    tradedPairs = []
+    toCheck = list(user.exchange.markets.keys()) # Get all available trading pairs on the exchange.
+    while toCheck != []:
+        print(f"Checking {toCheck[0]}.")
+        time.sleep(0.04) # Only allowed ~1200 requests per minute, so to avoid getting blocked from the API we will wait a bit.
+        try:
+            orders = user.exchange.fetch_orders(symbol=toCheck[0], limit=1) # Only request 1 trade to check if the user has interacted with this pair.
+            if orders != []:
+                tradedPairs.append(toCheck[0])
+                print("Found.")
+            
+            toCheck.pop(0)
+        except Exception as e:
+            print(e)
+            toBack = toCheck.pop(0) # If we get an error, move the symbol to the end of the queue to retry later.
+            toCheck.append(toBack)
+
+    return tradedPairs
