@@ -21,7 +21,7 @@ print(salt)
 print("---")
 print(combo)
 
-query = "INSERT INTO tblUsers VALUES (2094, 'admin', ?, 'Will', 'LsyXkKspvvpsPe7xHJFQB2hXr03iUdFMwCRi1BRgQgHGHILKkv8ETf07ESbCCwkK', '', 'binance', 'USD')"
+query = "INSERT INTO tblUsers VALUES (2094, 'admin', ?, 'Will', 'LsyXkKspvvpsPe7xHJFQB2hXr03iUdFMwCRi1BRgQgHGHILKkv8ETf07ESbCCwkK', 'binance', 'USD')"
 
 cursor.execute(query, (combo,)) # Pass our combo (which is a bytestring) as an argument for SQLite to parse.
 connection.commit() # Save changes and close

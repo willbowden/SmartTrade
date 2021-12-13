@@ -2,7 +2,7 @@ import json
 from SmartTrade.server.exchange import Exchange
 import time
 
-ex = Exchange('binance', 'bpSmvc8AxJsYRRTehCADJV1hF8fSJ9zjfcdbCAqNTeLbGZ30abBa7eTrq65rPEvz', )
+ex = Exchange('binance', 'bpSmvc8AxJsYRRTehCADJV1hF8fSJ9zjfcdbCAqNTeLbGZ30abBa7eTrq65rPEvz', '')
 
 with open ("trades.json", "w") as outfile:
     json.dump(ex.fetch_trades("AXS/USDT"), outfile)

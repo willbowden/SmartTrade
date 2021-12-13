@@ -84,6 +84,57 @@ def get_row_by_column(table: str, column: str, value) -> dict: # Returns a row f
     else:
         return None
 
+def get_backtest_trades(backtestID: int) -> list: # Return all trades associated with a backtest.
+    return __get_linked_entities(
+        'tblBacktest', 'tblTrades',
+        'tblBacktestTrades', ['backtestID', 'tradeID'],
+        backtestID
+    )
+
+def get_user_trades(userID: int) -> list: # Return all trades associated with a user.
+    return __get_linked_entities(
+        'tblUsers', 'tblTrades',
+        'tblUserTrades', ['id', 'tradeID'],
+        userID
+    )
+
+def get_user_strategies(userID: int) -> list: # Return all trades associated with a backtest.
+    return __get_linked_entities(
+        'tblUsers', 'tblStrategies',
+        'tblUserStrategy', ['id', 'strategyID'],
+        userID
+    )
+
+def get_strategy_backtests(strategyID: int) -> list: # Return all backtests associated with a strategy and the user who performed them.
+    cursor = __get_conn_and_cursor()[1]
+    query = f"""SELECT tblBacktests.*, tblStrategyBacktest.userID
+    FROM    tblBacktests 
+    INNER JOIN tblBacktests.backtestID ON tblStrategyBacktest.backtestID
+    WHERE tblStrategyBacktest.strategyID = {strategyID}
+    """
+    result = cursor.execute(query).fetchall()
+    cursor.close()
+    if result != None:
+        final = [dict(item) for item in result]
+        return final
+    else:
+        return None
+
+def __get_linked_entities(table1: str, table2: str, linkTable: str, idNames: list, id: int) -> list: # Return all linked entities linked to another one.
+    cursor = __get_conn_and_cursor()[1]
+    query = f"""SELECT * FROM {table1} 
+    INNER JOIN {linkTable}.{idNames[0]} ON {table1}.{idNames[0]}
+    INNER JOIN {linkTable}.{idNames[1]} ON {table2}.{idNames[1]}
+    WHERE {table1}.{idNames[0]} = {id}    """
+
+    result = cursor.execute(query).fetchall()
+    cursor.close()
+    if result != None:
+        final = [dict(item) for item in result]
+        return final
+    else:
+        return None
+
 def update_row_by_column(table: str, id:int, column: str, value) -> None: # Update a row 
     if type(value) == str: 
         value = f"'{value}'" # Add quotes to value if string so we can put in database

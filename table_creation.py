@@ -10,7 +10,6 @@ query = """
         password BLOB(96) NOT NULL,
         nickname VARCHAR(20),
         apiKey CHAR(64) NOT NULL,
-        secretKey CHAR(64) NOT NULL,
         exchangeID VARCHAR(10) NOT NULL,
         currency VARCHAR(4)
     )
