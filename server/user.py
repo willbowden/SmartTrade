@@ -7,12 +7,13 @@ from SmartTrade.server.exchange import Exchange
 import json
 from SmartTrade.server import constants
 from datetime import datetime
+import dotenv
 
 class User: # Class to represent a user in the system, containing their account balances and active strategies
     def __init__(self, infoDict):
         self.id = infoDict['id']
         self.username = infoDict['username']
-        self.exchange = Exchange(infoDict['exchangeID'], infoDict['binanceKey'], infoDict['secretKey'])
+        self.exchange = Exchange(infoDict['exchangeID'], infoDict['apiKey'], dotenv.dotenv_values(".env")[f"{self.id}_SECRET_KEY"])
         self.loggedIn = False
         self.tradedPairs = []
         self.transactions = [] # Load from database

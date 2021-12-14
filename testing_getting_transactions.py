@@ -1,8 +1,10 @@
 import json
-from SmartTrade.server.exchange import Exchange
+from SmartTrade.server.user import User
 import time
+from SmartTrade.server import dbmanager
 
-ex = Exchange('binance', 'bpSmvc8AxJsYRRTehCADJV1hF8fSJ9zjfcdbCAqNTeLbGZ30abBa7eTrq65rPEvz', '')
+u = User(dbmanager.get_row_by_column('tblUsers', 'id', 2094))
+ex = u.exchange
 
 with open ("trades.json", "w") as outfile:
     json.dump(ex.fetch_trades("AXS/USDT"), outfile)
@@ -27,8 +29,16 @@ def get_traded_pairs(user):
 
     return tradedPairs
 
-def get_transactions(exchange: Exchange):
-    pass
+def get_transactions(exchange, tradedPairs):
+    trades = []
+    for pair in tradedPairs:
+        balances = []
+        pairTrades = exchange.fetch_trades(pair)
+        print(pairTrades)
+
+get_transactions(ex, ['ETH/BUSD'])
+
+
 
 
 
