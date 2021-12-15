@@ -5,7 +5,7 @@ cursor = conn.cursor()
 
 query = """
     CREATE TABLE tblUsers (
-        id INT PRIMARY KEY NOT NULL,
+        userID INT PRIMARY KEY NOT NULL UNIQUE,
         username VARCHAR(20) NOT NULL,
         password BLOB(96) NOT NULL,
         nickname VARCHAR(20),
@@ -19,7 +19,7 @@ conn.commit()
 
 query = """
     CREATE TABLE tblStrategies (
-        strategyID INT PRIMARY KEY NOT NULL,
+        strategyID INT PRIMARY KEY NOT NULL UNIQUE,
         name VARCHAR(20) NOT NULL,
         avgWinRate FLOAT NOT NULL,
         avgReturn FLOAT NOT NULL
@@ -30,10 +30,10 @@ conn.commit()
 
 query = """
     CREATE TABLE tblUserStrategy (
-        strategyID INT NOT NULL,
+        strategyID INT NOT NULL UNIQUE,
         userID INT NOT NULL,
         FOREIGN KEY (strategyID) REFERENCES tblStrategies(strategyID),
-        FOREIGN KEY (userID) REFERENCES tblUsers(id),
+        FOREIGN KEY (userID) REFERENCES tblUsers(userID),
         PRIMARY KEY (strategyID, userID)
     )
     """
@@ -42,7 +42,7 @@ conn.commit()
 
 query = """
     CREATE TABLE tblBacktests (
-        backtestID INT PRIMARY KEY NOT NULL,
+        backtestID INT PRIMARY KEY NOT NULL UNIQUE,
         symbols VARCHAR(150) NOT NULL,
         startTimestamp BIGINT NOT NULL,
         endTimestamp BIGINT NOT NULL,
@@ -59,12 +59,12 @@ conn.commit()
 
 query = """
     CREATE TABLE tblStrategyBacktest (
-        backtestID INT NOT NULL,
-        strategyID INT NOT NULL,
-        userID INT NOT NULL,
+        backtestID INT NOT NULL UNIQUE,
+        strategyID INT NOT NULL UNIQUE,
+        userID INT NOT NULL UNIQUE,
         FOREIGN KEY (backtestID) REFERENCES tblBacktests(backtestID),
         FOREIGN KEY (strategyID) REFERENCES tblStrategies(strategyID),
-        FOREIGN KEY (userID) REFERENCES tblUsers(id),
+        FOREIGN KEY (userID) REFERENCES tblUsers(userID),
         PRIMARY KEY(backtestID, strategyID, userID)
     )
     """
@@ -73,7 +73,7 @@ conn.commit()
 
 query = """
     CREATE TABLE tblTrades (
-        tradeID INT PRIMARY KEY NOT NULL,
+        tradeID INT PRIMARY KEY NOT NULL UNIQUE,
         creator TEXT CHECK( creator IN ("user", "botDry", "botLive", "backtest") ) NOT NULL,
         date BIGINT NOT NULL,
         symbol VARCHAR(15) NOT NULL,
@@ -89,9 +89,9 @@ conn.commit()
 
 query = """
     CREATE TABLE tblUserTrades (
-        userID INT NOT NULL,
-        tradeID INT NOT NULL,
-        FOREIGN KEY (userID) REFERENCES tblUsers(id),
+        userID INT NOT NULL UNIQUE,
+        tradeID INT NOT NULL UNIQUE,
+        FOREIGN KEY (userID) REFERENCES tblUsers(userID),
         FOREIGN KEY (tradeID) REFERENCES tblTrades(tradeID),
         PRIMARY KEY(userID, tradeID)
     )
@@ -101,8 +101,8 @@ conn.commit()
 
 query = """
     CREATE TABLE tblBacktestTrades (
-        backtestID INT NOT NULL,
-        tradeID INT NOT NULL,
+        backtestID INT NOT NULL UNIQUE,
+        tradeID INT NOT NULL UNIQUE,
         FOREIGN KEY (backtestID) REFERENCES tblBacktests(backtestID),
         FOREIGN KEY (tradeID) REFERENCES tblTrades(tradeID),
         PRIMARY KEY(backtestID, tradeID)

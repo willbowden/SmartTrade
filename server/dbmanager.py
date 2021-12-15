@@ -11,9 +11,9 @@ def __get_conn_and_cursor() -> tuple: # See comments section in document.
     cursor = connection.cursor()
     return connection, cursor
 
-def create_account(username: str, password: str, nickname: str) -> None: # Creates new account
-    id = __get_unique_id('tblUsers', 'id')
-    query = f"INSERT INTO tblUsers VALUES ({id}, '{username}', '{password}', '{nickname}', '', '', '', '')"
+def create_account(username: str, password: str, nickname: str, apiKey: str, exchangeID: str, currency: str) -> None: # Creates new account
+    id = __get_unique_id('tblUsers', 'userID')
+    query = f"INSERT INTO tblUsers VALUES ({id}, '{username}', '{password}', '{nickname}', '{apiKey}', '{exchangeID}', '{currency}')"
     __execute_query(query)
 
 def create_trade(creatorID: int, creator: str, date: int, symbol: str, tradeType: str, quantity: float, value: float, price: float, profit: float) -> None: # Creates new trade entry
@@ -54,19 +54,19 @@ def __execute_query(query: str) -> None:
 
 def __create_link(userID: int = None, strategyID: int = None, backtestID:int = None, tradeID: int = None) -> None: # Creates a link between objects in one of the link tables
     if backtestID is None and tradeID is None:
-        query = f"INSERT INTO TABLE tblUserStrategy VALUES ({strategyID}, {userID})"
+        query = f"INSERT INTO tblUserStrategy VALUES ({strategyID}, {userID})"
     elif tradeID is None and backtestID is not None:
-        query = f"INSERT INTO TABLE tblStrategyBacktest VALUES ({backtestID}, {strategyID}, {userID})"
+        query = f"INSERT INTO tblStrategyBacktest VALUES ({backtestID}, {strategyID}, {userID})"
     elif backtestID is None and tradeID is not None:
-        query = f"INSERT INTO TABLE tblUserTrades VALUES ({userID}, {tradeID})"
+        query = f"INSERT INTO tblUserTrades VALUES ({userID}, {tradeID})"
     elif userID is None and strategyID is None:
-        query = f"INSERT INTO TABLE tblBacktestTrades VALUES ({backtestID}, {tradeID})"
+        query = f"INSERT INTO tblBacktestTrades VALUES ({backtestID}, {tradeID})"
 
     __execute_query(query)
 
-def delete_row(table:str, id: int) -> None: # Delete a row
+def delete_row(table:str, idName: str, id: int) -> None: # Delete a row
     try:
-        query = f"DELETE FROM {table} WHERE id={id}"
+        query = f"DELETE FROM {table} WHERE {idName}={id}"
         __execute_query(query)
     except:
         print("(delete_row): {id} not found!")
@@ -94,22 +94,22 @@ def get_backtest_trades(backtestID: int) -> list: # Return all trades associated
 def get_user_trades(userID: int) -> list: # Return all trades associated with a user.
     return __get_linked_entities(
         'tblUsers', 'tblTrades',
-        'tblUserTrades', ['id', 'tradeID'],
+        'tblUserTrades', ['userID', 'tradeID'],
         userID
     )
 
 def get_user_strategies(userID: int) -> list: # Return all trades associated with a backtest.
     return __get_linked_entities(
         'tblUsers', 'tblStrategies',
-        'tblUserStrategy', ['id', 'strategyID'],
+        'tblUserStrategy', ['userID', 'strategyID'],
         userID
     )
 
 def get_strategy_backtests(strategyID: int) -> list: # Return all backtests associated with a strategy and the user who performed them.
     cursor = __get_conn_and_cursor()[1]
     query = f"""SELECT tblBacktests.*, tblStrategyBacktest.userID
-    FROM    tblBacktests 
-    INNER JOIN tblBacktests.backtestID ON tblStrategyBacktest.backtestID
+    FROM tblBacktests 
+    INNER JOIN tblBacktests ON tblBacktests.backtestID = tblStrategyBacktest.backtestID
     WHERE tblStrategyBacktest.strategyID = {strategyID}
     """
     result = cursor.execute(query).fetchall()
@@ -122,10 +122,10 @@ def get_strategy_backtests(strategyID: int) -> list: # Return all backtests asso
 
 def __get_linked_entities(table1: str, table2: str, linkTable: str, idNames: list, id: int) -> list: # Return all linked entities linked to another one.
     cursor = __get_conn_and_cursor()[1]
-    query = f"""SELECT * FROM {table1} 
-    INNER JOIN {linkTable}.{idNames[0]} ON {table1}.{idNames[0]}
-    INNER JOIN {linkTable}.{idNames[1]} ON {table2}.{idNames[1]}
-    WHERE {table1}.{idNames[0]} = {id}    """
+    query = f"""SELECT {table2}.*, {table1}.{idNames[0]} FROM {table2} 
+    INNER JOIN {table1} ON {linkTable}.{idNames[0]} = {table1}.{idNames[0]}
+    LEFT OUTER JOIN {linkTable} ON {linkTable}.{idNames[1]} = {table2}.{idNames[1]}
+    WHERE {table1}.{idNames[0]} = {id}"""
 
     result = cursor.execute(query).fetchall()
     cursor.close()
@@ -135,10 +135,10 @@ def __get_linked_entities(table1: str, table2: str, linkTable: str, idNames: lis
     else:
         return None
 
-def update_row_by_column(table: str, id:int, column: str, value) -> None: # Update a row 
+def update_row_by_column(table: str, idName: str, id:int, column: str, value) -> None: # Update a row 
     if type(value) == str: 
         value = f"'{value}'" # Add quotes to value if string so we can put in database
-    query = f"UPDATE {table} SET {column}={value} WHERE id={id}"
+    query = f"UPDATE {table} SET {column}={value} WHERE {idName}={id}"
     __execute_query(query)
 
 def user_exists(username: str) -> bool: # Return true if user data is found in database
