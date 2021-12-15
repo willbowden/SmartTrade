@@ -42,7 +42,7 @@ class User: # Class to represent a user in the system, containing their account 
             inJSON = json.load(infile)
 
         for key in inJSON.keys():
-            exec(f"self.{key} = {inJSON[key]}")
+            exec(f"self.{key} = {inJSON[key]}") # Programatically load data from JSON into instance variables.
 
     def update_holdings(self) -> None: # Get new data about a user's balances and their value
         # As yet unimplemented.
