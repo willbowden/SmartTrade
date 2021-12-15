@@ -1,3 +1,4 @@
+import dotenv
 import hashlib
 import os
 
@@ -22,10 +23,14 @@ def check_password(password, storedHash):
     else:
         return False
 
-def test():
+def __test():
     salt = os.urandom(32) # Get random salt
     oldHash = hash_password("password", salt)
     result = check_password("wrongPassword", oldHash)
     print(f"Passwords the same: {result}")
+
+def test():
+    secretKey = dotenv.dotenv_values("./server/.env")["2094_SECRET_KEY"] 
+    print(secretKey)
 
 test()
