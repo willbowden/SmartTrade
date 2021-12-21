@@ -11,7 +11,7 @@ import dotenv
 
 class User: # Class to represent a user in the system, containing their account balances and active strategies
     def __init__(self, infoDict):
-        self.id = infoDict['id']
+        self.id = infoDict['userID']
         self.username = infoDict['username']
         self.exchange = Exchange(infoDict['exchangeID'], infoDict['apiKey'], dotenv.dotenv_values("./server/.env")[f"{self.id}_SECRET_KEY"])
         self.loggedIn = False
