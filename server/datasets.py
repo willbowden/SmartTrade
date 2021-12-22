@@ -70,8 +70,7 @@ def load_dataset(symbol: str, timeframe: str, startDate: int, config: dict) -> p
     dataset = datasetWithoutIndicators.iloc[indexOfStartDate:] # Select only parts of the dataset from the start date onwards
     dataset = populate_dataset(dataset, config['requiredIndicators']) # Populate the dataset with the required indicators that were provided in the config.
     dataset = dataset.dropna(0) # Remove all rows from the dataset that contain a "Not A Number" value.
-    dataset.reset_index(inplace=True) # Reset and delete the index.
-    del dataset['index']
+    dataset.reset_index(inplace=True, drop=True) # Reset and delete the index.
 
     return dataset
 

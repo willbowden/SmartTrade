@@ -10,10 +10,14 @@ def get_current_price(exchange, symbol: str) -> float: # Just return most recent
 def fetch_ticker(exchange, symbol: str): # Fetches current data for a symbol, only ~50 datapoints
     return exchange.fetch_ticker(symbol)
 
-def fetch_historical(exchange, symbol: str, timeframe: str, since: int=None) -> pd.DataFrame: #Fetches OHLCV data from a chosen start date, can only fetch ~500 datapoints at once
-    raw_trades = exchange.fetch_ohlcv(symbol, timeframe, since)
+def fetch_historical(exchange, symbol: str, timeframe: str, since: int=None, limit:int=500) -> pd.DataFrame: #Fetches OHLCV data from a chosen start date, can only fetch ~500 datapoints at once
+    raw_trades = exchange.fetch_ohlcv(symbol, timeframe, since, limit)
     dataframe = pd.DataFrame(raw_trades, columns=['date', 'open', 'high', 'low', 'close', 'volume'])
     return dataframe
+
+def fetch_price_at_time(exchange, symbol: str, date: int): # Fetches the price of a given asset at any single point in time.
+    data = fetch_historical(exchange, symbol, '1m', date, limit=1)
+    return data['close']
 
 def download_historical(symbol: str, timeframe: str, since: int=None) -> pd.DataFrame: # Uses pagination to download backtesting/training data
     ex = exchange.Exchange('binance', 'LsyXkKspvvpsPe7xHJFQB2hXr03iUdFMwCRi1BRgQgHGHILKkv8ETf07ESbCCwkK', '') # Use my apiKey to access public info

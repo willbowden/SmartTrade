@@ -53,15 +53,15 @@ class Exchange: # Class to represent an exchange object. This is necessary as ea
             raise Exception("Exchange does not support fetching user trades.")
 
 
-    def fetch_deposits(self, symbol=None, since=None, limit=None) -> list: # Fetch all of a user's deposits since a given start date.
+    def fetch_deposits(self, since=None, limit=None) -> list: # Fetch all of a user's deposits since a given start date.
         if self.exchange.has['fetchDeposits']:
-            return self.exchange.fetch_deposits(symbol=symbol, since=since, limit=limit)
+            return self.exchange.fetch_deposits(since=since, limit=limit)
         else:
             raise Exception("Exchange does not support fetching deposits.")
 
-    def fetch_withdrawals(self, symbol=None, since=None, limit=None) -> list: # Fetch all of a user's withdrawals since a given start date.
+    def fetch_withdrawals(self, since=None, limit=None) -> list: # Fetch all of a user's withdrawals since a given start date.
         if self.exchange.has['fetchWithdrawals']:
-            return self.exchange.fetch_withdrawals(symbol=symbol, since=since, limit=limit)
+            return self.exchange.fetch_withdrawals(since=since, limit=limit)
         else:
             raise Exception("Exchange does not support fetching withdrawals.")
 

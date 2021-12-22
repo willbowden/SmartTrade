@@ -1,1 +1,0 @@
-{"name": "rsi_strategy", "symbol": "ETH/BUSD", "date": "2021-09-02-17-46", "startingBalance": 500, "balance": 1243.06, "profit": 743.06, "profitPercent": 148.61, "totalTrades": 575, "numBuyOrders": 555, "numSellOrders": 20, "orders": "dict_values([{0: Timestamp('2021-09-01 16:00:00')}, {0: 'sell'}, {0: 0.33243947333085705}, {0: 1243.0600223770275}, {0: 3742.95}])"}
