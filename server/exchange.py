@@ -46,7 +46,9 @@ class Exchange: # Class to represent an exchange object. This is necessary as ea
 
         return whole
 
+    # Use pagination to gather data by working backwards.
     def __reverse_pagination(self, func, start, timeArgName, endArgName, params={}, kwargs={}) -> list:
+        # Since we don't know how much data is available, we'll have to stop searching when getting repeated data
         whole = []
         sameSinceCount = 0
         while sameSinceCount < 3: 
@@ -55,7 +57,7 @@ class Exchange: # Class to represent an exchange object. This is necessary as ea
 
             if new == []:
                 return whole
-            earliestDate = int(new[0][timeArgName])
+            earliestDate = int(new[0][timeArgName]) # Get the first (earliest) date.
             if earliestDate == start: # If we see a repeated date, don't append repeated data.
                 sameSinceCount += 1
             else:
@@ -64,10 +66,12 @@ class Exchange: # Class to represent an exchange object. This is necessary as ea
 
         return whole
 
+    # Allows me to make API calls that aren't included in every exchange and
+    #   treat them the same as every other call.
     def __custom_api_caller(self, func):
-        def temp(params):
+        def temp(params): # Return a temporary function
             try:
-                result = func(params)['data']
+                result = func(params)['data'] # Only extract and return the data part of a response
             except Exception as e:
                 print(e)
                 result = []
@@ -121,7 +125,26 @@ class Exchange: # Class to represent an exchange object. This is necessary as ea
 
     # Fetches the price of a given asset at any single point in time.
     def fetch_price_at_time(self, symbol: str, date: int) -> float: 
-        data = self.exchange.fetch_ohlcv(symbol, '1m', date, limit=1)
+        if "/" not in symbol:
+            return self.__get_dollar_value_at_time(symbol, date)
+        else:
+            data = self.exchange.fetch_ohlcv(symbol, '1m', date, limit=1)
+
+        return data[0][4] # Fetch the close price from the returned list
+
+    def __get_dollar_value_at_time(self, coin: str, date: int) -> float:
+        # Gets the dollar value of an asset, useful for tracking profits
+        found = False
+        quotes = ['BUSD', 'USDC', 'USDT', 'USD'] # Iterate over all possible dollar-based currencies
+        counter = 0
+        while not found:
+            try: # Keep trying until we find an answer
+                symbol = f"{coin}/{quotes[counter]}"
+                data = self.exchange.fetch_ohlcv(symbol, '1m', date, limit=1)
+                found = True
+            except:
+                counter += 1
+
         return data[0][4] # Fetch the close price from the returned list
 
     # Just return most recent close price from ticker
@@ -135,15 +158,18 @@ class Exchange: # Class to represent an exchange object. This is necessary as ea
         fiatSells = self.__use_pagination(self.__custom_api_caller(self.exchange.sapi_get_fiat_payments),
             since, 'updateTime', {'params': {'transactionType': "1", 'beginTime': since}, 'rows': limit})
         
-        fiatTrades = fiatBuys + fiatSells # Combine them
-        fiatTrades = pd.DataFrame(fiatTrades)
+        fiatBuys = pd.DataFrame(fiatBuys)
+        fiatSells =  pd.DataFrame(fiatSells)
+        fiatBuys['type'] = 'fiatBuy' # Set their types
+        fiatSells['type'] = 'fiatSell'
+        fiatTrades = fiatBuys.append(fiatSells) # Combine them
         
         fiatTrades = fiatTrades[fiatTrades['status'] == 'Completed'] # Only consider successful orders
         # Combine fiat and crypto currency symbols to make a pair e.g "BTC/GBP"
         symbolPairs = [f"{row['cryptoCurrency']}/{row['fiatCurrency']}" for index, row in fiatTrades.iterrows()]
         fiatTrades['symbol'] = symbolPairs # Add the pairs as a column
         # Only take the columns we're interested in. Drop the rest
-        fiatTrades = fiatTrades.drop(columns=[col for col in fiatTrades if col not in ['symbol', 'updateTime', 'sourceAmount', 'obtainAmount', 'price', 'totalFee']])
+        fiatTrades = fiatTrades.drop(columns=[col for col in fiatTrades if col not in ['symbol', 'updateTime', 'sourceAmount', 'obtainAmount', 'price', 'totalFee', 'type']])
         # Rename the columns to conform with the rest of the data.
         fiatTrades = fiatTrades.rename(columns={'updateTime': 'timestamp', 'sourceAmount': 'cost', 'obtainAmount': 'amount', 'totalFee': 'fee'})
         fiatTrades = fiatTrades.sort_values(by=['timestamp']) # Sort into chronological order.
