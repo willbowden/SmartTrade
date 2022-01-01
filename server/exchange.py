@@ -124,21 +124,23 @@ class Exchange: # Class to represent an exchange object. This is necessary as ea
             raise Exception("Exchange does not support fetching OHLCV.")
 
     # Fetches the price of a given asset at any single point in time.
-    def fetch_price_at_time(self, symbol: str, date: int) -> float: 
+    def fetch_price_at_time(self, symbol: str, date: int, amount: float=None) -> float: 
         if "/" not in symbol:
-            return self.__get_dollar_value_at_time(symbol, date)
+            return self.__get_dollar_value_at_time(symbol, date, amount)
         else:
             data = self.exchange.fetch_ohlcv(symbol, '1m', date, limit=1)
 
         return data[0][4] # Fetch the close price from the returned list
 
-    def __get_dollar_value_at_time(self, coin: str, date: int) -> float:
+    def __get_dollar_value_at_time(self, coin: str, date: int, amount: float) -> float:
         # Gets the dollar value of an asset, useful for tracking profits
         found = False
         quotes = ['BUSD', 'USDC', 'USDT', 'USD'] # Iterate over all possible dollar-based currencies
         counter = 0
         while not found:
             try: # Keep trying until we find an answer
+                if counter > 3:
+                    return amount
                 symbol = f"{coin}/{quotes[counter]}"
                 data = self.exchange.fetch_ohlcv(symbol, '1m', date, limit=1)
                 found = True
