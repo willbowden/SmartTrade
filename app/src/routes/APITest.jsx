@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import protectedFetch from "../auth/protectedFetch.js";
 import LoadingOverlay from "../components/loadingOverlay.jsx";
 import '../App.css';

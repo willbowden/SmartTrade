@@ -44,12 +44,12 @@ function Login() {
     const handlePasswordChange = (e) => {
       setPassword(e.target.value)
     }
+
   
     return (
-      <div>
         <div className="centered-div">
           <div id="login-div">
-            {loading ? <LoadingOverlay /> : null }
+          {loading ? <LoadingOverlay /> : null }
             <h2>Login</h2>
             <form action="#" className="login-form">
             <div>
@@ -75,7 +75,6 @@ function Login() {
               </div>
           </div>
           </div>
-        </div>
     )
   }
 

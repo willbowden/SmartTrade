@@ -1,36 +1,11 @@
-import dotenv
-import hashlib
-import os
+from SmartTrade.server.user import User
+from SmartTrade.server import account_data, dbmanager
+import json
 
-def hash_password(password, salt):
-    key = hashlib.pbkdf2_hmac( # Hash the password we received from the client.
-            'sha256', # The hashing algorithm
-            password.encode('utf-8'), # Convert the password to bytes
-            salt,
-            100000 # Number of iterations of SHA-256
-    )
- 
-    combo = key + salt # Combine new hash and old salt for comparison
- 
-    return combo
-
-def check_password(password, storedHash):
-    salt = storedHash[-32:] # Retrieve the saved salt from the second half of the hashed key.
-    combo = hash_password(password, salt) # Create a hash from the newly provided password
-
-    if combo == storedHash:
-        return True
-    else:
-        return False
-
-def __test():
-    salt = os.urandom(32) # Get random salt
-    oldHash = hash_password("password", salt)
-    result = check_password("wrongPassword", oldHash)
-    print(f"Passwords the same: {result}")
-
+u = User(dbmanager.get_row_by_column('tblUsers', 'userID', 2094))
 def test():
-    secretKey = dotenv.dotenv_values("./server/.env")["2094_SECRET_KEY"] 
-    print(secretKey)
+    result = account_data.get_account_holdings(u)
+    with open('test.json', 'w') as outfile:
+        json.dump(result, outfile)
 
 test()

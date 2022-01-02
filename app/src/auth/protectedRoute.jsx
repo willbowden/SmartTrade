@@ -1,17 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
+import protectedFetch from './protectedFetch';
+import LoadingOverlay from '../components/loadingOverlay';
 
-const PrivateRoute = () => {
-  const keyJSON = JSON.parse(localStorage.getItem('REACT_TOKEN_AUTH_KEY'));
-  console.log(keyJSON)
-  let token = null;
-  if (keyJSON) {
-    token = keyJSON.access_token;
-  }
+const PrivateRoute = React.memo(() => {
+  const[loggedIn, setLoggedIn] = useState(false)
+  const[loading, setLoading] = useState(true);
 
-  const logged = token ? true : false;
+  protectedFetch("/verify_token").then(data => {
+    if (data.response == 'ok') {
+      setLoggedIn(true);
+      setLoading(false);
+    } else {
+      setLoggedIn(false);
+      setLoading(false);
+    };
+  })
   
-  return logged ? (<Outlet />) : (<Navigate to="/login" />)
-}
+  return loading ? <LoadingOverlay /> : (loggedIn ? <Outlet /> : <Navigate to="/login" />)
+});
 
 export default PrivateRoute;

@@ -11,10 +11,11 @@ def __get_conn_and_cursor() -> tuple: # See comments section in document.
     cursor = connection.cursor()
     return connection, cursor
 
-def create_account(username: str, password: str, nickname: str, apiKey: str, exchangeID: str, currency: str) -> None: # Creates new account
+def create_account(username: str, password: str, nickname: str, apiKey: str, exchangeID: str, currency: str) -> int: # Creates new account
     id = __get_unique_id('tblUsers', 'userID')
-    query = f"INSERT INTO tblUsers VALUES ({id}, '{username}', '{password}', '{nickname}', '{apiKey}', '{exchangeID}', '{currency}')"
-    __execute_query(query)
+    query = f"INSERT INTO tblUsers VALUES ({id}, '{username}', ?, '{nickname}', ?, '{exchangeID}', '{currency}')"
+    __execute_query(query, (password, apiKey,))
+    return id
 
 def create_trade(creatorID: int, creator: str, date: int, symbol: str, tradeType: str, quantity: float, value: float, price: float, profit: float) -> None: # Creates new trade entry
     id = __get_unique_id('tblTrades', 'tradeID')
@@ -46,9 +47,12 @@ def __get_unique_id(table: str, idName: str) -> int: # Get an ID that is unused
 
     return id
 
-def __execute_query(query: str) -> None:
+def __execute_query(query: str, args=None) -> None:
     conn, cursor = __get_conn_and_cursor()
-    cursor.execute(query)
+    if args is None:
+        cursor.execute(query)
+    else:
+        cursor.execute(query, args)
     conn.commit()
     cursor.close()
 
@@ -68,7 +72,8 @@ def delete_row(table:str, idName: str, id: int) -> None: # Delete a row
     try:
         query = f"DELETE FROM {table} WHERE {idName}={id}"
         __execute_query(query)
-    except:
+    except Exception as e:
+        print(e)
         print("(delete_row): {id} not found!")
 
 def get_row_by_column(table: str, column: str, value) -> dict: # Returns a row from a table by looking up a given field

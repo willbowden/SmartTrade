@@ -21,7 +21,7 @@ ReactDOM.render(
             <Route exact path='/api_test' element={<APITest />}/>
         </Route>
         <Route path="/backtest" element={<Backtest />} />
-        <Route path="/login" element={<Login />} />
+        <Route exact path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Route>
     </Routes>

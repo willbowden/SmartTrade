@@ -19,8 +19,16 @@ class Exchange: # Class to represent an exchange object. This is necessary as ea
             'timeout': 30000,
             'enableRateLimit': True,
         })
-        self.markets = self.exchange.load_markets()
         self.fiatConverter = CurrencyRates()
+
+    def __getattr__(self, name): 
+        # It takes a long time to load markets, but they're not used often.
+        # To save time, I'll only load markets when they're needed.
+        if name == 'markets':
+            self.markets = self.exchange.load_markets()
+            return self.markets
+        else:
+            raise NotImplementedError
 
     # General purpose function to download data using pagination
     def __use_pagination(self, func, since, timeArgName, kwargs={}) -> list:

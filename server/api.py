@@ -40,7 +40,6 @@ def hash_password(password, salt): # Create a password hash, combining the hashe
 
     return combo
 
-
 def main():
     SECRET_KEY = os.urandom(32) # Get a random key to sign our JWT tokens with.
 
@@ -58,6 +57,11 @@ def main():
         print(current_identity)
         return jsonify({'time': time.time()})
 
+    @app.route('/verify_token', methods=['GET'])
+    @jwt_required()
+    def verify_token():
+        return jsonify({'response': 'ok'}), 200
+
     @app.route('/api/get_user_holdings', methods=["GET"])
     @jwt_required()
     def get_user_holdings():
@@ -70,9 +74,13 @@ def main():
         if not dbmanager.user_exists(payload['username']):
             salt = os.urandom(32) # Generate random salt
             combo = hash_password(payload['password'], salt) # Create hashed password
-            dbmanager.create_account(payload['username'], combo, payload['nickname']) # Store hash in database
+            # Store hash and other details in database
+            userID = dbmanager.create_account(payload['username'], combo, payload['nickname'], payload['apiKey'], payload['exchangeID'], payload['currency'])
+            
+            with open('./server/.env', 'a') as outfile: # Write the user's secret key to the .env file
+                outfile.write(f"\n{userID}_SECRET_KEY={payload['secretKey']}\n")
         
-            requestObj = {'username': payload['username'], 'password': combo} # Create an object for sending authentication data to our /auth endpoint
+            requestObj = {'username': payload['username'], 'password': payload['password']} # Create an object for sending authentication data to our /auth endpoint
             token = requests.post('http://localhost:5000/auth', json=requestObj) # Automatically log the user in with their new details
             return jsonify({'access_token': token})
 

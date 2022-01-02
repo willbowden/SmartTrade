@@ -13,6 +13,8 @@ input[type=text], input[type=password] {
     color: white;
     padding: 14px 20px;
     margin: 8px 0;
+    margin-bottom: 0;
+    border-bottom: 0;
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -26,8 +28,20 @@ input[type=text], input[type=password] {
 #login-div {
     background-color: rgb(28, 25, 37);
     width: 16%;
-    padding: 10px 20px;
+    padding: 0px 20px;
     border-radius: 8px;
-    margin-top: 20vh;
-    position: relative;
+    position: absolute;
+    top: 30px;
+}
+
+.selectField {
+  padding: 8px 0px;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+}
+
+select {
+  color: #000000;
+  border-radius: 6px;
 }

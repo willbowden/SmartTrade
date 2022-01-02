@@ -2,22 +2,24 @@
 #    Module to manage data about a user's account.   #
 ######################################################
 
-from SmartTrade.server import dbmanager
 from datetime import datetime
-from SmartTrade.server import constants
+from SmartTrade.server import constants, dbmanager
 import time
 
-def get_account_value(user) -> dict: # Calculate and return user's total account value in USD
+def get_account_value(user, balances=None) -> dict: # Calculate and return user's total account value in USD
     totalValue = 0.0
-    balances = get_account_balances(user)
+    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    if balances is None:
+        balances = get_account_balances(user)
+
     for key in balances.keys(): # Iterate through non-zero balances
         if key != 'USDT':
             value = get_asset_value(user, key, balances[key])
         else:
             value = balances[key]
         totalValue += value
-    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     result = {'date': date, 'value': totalValue}
+
     return result
 
 def get_account_holdings(user) -> dict: # Return a dictionary of the user's cryptocurrency balances and their individual value
@@ -26,6 +28,9 @@ def get_account_holdings(user) -> dict: # Return a dictionary of the user's cryp
     for key in balances.keys():
         value = get_asset_value(user, key, balances[key])
         result[key] = {'asset': key, 'balance': balances[key], 'value': value}
+
+    totalValue = get_account_value(user, balances)
+    result['totalValue'] = totalValue
 
     return result
 
@@ -63,3 +68,5 @@ def get_traded_pairs(user):
             toCheck.append(toBack)
 
     return tradedPairs
+
+
