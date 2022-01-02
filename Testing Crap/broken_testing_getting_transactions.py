@@ -37,14 +37,13 @@ def __get_fiat_deposits_and_withdrawals(user): # Get all fiat deposits and withd
     deposits = pd.DataFrame(user.exchange.fetch_fiat_deposits()) # Collect data from exchange
     deposits['type'] = 'deposit' # Set the type to 'deposit
     df = df.append(deposits) # Append to dataframe
-    withdrawals = pd.DataFrame(user.exchange.fetch_fiat_withdrawals())
+    withdrawals = pd.DataFrame(user.exchange.fetch_fiat_withdrawals()) # Get withdrawals
     withdrawals['type'] = 'withdrawal' # Set the type to 'withdrawal'
     df = df.append(withdrawals) # Append to dataframe
-    print(df)
     df = df.rename(columns={'updateTime': 'timestamp', 'fiatCurrency': 'coin'}) # Rename some columns to conform with other data
     df = df[df['status'] == 'Successful'] # Only consider successful transactions
     df = df.drop(columns=[col for col in df if col not in ['timestamp', 'amount', 'type', 'coin']]) # Filter out only the needed info
-    df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+    df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms') # Change timestamp column to datetime type
     df.reset_index(inplace=True, drop=True) # Reset the index
 
     return df
@@ -56,6 +55,7 @@ def __get_crypto_deposits_and_withdrawals(user): # Get all crypto deposits and w
     df = df.drop(columns=[col for col in df if col not in ['info', 'timestamp', 'amount', 'type']]) # Filter out only the needed info
     df['coin'] = [row['info']['coin'] for index, row in df.iterrows()] # Extract the 'coin' info from the 'info' dict.
     df = df.drop(columns=['info']) # Get rid of the info dict, as we don't need anything more from it.
+    df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms') # Change timestamp column to datetime type
     df.reset_index(inplace=True, drop=True) # Reset the index
 
     return df
@@ -77,28 +77,31 @@ def __assemble_transactions(user, tradedPairs, trades=None):
             pairTrades = user.exchange.fetch_crypto_trades(pair)
             trades = trades.append(pd.DataFrame(pairTrades)) # Append to dataframe
 
-    trades = trades.drop(columns=[col for col in trades if col not in ['timestamp', 'symbol', 'side', 'price', 'amount', 'cost', 'fee']]) # Extract needed info
-    trades = trades.rename(columns={"side": "type"}) # Rename column to conform with deposits & withdrawals
+        trades = trades.drop(columns=[col for col in trades if col not in ['timestamp', 'symbol', 'side', 'price', 'amount', 'cost', 'fee', 'type']]) # Extract needed info
+        trades = trades.rename(columns={"side": "type"}) # Rename column to conform with deposits & withdrawals
+        trades['coin'] = ''
 
-    trades = trades.append(user.exchange.fetch_fiat_trades()) # Get their fiat trades.
-    
+        trades = trades.append(user.exchange.fetch_fiat_trades()) # Get their fiat trades.
+
+    if 'timestamp' not in str(type(trades['timestamp'].iat[0])):
+        trades['timestamp'] = pd.to_datetime(trades['timestamp'], unit='ms') # Make sure all timestamps are in the right format, for sorting.
+
     txns = trades.append(__get_all_deposits_and_withdrawals(user)) # Combine with deposits and withdrawals.
-
-    txns['timestamp'] = pd.to_datetime(txns['timestamp'], unit='ms', errors='coerce') # Make sure all timestamps are in the right format, for sorting.
-    print(txns)
-    txns = txns.sort_values(by=['timestamp']) # Order data chronologically
-    txns = txns.astype({'symbol': 'str', 'type': 'str', 'price': 'float64', 'amount': 'float64', 'cost': 'float64'}) # Convert columns to correct datatypes
+    txns = txns.astype({'timestamp': 'datetime64[ms]', 'symbol': 'str', 'price': 'float64', 'amount': 'float64', 'cost': 'float64', 'fee': 'object', 'type': 'str', 'coin': 'str'}) # Convert columns to correct datatypes
+ 
+    txns = txns.sort_values(by='timestamp') # Order data chronologically
     txns.reset_index(inplace=True, drop=True) # Reset index
 
     return txns
 
 def track_transactions(user, tradedPairs, trades=None): # Track a user's trading history and use it to populate the database.
     txns = __assemble_transactions(user, tradedPairs, trades)
-    print(txns)
 
     tradeHistory = pd.DataFrame(columns=['timestamp', 'type', 'symbol', 'cost', 'amount', 'profit'])
     def __add_trade(tradeHistory, txn: pd.DataFrame, coin: str, cost: float, profit: float):
-        tradeHistory = tradeHistory.append({'timestamp': txn['timestamp'], 'type': txn['type'], 'symbol': coin, 'cost': cost, 'amount': txn['amount'], 'profit': profit}, ignore_index=True)
+        print("Adding Trade.")
+        timestamp = int(txn['timestamp'].value / 1e6)
+        tradeHistory = tradeHistory.append({'timestamp': timestamp, 'type': txn['type'], 'symbol': coin, 'cost': cost, 'amount': txn['amount'], 'profit': profit}, ignore_index=True)
         return tradeHistory
 
     balances = {}
@@ -108,76 +111,89 @@ def track_transactions(user, tradedPairs, trades=None): # Track a user's trading
         coins = pair.split("/") # Separate trading pairs into base and quote currency
         for coin in coins:
             if coin not in balances: # Add records for the balance of each coin.
-                balances[coin] = pd.DataFrame(columns=['timestamp', 'price', 'amount'])
+                balances[coin] = []
 
     for index, txn in txns.iterrows():
-        print(txn['type'])
+        timestamp = int(txn['timestamp'].value / 1e6)
         if txn['type'] in ['buy', 'sell', 'fiatBuy', 'fiatSell']: # If we're working with a trading pair..
             base, quote = txn['symbol'].split("/") # .. separate into base and quote currencies.
-            quoteValue = u.exchange.fetch_price_at_time(quote, txn['timestamp'])
+            quoteValue = user.exchange.fetch_price_at_time(quote, timestamp)
+            baseValue = user.exchange.fetch_price_at_time(base, timestamp)
+
 
         if txn['type'] == 'deposit':
-            price = u.exchange.fetch_price_at_time(txn['coin'], txn['timestamp'], txn['amount'])
-            tradeHistory = __add_trade(tradeHistory, txn, txn['coin'], price, 0)
-            balances = __increase_balances(balances, txn, txn['coin'], price)
+            cost = user.exchange.fetch_price_at_time(txn['coin'], timestamp, txn['amount'])
+            balances = __increase_balances(balances, txn, txn['coin'], cost, cost)
+            tradeHistory = __add_trade(tradeHistory, txn, txn['coin'], cost, 0)
 
         if txn['type'] == 'withdrawal':
+            balances, profit = __decrease_balances(user, balances, txn['coin'], txn['amount'], 0)
             tradeHistory = __add_trade(tradeHistory, txn, txn['coin'], 0, 0)
-            balances = __decrease_balances(balances, txn['coin'], txn['amount'])
 
         if txn['type'] == 'fiatBuy':
+            balances = __increase_balances(balances, txn, base, quoteValue, txn['cost'])
             tradeHistory = __add_trade(tradeHistory, txn, txn['symbol'], (txn['price'] * txn['amount']), 0)
-            balances = __increase_balances(balances, txn, base, txn['price'])
         
         if txn['type'] == 'buy':
-            print("cock")
+            balances = __increase_balances(balances, txn, base, baseValue, (quoteValue * txn['cost']))
+            balances, profit = __decrease_balances(user, balances, quote, txn['cost'], quoteValue)
             tradeHistory = __add_trade(tradeHistory, txn, txn['symbol'], txn['cost'], 0)
-            balances = __increase_balances(balances, txn, base, (quoteValue * txn['cost']))
-            balances = __decrease_balances(balances, quote, txn['cost'])
 
         if txn['type'] == 'sell':
-            tradeHistory = __add_trade(tradeHistory, txn, txn['symbol'], txn['cost'], 1)
-            balances = __increase_balances(balances, txn, quote, (quoteValue * txn['cost']))
-            balances = __decrease_balances(balances, base, txn['cost'])
+            balances = __increase_balances(balances, txn, quote, baseValue, (quoteValue * txn['cost']))
+            balances, profit = __decrease_balances(user, balances, base, txn['cost'], baseValue)
+            tradeHistory = __add_trade(tradeHistory, txn, txn['symbol'], txn['cost'], profit)
+
+        print(txn['type'])
+        print(tradeHistory)
+        print(balances)
+        input()
 
     print(tradeHistory)
+
+    return tradeHistory
             
 
-def __increase_balances(balances: dict, txn: pd.DataFrame, coin: str, price: float) -> dict:
-    balances[coin] = balances[coin].append({'timestamp': txn['timestamp'], 'price': price, 'amount': txn['amount']}, ignore_index=True)
+def __increase_balances(balances: dict, txn: pd.DataFrame, coin: str, price: float, cost: float) -> dict:
+    timestamp = int(txn['timestamp'].value / 1e6)
+    balances[coin].append({'timestamp': timestamp, 'price': price, 'cost': cost, 'amount': txn['amount']})
     return balances
         
-def __decrease_balances(balances: dict, coin: str, amount: float) -> pd.DataFrame:
+def __decrease_balances(user, balances: dict, coin: str, amount: float, value:float) -> pd.DataFrame:
+    profit = 0
     while amount > 0:
         try:
-            if balances[coin]['amount'].iat[0] < amount:
-                amount -= balances[coin]['amount'].iat[0]
-                balances[coin].drop(index=balances[coin].index[0], axis=0, inplace=True)
+            if balances[coin][0]['amount'] < amount:
+                spent = balances[coin][0]['amount']
+                cost = balances[coin][0]['cost']
+                amount -= balances[coin][0]['amount']
+                balances[coin].pop(0)
             else:
-                temp = amount
-                amount -= balances[coin]['amount'].iat[0]
-                balances[coin]['amount'].iat[0] -= temp
+                spent = amount
+                cost = balances[coin][0]['cost'] * spent
+                amount = 0
+                balances[coin][0]['amount'] -= spent
 
-            return balances
+                if value != 0:
+                    profit += ((spent * value) - (cost))
 
         except Exception as e:
-            print(balances[coin])
-            input()
             print(e)
             print(f"Failed To Decrease Balance For: {coin}. Continuing")
-            return balances
+            return balances, profit
+
+    return balances, profit
 
 
 
 
-# track_transactions(u, tradedPairs, trades)
-
-# trades = pd.read_json('trades.json')
+trades = pd.read_json('trades.json')
 with open('tradedPairs.json', 'r') as infile:
     tradedPairs = json.load(infile)
 
-with open('trades.json', 'w') as outfile:
-    trades = __assemble_transactions(u, tradedPairs)
-    trades.to_json(outfile)
+with open('trades.json', 'r') as infile:
+    trades = pd.read_json(infile)
 
-#track_transactions(u, tradedPairs, trades)
+out = track_transactions(u, tradedPairs, trades)
+with open('tradeHistory.json', 'w') as outfile:
+    out.to_json(outfile)
