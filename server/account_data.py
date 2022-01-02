@@ -5,7 +5,6 @@
 from SmartTrade.server import dbmanager
 from datetime import datetime
 from SmartTrade.server import constants
-from SmartTrade.server import exchange_data
 import time
 
 def get_account_value(user) -> dict: # Calculate and return user's total account value in USD
@@ -21,13 +20,12 @@ def get_account_value(user) -> dict: # Calculate and return user's total account
     result = {'date': date, 'value': totalValue}
     return result
 
-def get_account_holdings(user) ->  list: # Return a list of the user's cryptocurrency balances and their individual value
-    balances = get_account_balances(user.exchange)
-    result = []
+def get_account_holdings(user) -> dict: # Return a dictionary of the user's cryptocurrency balances and their individual value
+    balances = get_account_balances(user)
+    result = {}
     for key in balances.keys():
-        value = get_asset_value(user.exchange, key, balances[key])
-        holding = {'asset': key, 'balance': balances[key], 'value': value}
-        result.append(holding)
+        value = get_asset_value(user, key, balances[key])
+        result[key] = {'asset': key, 'balance': balances[key], 'value': value}
 
     return result
 
@@ -37,12 +35,12 @@ def get_asset_value(user, asset:str, quantity:float) -> float: # Calculates the 
     elif asset in constants.BLACKLISTED_COINS:
         value = 0
     else:
-        price = exchange_data.get_current_price(user.exchange, f"{asset}/USDT")
+        price = user.exchange.fetch_current_price(f"{asset}/USDT")
         value = quantity * price
     return round(value, 2)
 
 def get_account_balances(user) -> dict: # Get dict of total balances for every coin
-    balanceJSON = user.exchange.fetch_balance()
+    balanceJSON = user.exchange.fetch_balances()
     balances = {x:y for x,y in balanceJSON['total'].items() if y!=0}  # See coursework document
     return balances
 

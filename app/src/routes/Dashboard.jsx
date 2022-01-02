@@ -1,5 +1,4 @@
 import React from "react";
-import Clock from '../components/clock'
 import '../App.css';
  
 function Dashboard() {

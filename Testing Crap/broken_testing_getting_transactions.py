@@ -1,7 +1,7 @@
 import json
 from SmartTrade.server.user import User
 import time
-from SmartTrade.server import dbmanager, exchange_data
+from SmartTrade.server import dbmanager
 import pandas as pd
 
 ### 

@@ -10,12 +10,13 @@ from flask_jwt import JWT, jwt_required, current_identity
 import dbmanager
 import time
 from SmartTrade.server.user import User
+from SmartTrade.server import account_data
 
 def authenticate_user(username, password): # Verify a user's credentials 
     print(f"Attempting Login For: {username}")
     user = None # Return nothing if we can't log the user in.
     if dbmanager.user_exists(username):
-        userInfo = dbmanager.get_account_by_column('username', username) # Get the prospective user's info.
+        userInfo = dbmanager.get_row_by_column('tblUsers', 'username', username) # Get the prospective user's info.
         salt = userInfo['password'][-32:] # Retrieve the saved salt from the second half of the hashed key.
         combo = hash_password(password, salt) # Create a hash from the newly provided password
 
@@ -26,7 +27,7 @@ def authenticate_user(username, password): # Verify a user's credentials
 
 def get_user_by_id(payload): # Return a user given their ID
     user_id = payload['identity']
-    return User(dbmanager.get_account_by_column('id', user_id))
+    return User(dbmanager.get_row_by_column('tblUsers', 'userID', user_id))
 
 def hash_password(password, salt): # Create a password hash, combining the hashed key and the salt
     key = hashlib.pbkdf2_hmac(
@@ -56,6 +57,12 @@ def main():
     def get_current_time():
         print(current_identity)
         return jsonify({'time': time.time()})
+
+    @app.route('/api/get_user_holdings', methods=["GET"])
+    @jwt_required()
+    def get_user_holdings():
+        print(f"Fetching Balances For: {current_identity.id}")
+        return jsonify(account_data.get_account_holdings(current_identity))
 
     @app.route('/api/register', methods=['POST'])
     def register():

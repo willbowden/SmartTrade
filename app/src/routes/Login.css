@@ -28,4 +28,6 @@ input[type=text], input[type=password] {
     width: 16%;
     padding: 10px 20px;
     border-radius: 8px;
+    margin-top: 20vh;
+    position: relative;
 }
