@@ -20,10 +20,12 @@ def populate_dataset(dataset: pd.DataFrame, indicators) -> pd.DataFrame: # Calcu
             
             # Unwrap the tuple into individual arguments, and unwrap indicator_args into keyword arguments. Use the..
             #   ..corresponding function to calculate the indicator.  
-            result = exec(f"talib.{item['name'].upper()}(*indicator_data, **indicator_args)")
+            func = getattr(talib, item['name'].upper())
+            result = func(*indicator_data, **indicator_args)
         else:
             indicator_data = dataset['close'].to_numpy() # Otherwise, only provide close price data and calculate the indicator.
-            result = exec(f"talib.{item['name'].upper()}(indicator_data, **indicator_args)")
+            func = getattr(talib, item['name'].upper())
+            result = func(indicator_data, **indicator_args)
 
         if isinstance(result, tuple): # Some indicators return multiple outputs, so we'll separate them out.
             # Iterate over all the results and add a named column to the dataset to..
@@ -44,7 +46,7 @@ def dataset_exists(symbol: str, timeframe: str, startDate: int) -> bool: # Check
     try:
         with open(fname, 'r') as infile: # Attempt to open the file
             dataset = pd.read_json(infile)
-            if startDatePandas > dataset['date'][0]: # Check that the start date is included in the dataframe
+            if startDatePandas > dataset['timestamp'][0]: # Check that the start date is included in the dataframe
                 return okay
             else:
                 okay = False
@@ -52,6 +54,22 @@ def dataset_exists(symbol: str, timeframe: str, startDate: int) -> bool: # Check
         okay = False
 
     return okay
+
+def modify_candles(dataframe, candleType) -> pd.DataFrame:
+    if candleType == 'heikin_ashi':
+        newDataframe = dataframe.apply(lambda x: (x['open'] + x['high'] + x['low'] + x['close']) / 4 if x.name == 'close' else x, axis=1)
+        newOpen = []
+        for i in range(len(newDataframe['open'])):
+            if i == 0:
+                newOpen.append(newDataframe['open'].iat[i])
+            else:
+                newOpen.append(((newOpen[i-1] + newDataframe['close'].iat[i-1]) / 2))
+
+        newDataframe['open'] = newOpen
+        newDataframe = newDataframe.apply(lambda x: max(x['open'], x['high'], x['low'], x['close']) if x.name == 'high' else x, axis=1)
+        newDataframe = newDataframe.apply(lambda x: min(x['open'], x['high'], x['low'], x['close']) if x.name == 'low' else x, axis=1)
+        print(newDataframe)
+        exit()
 
 
 def load_dataset(user, symbol: str, timeframe: str, startDate: int, config: dict) -> pd.DataFrame: # Load a dataset from a .json file
@@ -64,9 +82,12 @@ def load_dataset(user, symbol: str, timeframe: str, startDate: int, config: dict
         print(f"Dataset for {symbol} does not exist or does not contain start date! Creating...")
         datasetWithoutIndicators = create_new_dataset(user, symbol, timeframe, startDate) # Read the raw dataset with just OHLCV data (no indicators)
     # Find the index closest to our startdate.
-    indexOfStartDate = np.where(datasetWithoutIndicators['date'] >= pd.to_datetime(startDate, unit='ms'))[0][0] 
+    indexOfStartDate = np.where(datasetWithoutIndicators['timestamp'] >= pd.to_datetime(startDate, unit='ms'))[0][0] 
 
     dataset = datasetWithoutIndicators.iloc[indexOfStartDate:] # Select only parts of the dataset from the start date onwards
+    if config['candleType'] != 'candles':
+        dataset = modify_candles(dataset, config['candleType'])
+
     dataset = populate_dataset(dataset, config['requiredIndicators']) # Populate the dataset with the required indicators that were provided in the config.
     dataset = dataset.dropna(0) # Remove all rows from the dataset that contain a "Not A Number" value.
     dataset.reset_index(inplace=True, drop=True) # Reset and delete the index.

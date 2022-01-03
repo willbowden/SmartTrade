@@ -1,0 +1,34 @@
+{
+    "name": "macdScalp",
+    "symbols": ["BTC/BUSD"],
+    "startingBalance": 1000,
+    "timeframe": "5m",
+    "pastDataSteps": 3,
+    "fee": 0.00075,
+    "spendPercent": 1,
+    "takeProfit": 1.0075,
+    "stopLoss": 0.995,
+    "requiredIndicators": [{
+        "name": "macd",
+        "data": ["close"],
+        "arguments": {
+            "fastperiod": 12,
+            "slowperiod": 26,
+            "signalperiod": 9
+        },
+        "output": [
+            "macd",
+            "macdsignal",
+            "macdhist"
+        ]
+    },
+        {"name": "ema",
+        "data": ["close"],
+        "arguments": {
+            "timeperiod": 200
+        },
+        "output": [
+            "ema"
+        ]
+        }]
+}

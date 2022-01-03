@@ -8,13 +8,13 @@ from datetime import datetime
 from numpy import save
 import pandas as pd
 from SmartTrade.server import constants
-from SmartTrade.server import account_data
 
 class Bot:
     def __init__(self, owner, strategyName, dryRun, config, saveData=None) -> None:
         self.owner = owner
         self.config = config
         self.dryRun = dryRun
+        self.inPosition = False
         if saveData is not None:
             self.__load_from_save(saveData)
         else:
@@ -36,7 +36,7 @@ class Bot:
         self.profit = 0
         self.profitPercent = 0
         self.accountValue = 0
-        self.orderHistory = pd.DataFrame(columns=['date', 'symbol', 'side', 'quantity', 'value', 'price'])
+        self.orderHistory = pd.DataFrame(columns=['timestamp', 'symbol', 'side', 'quantity', 'value', 'price'])
 
     def __load_from_save(self, saveData) -> None:
         self.balance = saveData['balance']
@@ -47,7 +47,7 @@ class Bot:
         self.assetHoldings = saveData['assetHoldings']
         self.profit = saveData['profit']
         self.profitPercent = saveData['profitPercent']
-        self.orderHistory = pd.DataFrame(saveData['orderHistory'], columns=['date', 'symbol', 'side', 'quantity', 'value', 'price'])
+        self.orderHistory = pd.DataFrame(saveData['orderHistory'], columns=['timestamp', 'symbol', 'side', 'quantity', 'value', 'price'])
 
     def __load_strategy(self, name) -> None:
         sys.path.append(constants.STRATEGY_PATH)
@@ -55,63 +55,68 @@ class Bot:
 
     def tick(self, data, index, symbol) -> None:
         self.currentSymbol = symbol
-        self.strategy.check_buy(self, data, index, symbol)
-        self.strategy.check_sell(self, data, index, symbol)
+        if self.inPosition == False:
+            self.strategy.check_buy(self, data, index, symbol)
+        if self.inPosition:
+            self.strategy.check_sell(self, data, index, symbol)
 
         self.__update_balances_and_pnl(data, symbol)
 
-    def place_order(self, side, quantity, value, price, date) -> None:
+    def place_order(self, side, quantity, value, price, timestamp) -> None:
         if side == "sell":
-            self.__sell(quantity, value, price, date)
+            self.__sell(quantity, value, price, timestamp)
         elif side == "buy":
-            self.__buy(quantity, value, price, date)
+            self.__buy(quantity, value, price, timestamp)
     
-    def __sell(self, quantity, value, price, date) -> None:
-        potentialOrder = {'date': date, 'symbol': self.currentSymbol, 'side': 'sell', 'quantity': quantity, 'value': value, 'price': price}
+    def __sell(self, quantity, value, price, timestamp) -> None:
+        potentialOrder = {'timestamp': timestamp, 'symbol': self.currentSymbol, 'side': 'sell', 'quantity': quantity, 'value': value, 'price': price}
         if value >= 10:
             if not self.dryRun:
                 valid = self.owner.place_sell_order(quantity, value, price)
                 if valid:
-                    self.balance += (value * 0.999)
+                    self.balance += (value * (1 - self.config['fee']))
                     self.assetHoldings[self.currentSymbol]['balance'] -= quantity
                     if self.assetHoldings[self.currentSymbol]['outstandingSpend'] < value:
                         self.assetHoldings[self.currentSymbol]['outstandingSpend'] = 0
                     else:
                         self.assetHoldings[self.currentSymbol]['outstandingSpend'] -= value
                     self.orderHistory = self.orderHistory.append(potentialOrder, ignore_index=True)
+                    self.inPosition = False
                 else:
                     print("Bot tried to execute sell order but exchange refused!")
             else:
                 if self.assetHoldings[self.currentSymbol]['balance'] >= quantity:
-                    self.balance += (value * 0.999)
+                    self.balance += (value * (1 - self.config['fee']))
                     self.assetHoldings[self.currentSymbol]['balance'] -= quantity
                     if self.assetHoldings[self.currentSymbol]['outstandingSpend'] < value:
                         self.assetHoldings[self.currentSymbol]['outstandingSpend'] = 0
                     else:
                         self.assetHoldings[self.currentSymbol]['outstandingSpend'] -= value
                     self.orderHistory = self.orderHistory.append(potentialOrder, ignore_index=True)
+                    self.inPosition = False
                 else:
                     print(f"Bot tried to sell {self.currentSymbol} but didn't have a great enough balance!")
 
-
-    def __buy(self, quantity, value, price, date) -> None:
-        potentialOrder = {'date': date, 'symbol': self.currentSymbol, 'side': 'buy', 'quantity': quantity, 'value': value, 'price': price}
+    def __buy(self, quantity, value, price, timestamp) -> None:
+        potentialOrder = {'timestamp': timestamp, 'symbol': self.currentSymbol, 'side': 'buy', 'quantity': quantity, 'value': value, 'price': price}
         if value >= 10:
             if not self.dryRun:
                 valid = self.owner.place_buy_order(quantity, value, price)
                 if valid:
                     self.balance -= (value)
-                    self.assetHoldings[self.currentSymbol]['balance'] += (quantity * 0.999)
+                    self.assetHoldings[self.currentSymbol]['balance'] += (quantity * (1 - self.config['fee']))
                     self.assetHoldings[self.currentSymbol]['outstandingSpend'] += value
                     self.orderHistory = self.orderHistory.append(potentialOrder, ignore_index=True)
+                    self.inPosition = True
                 else:
                     print("Bot tried to execute buy order but exchange refused!")
             else:
                 if self.balance >= value:
                     self.balance -= (value)
-                    self.assetHoldings[self.currentSymbol]['balance'] += (quantity * 0.999)
+                    self.assetHoldings[self.currentSymbol]['balance'] += (quantity * (1 - self.config['fee']))
                     self.assetHoldings[self.currentSymbol]['outstandingSpend'] += value
                     self.orderHistory = self.orderHistory.append(potentialOrder, ignore_index=True)
+                    self.inPosition = True
                 else:
                     print(f"Bot tried to buy {self.currentSymbol} but didn't have a great enough balance!")
                     

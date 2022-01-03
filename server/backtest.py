@@ -2,46 +2,33 @@
 #    Class to conduct a backtest on a chosen strategy and return performance results.    #
 ##########################################################################################
 
-import sys
-import importlib
 import plotly.graph_objects as go
-from SmartTrade.server import constants, configs, datasets, bot
+from SmartTrade.server import user, configs, datasets, bot, dbmanager
 
 
 class Backtest:
-    def __init__(self, symbols, timeframe, startDate, startingBalance, strategyName, userID, plotResults):
+    def __init__(self, user, startDate, strategyName, plotResults):
+        self.owner = user
+        self.config = configs.load_config(strategyName, self.owner.id)
         self.plotResults = plotResults
-        self.info = {'strategyName': strategyName, 'userID': userID}
-        sys.path.append(constants.STRATEGY_PATH)
-        self.strategy = importlib.import_module(strategyName)
-        self.startingBalance = startingBalance
-        self.balance = startingBalance
-        self.config = configs.load_config(strategyName, userID)
-        self.config['startingBalance'] = startingBalance
-        self.config['symbols'] = symbols
+        self.info = {'strategyName': strategyName, 'userID': self.owner.id}
+        self.startingBalance = self.config["startingBalance"]
+        self.balance = self.config["startingBalance"]
         self.data = {}
         self.bot = bot.Bot(self, strategyName, True, self.config)
         for item in self.config['symbols']:
-            self.data[item] = datasets.load_dataset(item, timeframe, startDate, self.config)
+            self.data[item] = datasets.load_dataset(self.owner, item, self.config['timeframe'], startDate, self.config)
         
         self.__run()
 
     def __run(self):
         for symbol in self.config['symbols']:
             ds = self.data[symbol]
+            print(ds)
             for index, row in ds.iterrows():
                 self.bot.tick(ds, index, symbol)
         
         self.__get_results()
-
-    # NO LONGER USED FOR PERFORMANCE REASONS
-    # def __prepare_block(self, symbol, index):
-    #     block = self.data[symbol].iloc[[index]]
-    #     if index >= (self.config['pastDataSteps'] - 1):
-    #         for i in range(1, self.config['pastDataSteps']):
-    #             block = block.append(self.data[symbol].iloc[[index-i]])
-
-    #     return block
         
     def __get_results(self):
         results = self.bot.get_info()
@@ -58,7 +45,7 @@ class Backtest:
             buyMarkers = results['orderHistory'][results['orderHistory']['side'] == 'buy']
             sellMarkers = results['orderHistory'][results['orderHistory']['side'] == 'sell']
             fig = go.Figure()
-            fig.add_trace(go.Candlestick(x=self.data[item]['date'],
+            fig.add_trace(go.Candlestick(x=self.data[item]['timestamp'],
             open=self.data[item]['open'],
             high=self.data[item]['high'],
             low=self.data[item]['low'],
@@ -66,34 +53,26 @@ class Backtest:
             name="Price"))
 
             fig.add_trace(go.Scatter(
-                x=self.data[item]['date'],
-                y=self.data[item]['ma7'],
+                x=self.data[item]['timestamp'],
+                y=self.data[item]['ema'],
                 mode='lines',
-                name='MA 7',
-                line_color="orange"
+                name='EMA100',
+                line_color="white"
             ))
 
             fig.add_trace(go.Scatter(
-                x=self.data[item]['date'],
-                y=self.data[item]['ma99'],
-                mode='lines',
-                name='MA 99',
-                line_color="purple"
-            ))
-
-            fig.add_trace(go.Scatter(
-                    x=buyMarkers['date'],
+                    x=buyMarkers['timestamp'],
                     y=buyMarkers['price'],
                     mode='markers',
-                    name='Scores',
+                    name='Buys',
                     text = "Buy",
                     line_color='yellow'))
 
             fig.add_trace(go.Scatter(
-                    x=sellMarkers['date'],
+                    x=sellMarkers['timestamp'],
                     y=sellMarkers['price'],
                     mode='markers',
-                    name='Scores',
+                    name='Sells',
                     text = "Sell",
                     line_color='purple'))
 
@@ -104,4 +83,5 @@ class Backtest:
 
 
 if __name__ == '__main__':
-    b = Backtest(['ETH/USDT'], '5m', 1632956400000, 1000, 'rsiStrategy', 2194, True)
+    u = user.User(dbmanager.get_row_by_column('tblUsers', 'userID', 2094))
+    b = Backtest(u, 1632956400000, 'sarScalp', True)

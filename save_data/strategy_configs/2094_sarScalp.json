@@ -1,0 +1,41 @@
+{
+    "name": "sarScalp",
+    "symbols": ["BTC/BUSD"],
+    "startingBalance": 1000,
+    "timeframe": "5m",
+    "pastDataSteps": 3,
+    "fee": 0.00075,
+    "candleType": "heikin_ashi",
+    "spendPercent": 1,
+    "takeProfit": 1.0075,
+    "stopLoss": 0.995,
+    "requiredIndicators": [{
+        "name": "sar",
+        "data": ["high", "low"],
+        "arguments": {
+            "acceleration": 0,
+            "maximum": 0
+        },
+        "output": [
+            "sar"
+        ]
+    },
+        {"name": "ema",
+        "data": ["close"],
+        "arguments": {
+            "timeperiod": 200
+        },
+        "output": [
+            "ema"
+        ]
+        },
+        {"name": "rsi",
+            "data": ["close"],
+            "arguments": {
+                "timeperiod": 14
+            },
+            "output": [
+                "rsi"
+            ]
+            }]
+}
