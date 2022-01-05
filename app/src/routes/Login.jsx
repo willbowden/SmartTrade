@@ -26,7 +26,7 @@ function Login() {
       }).then(r => r.json())
         .then(result => {
           if (result.access_token){
-            console.log(result);
+            localStorage.setItem("isAuthenticated", "true");
             login(result);
             navigate('/dashboard');
           }

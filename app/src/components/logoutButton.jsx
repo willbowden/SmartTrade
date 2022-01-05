@@ -9,6 +9,7 @@ function LogoutButton() {
     const onLogoutClick = (e) => {
         e.preventDefault();
         logout();
+        localStorage.setItem('isAuthenticated', "false")
         navigate("/login")
     }
 
