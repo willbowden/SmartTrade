@@ -7,7 +7,7 @@ function protectedFetch(url, ...rest){
                 resolve(data);
             })
         } catch(err) {
-            resolve({response: 'error'})
+            resolve({response: err})
         }
     })
 }
