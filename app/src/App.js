@@ -15,6 +15,7 @@ function App() {
           <li><Link to="/dashboard">Home</Link></li>
           <li><Link to="/backtest">Backtesting</Link></li>
           <li><Link to="/api_test">API Tester</Link></li>
+          <li><Link to="/chart_test">Chart Tester</Link></li>
           {isAuthenticated ?  <li><Link to="/login">Login</Link></li> : null}
           {isAuthenticated ? <li><Link to="/register">Register</Link></li> : null}
           <LogoutButton />

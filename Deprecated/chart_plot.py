@@ -5,7 +5,7 @@ def plot_swings(results):
     buyMarkers = [x for x in results['markers'] if x['score'] == 1]
     sellMarkers = [x for x in results['markers'] if x['score'] == -1]
     fig = go.Figure()
-    fig.add_trace(go.Candlestick(x=results['dataset']['date'],
+    fig.add_trace(go.Candlestick(x=results['dataset']['timestamp'],
      open=results['dataset']['open'],
      high=results['dataset']['high'],
      low=results['dataset']['low'],
@@ -13,7 +13,7 @@ def plot_swings(results):
      name="Price"))
 
     fig.add_trace(go.Scatter(
-            x=[x['date'] for x in buyMarkers],
+            x=[x['timestamp'] for x in buyMarkers],
             y=[x['price'] for x in buyMarkers],
             mode='markers',
             name='Scores',
@@ -21,7 +21,7 @@ def plot_swings(results):
             line_color='yellow'))
 
     fig.add_trace(go.Scatter(
-            x=[x['date'] for x in sellMarkers],
+            x=[x['timestamp'] for x in sellMarkers],
             y=[x['price'] for x in sellMarkers],
             mode='markers',
             name='Scores',

@@ -10,7 +10,7 @@ from flask_jwt import JWT, jwt_required, current_identity
 import dbmanager
 import time
 from SmartTrade.server.user import User
-from SmartTrade.server import account_data
+from SmartTrade.server import account_data, datasets
 
 def authenticate_user(username, password): # Verify a user's credentials 
     print(f"Attempting Login For: {username}")
@@ -61,6 +61,16 @@ def main():
     @jwt_required()
     def verify_token():
         return jsonify({'response': 'ok'}), 200
+
+    @app.route('/api/test_candlestick_chart', methods=['POST'])
+    @jwt_required()
+    def get_dataset():
+        payload = request.json
+        print(f"Gathering dataset for: {payload['symbol']}")
+        dataset = datasets.load_dataset(current_identity, payload['symbol'], payload['timeframe'],
+         payload['startDate'], payload['config'])
+        print(dataset)
+        return jsonify(dataset.to_json(orient="records"))
 
     @app.route('/api/get_user_holdings', methods=["GET"])
     @jwt_required()

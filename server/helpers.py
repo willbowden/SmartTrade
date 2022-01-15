@@ -1,5 +1,5 @@
 import hashlib
-import constants
+from SmartTrade.server import constants
 import time
 import numpy as np
 

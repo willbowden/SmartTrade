@@ -1,18 +1,85 @@
-// Example Indicator JSON Structure
-
 {
     "config": {
         "requiredIndicators": [
             {
                 "name": "rsi",
+                "functionName": "talib.RSI",
+                "plot": {
+                    "type": "separate",
+                    "minValue": 0,
+                    "maxValue": 100,
+                    "objects": [
+                        {
+                            "name": "rsi",
+                            "type": "LineSeries",
+                            "stroke": {
+                                "strokeWidth": 3
+                            },
+                            "strokeCol": "#8e14ba",
+                            "fillCol": "#8e14ba",
+                            "value": "rsi" 
+                        },
+                        {
+                            "name": "upperLine",
+                            "type": "HorizontalLine",
+                            "stroke": {
+                                "strokeWidth": 3,
+                                "strokeDasharray": [10, 5]
+                            },
+                            "strokeCol": "#ffffff",
+                            "fillCol": "#ffffff",
+                            "value": 70
+                        },
+                        {
+                            "name": "lowerLine",
+                            "type": "HorizontalLine",
+                            "stroke": {
+                                "strokeWidth": 3,
+                                "strokeDasharray": [10, 5]
+                            },
+                            "strokeCol": "#ffffff",
+                            "fillCol": "#ffffff",
+                            "value": 30
+                        }
+                    ]
+                },
                 "data": ["close"],
                 "arguments": {
                     "timeperiod": 14
                 },
-                "output": []
+                "output": [
+                    "rsi"
+                ]
             },
             {
                 "name": "bbands",
+                "functionName": "talib.BBANDS",
+                "plot": {
+                    "type": "combined",
+                    "objects": [
+                        {
+                            "name": "bbands",
+                            "type": "LineSeries",
+                            "stroke": {
+                                "strokeWidth": 3
+                            },
+                            "strokeCol": "#254ac4",
+                            "fillCol": "#254ac4",
+                            "value": "upperband",
+                            "openValueYField": "lowerband"
+                        },
+                        {
+                            "name": "middleband",
+                            "type": "LineSeries",
+                            "stroke": {
+                                "strokeWidth": 3
+                            },
+                            "strokeCol": "#e38e27",
+                            "fillCol": "#e38e27",
+                            "value": "middleband"
+                        }
+                    ]
+                },
                 "data": ["close"],
                 "arguments": {
                     "timeperiod": 5, 

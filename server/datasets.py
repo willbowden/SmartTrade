@@ -6,11 +6,17 @@ from SmartTrade.server import constants, helpers
 
 import talib
 import pandas as pd
-import datetime
+import json
 import numpy as np
 
 def populate_dataset(dataset: pd.DataFrame, indicators) -> pd.DataFrame: # Calculate & add indicators to the dataset.
+    with open(constants.DEFAULT_INDICATORS, 'r') as infile: # Load default indicators from file
+        defaultIndicators = json.load(infile)
+
     for item in indicators: # Iterate over all the required indicators
+        if type(item) == str: # If we've just been given the name of an indicator, load its default info
+            item = defaultIndicators[item]
+            
         indicator_args = item['arguments'] # Collect the arguments for calculation (e.g timeperiod)
         if item['data'] is not ["close"]: # Check if the calculation requires more than just "close" price data.
             indicator_data = [] 

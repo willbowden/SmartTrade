@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import protectedFetch from './protectedFetch';
-import LoadingOverlay from '../components/loadingOverlay';
 
 const PrivateRoute = React.memo(() => {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isAuthenticated"));
 
   function refreshStatus() { // Verify the user's token
     protectedFetch('/api/verify_token').then(r => r.json()).then(result => {
-      if (result.response != 'ok') { // If their token isn't valid
+      if (result.response !== 'ok') { // If their token isn't valid
         setIsAuthenticated(false); // Set the localStorage variable
         return (<Navigate to="/login" />); // Return them to login
       }
