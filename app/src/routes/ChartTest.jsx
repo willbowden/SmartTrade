@@ -6,19 +6,13 @@ import '../App.css';
 
 function ChartTest() {
 
-
+    const[test, setTest] = useState('hello!');
 
     return(
         <div className="centered-div">
-            {loading ? <LoadingOverlay /> : null }  
-            <form><label>Symbol:</label> {/* Form for entering info */}
-            <input type="text" value={symbol} onChange={e => {setSymbol(e.target.value)}}></input></form>
-            <form><label>Timeframe:</label> {/* Form for entering info */}
-            <input type="text" value={timeframe} onChange={e => {setTimeframe(e.target.value)}}></input></form>
-            <form><label>Start Date:</label> {/* Form for entering info */}
-            <input type="text" value={startDate} onChange={e => {setStartDate(e.target.value)}}></input></form>
-            <CandlestickChart />
-            <input className="button" type="button" value="Test" onClick={sendRequest} disabled={loading?true:null}></input>
+            <form><label>Test Text:</label> {/* Form for entering info */}
+            <input type="text" value={test} onChange={e => {setTest(e.target.value)}}></input></form>
+            <CandlestickChart test={test}></CandlestickChart>
         </div>
     );
 }

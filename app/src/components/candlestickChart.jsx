@@ -17,6 +17,7 @@ function CandlestickChart(props) {
   const config = { candleType: "candles", requiredIndicators: [] };
 
   useLayoutEffect(() => {
+    console.log(this.props.test);
     const token_header = JSON.parse(localStorage.getItem('REACT_TOKEN_AUTH_KEY'));
     const token = token_header.access_token
     let x = am4core.create("chartdiv", am4charts.XYChart);
@@ -54,7 +55,6 @@ function CandlestickChart(props) {
   }, []);
   
   useLayoutEffect(() => {
-      console.log(result);
     chart.current.data = result;
 }, [result]);
 
