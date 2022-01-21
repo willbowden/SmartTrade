@@ -10,23 +10,32 @@ import Register from './routes/Register';
 import APITest from './routes/APITest';
 import CandlestickChart from './components/candlestickChart';
 import PrivateRoute from './auth/protectedRoute';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+const darkTheme = createTheme({
+  palette: {
+    type: "dark",
+  }
+});
 
 ReactDOM.render(
-  <BrowserRouter>
-    <Routes>
-      <Route exact path="/" element={<App />}>
-        <Route exact path='/dashboard' element={<PrivateRoute />}>
-            <Route exact path='/dashboard' element={<Dashboard />}/>
+  <ThemeProvider theme={darkTheme}>
+    <BrowserRouter>
+      <Routes>
+        <Route exact path="/" element={<App />}>
+          <Route exact path='/dashboard' element={<PrivateRoute />}>
+              <Route exact path='/dashboard' element={<Dashboard />}/>
+          </Route>
+          <Route exact path='/chart_test' element={<CandlestickChart />}/>
+          <Route exact path='/api_test' element={<PrivateRoute />}>
+              <Route exact path='/api_test' element={<APITest />}/>
+          </Route>
+          <Route path="/backtest" element={<Backtest />} />
+          <Route exact path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Route>
-        <Route exact path='/chart_test' element={<CandlestickChart />}/>
-        <Route exact path='/api_test' element={<PrivateRoute />}>
-            <Route exact path='/api_test' element={<APITest />}/>
-        </Route>
-        <Route path="/backtest" element={<Backtest />} />
-        <Route exact path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Route>
-    </Routes>
-  </BrowserRouter>,
+      </Routes>
+    </BrowserRouter>
+  </ThemeProvider>,
   document.getElementById('root')
 );
