@@ -2,6 +2,7 @@ import React from 'react';
 import { logout } from "../auth"
 import { useNavigate } from "react-router-dom";
 import '../App.css';
+import Button from '@mui/material/Button';
 
 function LogoutButton() {
     const navigate = useNavigate();
@@ -14,7 +15,7 @@ function LogoutButton() {
     }
 
     return (
-        <button onClick={onLogoutClick}>Logout</button>
+        <Button onClick={onLogoutClick}>Logout</Button>
     )
 }
 

@@ -11,15 +11,17 @@ import APITest from './routes/APITest';
 import CandlestickChart from './components/candlestickChart';
 import PrivateRoute from './auth/protectedRoute';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import Button from '@mui/material/Button';
 
 const darkTheme = createTheme({
   palette: {
-    type: "dark",
+    mode: "dark",
   }
 });
 
 ReactDOM.render(
   <ThemeProvider theme={darkTheme}>
+    <div className="fullsize">
     <BrowserRouter>
       <Routes>
         <Route exact path="/" element={<App />}>
@@ -36,6 +38,7 @@ ReactDOM.render(
         </Route>
       </Routes>
     </BrowserRouter>
+    </div>
   </ThemeProvider>,
   document.getElementById('root')
 );

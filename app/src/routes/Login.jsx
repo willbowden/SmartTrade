@@ -2,8 +2,9 @@ import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
 import {login} from "../auth"
 import LoadingOverlay from "../components/loadingOverlay.jsx";
-import '../App.css';
-import './Login.css';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Container from '@mui/material/Container';
 
 function Login() {
     const [username, setUsername] = useState('')
@@ -47,35 +48,47 @@ function Login() {
 
   
     return (
-        <div className="centered-div">
-          <div id="login-div">
-          {loading ? <LoadingOverlay /> : null }
-            <h2>Login</h2>
-            <form action="#" className="login-form">
-            <div>
-                <input id="usernameInput" type="text" 
-                  placeholder="Username" 
-                  onChange={handleUsernameChange}
-                  value={username} />
-              </div>
-              <div>
-                <input
-                  id="passwordInput"
-                  type="password"
-                  placeholder="Password"
-                  onChange={handlePasswordChange}
-                  value={password}/>
-              </div>
-              <button onClick={onSubmitClick} type="submit">
-                Login
-              </button>
-            </form>
-              <div id="error-message">
-                <p>{errorMessage}</p>
-              </div>
-          </div>
-          </div>
+      <Box component="form"
+      sx={{flexGrow: 1}}
+      autoComplete="off"
+      >
+        <TextField
+          id="outlined-password-input"
+          label="Password"
+          type="password"
+          autoComplete="current-password"
+        />
+      </Box>
     )
   }
 
   export default Login;
+
+  // <div className="centered-div">
+  //         <div id="login-div">
+  //         {loading ? <LoadingOverlay /> : null }
+  //           <h2>Login</h2>
+  //           <form action="#" className="login-form">
+  //           <div>
+  //               <input id="usernameInput" type="text" 
+  //                 placeholder="Username" 
+  //                 onChange={handleUsernameChange}
+  //                 value={username} />
+  //             </div>
+  //             <div>
+  //               <input
+  //                 id="passwordInput"
+  //                 type="password"
+  //                 placeholder="Password"
+  //                 onChange={handlePasswordChange}
+  //                 value={password}/>
+  //             </div>
+  //             <button onClick={onSubmitClick} type="submit">
+  //               Login
+  //             </button>
+  //           </form>
+  //             <div id="error-message">
+  //               <p>{errorMessage}</p>
+  //             </div>
+  //         </div>
+  //         </div>
