@@ -1,9 +1,7 @@
 import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
 import {login} from "../auth"
-import LoadingOverlay from "../components/loadingOverlay.jsx";
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
+import { Box, Stack, TextField, Typography, Button, CircularProgress } from '@mui/material';
 import CenteredPageContainer from "../components/centeredPageContainer";
 
 function Login() {
@@ -49,14 +47,35 @@ function Login() {
   
     return (
       <CenteredPageContainer>
-        <form>
-          <TextField
-            id="outlined-password-input"
-            label="Password"
-            type="password"
-            autoComplete="current-password"
-          />
-        </form>
+        {loading ? <CircularProgress /> : 
+        <Box
+          component="form"
+          sx={{
+            '& .MuiTextField-root': { m: 1, width: '25ch' },
+            backgroundColor: '#212121',
+            borderRadius: 2,
+            padding: 3
+          }}
+          noValidate
+          autoComplete="off"
+        >
+          <Stack>
+            <Typography variant="h2">Login</Typography>
+            <TextField
+              label="Username"
+              variant="outlined"
+              onChange={handleUsernameChange}
+            />
+            <TextField
+              label="Password"
+              type="password"
+              variant="outlined"
+              onChange={handlePasswordChange}
+            />
+            <Button sx={{marginTop: 1}} variant="contained" color="success" onClick={onSubmitClick}>Go</Button>
+          </Stack>
+        </Box>
+        }
       </CenteredPageContainer>
     )
   }

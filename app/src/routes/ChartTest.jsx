@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import protectedFetch from "../auth/protectedFetch.js";
-import LoadingOverlay from "../components/loadingOverlay.jsx";
 import CandlestickChart from '../components/candlestickChart.jsx';
 import '../App.css';
 

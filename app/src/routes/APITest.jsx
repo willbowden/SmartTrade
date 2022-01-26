@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import protectedFetch from "../auth/protectedFetch.js";
-import LoadingOverlay from "../components/loadingOverlay.jsx";
 import '../App.css';
 
 function APITest() {
@@ -21,7 +20,7 @@ function APITest() {
 
     return(
         <div className="centered-div">
-            {loading ? <LoadingOverlay /> : null }  
+            {loading ? null : null }  
             <form><label>The API Endpoint Being Tested Is:</label> {/* Form for entering API endpoint */}
             <input type="text" value={endPoint} onChange={e => {setEndPoint(e.target.value)}}></input></form>
             <p>Result: {result}</p>

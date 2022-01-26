@@ -3,7 +3,6 @@ import "../App.css";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import protectedFetch from "../auth/protectedFetch";
-import LoadingOverlay from "./loadingOverlay";
 
 am4core.options.onlyShowOnViewport = true;
 
@@ -81,7 +80,7 @@ function CandlestickChart(props) {
 
   return (
     <div className="centered-div">
-      {loading ? <LoadingOverlay /> : null}
+      {loading ? null : null}
       <form>
         <label>Symbol:</label> {/* Form for entering info */}
         <input

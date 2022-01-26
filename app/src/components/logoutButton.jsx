@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 import '../App.css';
 import Button from '@mui/material/Button';
 
+
 function LogoutButton() {
-    const navigate = useNavigate();
 
     const onLogoutClick = (e) => {
         e.preventDefault();
         logout();
-        localStorage.setItem('isAuthenticated', "false")
+        localStorage.setItem('isAuthenticated', 'false')
         navigate("/login")
     }
 
