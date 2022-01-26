@@ -1,11 +1,15 @@
 import React from "react";
-//import '../App.css';
- 
+import Typography from '@mui/material/Typography';
+import CenteredPageContainer from '../components/centeredPageContainer.jsx';
+
+
 function Dashboard() {
   return ( 
-    <div className="centered-div">
-        <h1>Dashboard</h1>
-    </div>
+    <CenteredPageContainer>
+      <Typography variant="h1">
+        Dashboard
+      </Typography>
+    </CenteredPageContainer>
   );
 }
  

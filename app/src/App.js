@@ -5,15 +5,14 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 
 function App() {
 
   const isAuthenticated = localStorage.getItem('isAuthenticated');
 
   return (
-    <Box>
-      <AppBar position="sticky" color="default">
+    <>
+      <AppBar position="sticky" color="default" style={{ height: '8vh'}}>
         <Toolbar>
           <Button component={Link} to="/dashboard" variant="text">Dashboard</Button>
           <Button component={Link} to="/backtest" variant="text">Backtesting</Button>
@@ -25,8 +24,8 @@ function App() {
           <LogoutButton />
         </Toolbar>
       </AppBar>
-      <Outlet />
-    </Box>
+        <Outlet />
+    </>
   );
 }
 

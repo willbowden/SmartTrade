@@ -4,7 +4,7 @@ import {login} from "../auth"
 import LoadingOverlay from "../components/loadingOverlay.jsx";
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import Container from '@mui/material/Container';
+import CenteredPageContainer from "../components/centeredPageContainer";
 
 function Login() {
     const [username, setUsername] = useState('')
@@ -48,17 +48,16 @@ function Login() {
 
   
     return (
-      <Box component="form"
-      sx={{flexGrow: 1}}
-      autoComplete="off"
-      >
-        <TextField
-          id="outlined-password-input"
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-        />
-      </Box>
+      <CenteredPageContainer>
+        <form>
+          <TextField
+            id="outlined-password-input"
+            label="Password"
+            type="password"
+            autoComplete="current-password"
+          />
+        </form>
+      </CenteredPageContainer>
     )
   }
 

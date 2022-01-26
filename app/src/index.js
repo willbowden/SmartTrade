@@ -11,7 +11,6 @@ import APITest from './routes/APITest';
 import CandlestickChart from './components/candlestickChart';
 import PrivateRoute from './auth/protectedRoute';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import Button from '@mui/material/Button';
 
 const darkTheme = createTheme({
   palette: {
