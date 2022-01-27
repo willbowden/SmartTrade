@@ -57,7 +57,7 @@ def main():
         print(current_identity)
         return jsonify({'time': time.time()})
 
-    @app.route('/verify_token', methods=['GET'])
+    @app.route('/api/verify_token', methods=['GET'])
     @jwt_required()
     def verify_token():
         return jsonify({'response': 'ok'}), 200
@@ -69,7 +69,6 @@ def main():
         print(f"Gathering dataset for: {payload['symbol']}")
         dataset = datasets.load_dataset(current_identity, payload['symbol'], payload['timeframe'],
          payload['startDate'], payload['config'])
-        print(dataset)
         return jsonify(dataset.to_json(orient="records"))
 
     @app.route('/api/get_user_holdings', methods=["GET"])

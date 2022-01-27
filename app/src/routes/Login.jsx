@@ -73,6 +73,7 @@ function Login() {
               onChange={handlePasswordChange}
             />
             <Button sx={{marginTop: 1}} variant="contained" color="success" onClick={onSubmitClick}>Go</Button>
+            {errorMessage ? <Typography color="red" paragraph>{errorMessage}</Typography> : null}
           </Stack>
         </Box>
         }
@@ -81,32 +82,3 @@ function Login() {
   }
 
   export default Login;
-
-  // <div className="centered-div">
-  //         <div id="login-div">
-  //         {loading ? <LoadingOverlay /> : null }
-  //           <h2>Login</h2>
-  //           <form action="#" className="login-form">
-  //           <div>
-  //               <input id="usernameInput" type="text" 
-  //                 placeholder="Username" 
-  //                 onChange={handleUsernameChange}
-  //                 value={username} />
-  //             </div>
-  //             <div>
-  //               <input
-  //                 id="passwordInput"
-  //                 type="password"
-  //                 placeholder="Password"
-  //                 onChange={handlePasswordChange}
-  //                 value={password}/>
-  //             </div>
-  //             <button onClick={onSubmitClick} type="submit">
-  //               Login
-  //             </button>
-  //           </form>
-  //             <div id="error-message">
-  //               <p>{errorMessage}</p>
-  //             </div>
-  //         </div>
-  //         </div>

@@ -9,7 +9,7 @@ export default function CenteredPageContainer(props) {
         direction="column"
         alignItems="center"
         justifyContent="center"
-        style={{ minHeight: '92vh' }}
+        style={{ minHeight: '92vh', width: '100vw' }}
     >
         {props.children}
     </Grid>);

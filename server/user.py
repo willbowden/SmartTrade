@@ -16,16 +16,20 @@ class User: # Class to represent a user in the system, containing their account 
         self.username = infoDict['username']
         self.loggedIn = False
         self.tradedPairs = []
-        self.holdings = account_data.get_account_holdings(self)
         self.isLive = False
         self.lastActivity = datetime.now()
 
     def __getattr__(self, name):
-        # It takes some time to initialise the exchange object, but it's not always needed instantly.
-        # Instead, only initialise it when it is first accessed.
+        # It takes some time to initialise the exchange object and to get the user's holdings, 
+        #    but they're not always needed instantly.
+        # Instead, only initialise them when it is first accessed.
+        # This will significantly reduce the time it takes to login.
         if name == 'exchange':
             self.exchange = Exchange(self.infoDict['exchangeID'], self.infoDict['apiKey'], dotenv.dotenv_values("./server/.env")[f"{self.id}_SECRET_KEY"])
             return self.exchange
+        elif name == 'holdings':
+            self.holdings = account_data.get_account_holdings(self)
+            return self.holdings
         else:
             raise NotImplementedError
 

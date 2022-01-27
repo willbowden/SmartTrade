@@ -3,6 +3,8 @@ import "../App.css";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import protectedFetch from "../auth/protectedFetch";
+import { Box, Stack, TextField, Button, CircularProgress } from '@mui/material';
+import CenteredPageContainer from "./centeredPageContainer";
 
 am4core.options.onlyShowOnViewport = true;
 
@@ -16,12 +18,12 @@ function CandlestickChart(props) {
   const config = { candleType: "candles", requiredIndicators: [] };
 
   useLayoutEffect(() => {
-    console.log(this.props.test);
-    const token_header = JSON.parse(localStorage.getItem('REACT_TOKEN_AUTH_KEY'));
-    const token = token_header.access_token
+    console.log(props.test);
     let x = am4core.create("chartdiv", am4charts.XYChart);
 
     x.paddingRight = 20;
+    x.legend = new am4charts.Legend();
+    x.legend.markers.template.disabled = true;
 
     let dateAxis = x.xAxes.push(new am4charts.DateAxis());
     dateAxis.renderer.grid.template.location = 0;
@@ -31,6 +33,8 @@ function CandlestickChart(props) {
     }
     dateAxis.dateFormatter = new am4core.DateFormatter();
     dateAxis.dateFormatter.dateFormat = "i";
+    dateAxis.renderer.stroke = '#ffffff';
+    dateAxis.renderer.fill = "#ffffff";
 
     let valueAxis = x.yAxes.push(new am4charts.ValueAxis());
     valueAxis.tooltip.disabled = true;
@@ -42,7 +46,7 @@ function CandlestickChart(props) {
     series.dataFields.openValueY = "open";
     series.dataFields.lowValueY = "low";
     series.dataFields.highValueY = "high";
-    series.tooltipText = "Open: ${openValueY.value}[/]\nLow: ${lowValueY.value}[/]\nHigh: ${highValueY.value}[/]\nClose: ${valueY.value}[/]";
+    series.legendSettings.itemValueText = "[bold]{valueY}[/bold]";
     x.cursor = new am4charts.XYCursor()
     x.cursor.behaviour = "panX";
 
@@ -51,7 +55,7 @@ function CandlestickChart(props) {
     return () => {
       x.dispose();
     };
-  }, []);
+  });
   
   useLayoutEffect(() => {
     chart.current.data = result;
@@ -79,46 +83,31 @@ function CandlestickChart(props) {
   };
 
   return (
-    <div className="centered-div">
-      {loading ? null : null}
-      <form>
-        <label>Symbol:</label> {/* Form for entering info */}
-        <input
-          type="text"
-          value={symbol}
-          onChange={(e) => {
-            setSymbol(e.target.value);
+    <CenteredPageContainer>
+      {loading ? <CircularProgress /> : 
+      <Stack sx={{display: 'flex', justifyContent: 'center'}}>
+      <Box
+          component="form"
+          sx={{
+            '& .MuiTextField-root': { m: 1, width: '25ch' },
+            backgroundColor: '#212121',
+            borderRadius: 2,
+            padding: 3
           }}
-        ></input>
-      </form>
-      <form>
-        <label>Timeframe:</label> {/* Form for entering info */}
-        <input
-          type="text"
-          value={timeframe}
-          onChange={(e) => {
-            setTimeframe(e.target.value);
-          }}
-        ></input>
-      </form>
-      <form>
-        <label>Start Date:</label> {/* Form for entering info */}
-        <input
-          type="text"
-          value={startDate}
-          onChange={(e) => {
-            setStartDate(e.target.value);
-          }}
-        ></input>
-      </form>
-      <div id="chartdiv" style={{ width: "100%", height: "500px" }}></div>
-      <input
-        className="button"
-        type="button"
-        value="Test"
-        onClick={sendRequest}
-      ></input>
-    </div>
+          noValidate
+          autoComplete="off"
+        >
+          <TextField label="Symbol" value={symbol} onChange={(e) => setSymbol(e.target.value)} />
+          <TextField label="Timeframe" value={timeframe} onChange={(e) => setTimeframe(e.target.value)} />
+          <TextField label="Start Date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+          <Button variant="contained" color="success" onClick={sendRequest}>Go</Button>
+      </Box>
+      <Box sx={{width: '100vw'}}>
+        <div id="chartdiv" style={{ width: "100%", height: "500px" }}></div>
+      </Box>
+      </Stack>
+        }
+    </CenteredPageContainer>
   );
 }
 

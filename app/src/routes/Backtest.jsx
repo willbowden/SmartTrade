@@ -1,12 +1,14 @@
 import React from "react";
 import '../App.css';
+import { Typography } from '@mui/material';
+import CenteredPageContainer from "../components/centeredPageContainer";
  
 class Backtest extends React.Component {
   render() {
     return (
-      <div className="centered-div">
-          <h1>BACKTESTING PAGE</h1>
-      </div>
+      <CenteredPageContainer>
+        <Typography variant="h1">Backtesting Page</Typography>
+      </CenteredPageContainer>
     );
   }
 }
