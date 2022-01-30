@@ -1,14 +1,17 @@
 import React from "react";
-import Typography from '@mui/material/Typography';
 import CenteredPageContainer from '../components/centeredPageContainer.jsx';
+import { Grid, Box, Typography, Button, Item } from '@mui/material';
 
 
 function Dashboard() {
   return ( 
     <CenteredPageContainer>
-      <Typography variant="h1">
-        Dashboard
-      </Typography>
+      <Grid item xs={6} >
+        Ayo
+      </Grid>
+      <Grid item xs={6}>
+        Ayo
+      </Grid>
     </CenteredPageContainer>
   );
 }

@@ -6,8 +6,8 @@ export default function CenteredPageContainer(props) {
     <Grid         
         container
         spacing={0}
-        direction="column"
         alignItems="center"
+        textAlign="center"
         justifyContent="center"
         style={{ minHeight: '92vh', width: '100vw' }}
     >

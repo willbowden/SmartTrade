@@ -75,7 +75,7 @@ def main():
     @jwt_required()
     def get_user_holdings():
         print(f"Fetching Balances For: {current_identity.id}")
-        return jsonify(account_data.get_account_holdings(current_identity))
+        return jsonify(current_identity.get_holdings())
 
     @app.route('/api/register', methods=['POST'])
     def register():
