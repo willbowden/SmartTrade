@@ -1,20 +1,36 @@
 import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
 import {login} from "../auth"
-import { Box, Stack, TextField, Select, FormControl, MenuItem, InputLabel, Typography, Button, CircularProgress } from '@mui/material';
+import { Box, Stack, TextField, Select, FormControl, FormHelperText, MenuItem, InputLabel, Typography, Button, CircularProgress } from '@mui/material';
 import CenteredPageContainer from "../components/centeredPageContainer";
 
 function Register() {
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const [nickname, setNickname] = useState('')
-    const [apiKey, setAPIKey] = useState('')
-    const [secretKey, setSecretKey] = useState('')
-    const [exchangeID, setExchangeID] = useState('binance')
-    const [currency, setCurrency] = useState('')
-    const [errorMessage, setErrorMessage] = useState('')
+    const [username, setUsername] = useState(null)
+    const [inputErrors, setInputErrors] = useState({currency: true, exchangeID: true})
+    const [password, setPassword] = useState(null)
+    const [nickname, setNickname] = useState(null)
+    const [apiKey, setAPIKey] = useState(null)
+    const [secretKey, setSecretKey] = useState(null)
+    const [exchangeID, setExchangeID] = useState(null)
+    const [currency, setCurrency] = useState(null)
+    const [errorMessage, setErrorMessage] = useState(null)
     const[loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    const checkInput = function (field, value, minLength, maxLength, changerFunc) {
+      if (minLength <= value.length && value.length <= maxLength) {
+        let temp = inputErrors;
+        temp[field] = false;
+        setInputErrors(temp);
+        changerFunc(value);
+      } else {
+        let temp = inputErrors;
+        temp[field] = true;
+        setInputErrors(temp);
+        changerFunc(value);
+      }
+     console.log(inputErrors['username'])
+    }
   
     const onSubmitClick = (e)=>{
       e.preventDefault()
@@ -65,12 +81,16 @@ function Register() {
             <TextField
               label="Username"
               variant="outlined"
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => checkInput("username", e.target.value, 4, 20, setUsername)}
+              error={inputErrors.username}
+              helperText={inputErrors.username ? "Please enter a value of 4-20 characters in length." : null}
             />
             <TextField
               label="Nickname"
               variant="outlined"
-              onChange={(e) => setNickname(e.target.value)}
+              onChange={(e) => checkInput("nickname", e.target.value, 4, 20, setNickname)}
+              error={inputErrors.nickname}
+              helperText={inputErrors.nickname ? "Please enter a value of 4-20 characters in length." : null}
             />
             </Box>
             <Box>
@@ -78,16 +98,20 @@ function Register() {
                 label="Password"
                 type="password"
                 variant="outlined"
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => checkInput("password", e.target.value, 8, 20, setPassword)}
+                error={inputErrors.password}
+              helperText={inputErrors.password ? "Please enter a value of 8-20 characters in length." : null}
               />
               <FormControl sx={{m: 1, width: '47.5%'}}>
               <InputLabel id="exchange-selector">Exchange</InputLabel>
               <Select labelID="exchange-selector"
                 value={exchangeID}
                 label="Exchange"
-                onChange={(e) => setExchangeID(e.target.value)}>
+                onChange={(e) => checkInput("exchangeID", e.target.value, 4, 20, setExchangeID)}
+                error={inputErrors.exchangeID}>
                   <MenuItem value={'binance'}>Binance</MenuItem>
                 </Select>
+                {inputErrors.exchangeID ? <FormHelperText>Please select a value.</FormHelperText> : null}
               </FormControl>
             </Box>
             <Box>
@@ -95,13 +119,17 @@ function Register() {
                 label="API Key"
                 type="password"
                 variant="outlined"
-                onChange={(e) => setAPIKey(e.target.value)}
+                onChange={(e) => checkInput("apiKey", e.target.value, 64, 64, setAPIKey)}
+                error={inputErrors.apiKey}
+                helperText={inputErrors.apiKey ? "Your API Key should be 64 characters in length." : null}
               />
               <TextField
                 label="Private API Key"
                 type="password"
                 variant="outlined"
-                onChange={(e) => setSecretKey(e.target.value)}
+                onChange={(e) => checkInput("secretKey", e.target.value, 64, 64, setSecretKey)}
+                error={inputErrors.secretKey}
+                helperText={inputErrors.secretKey ? "Your Private API Key should be 64 characters characters in length." : null}
               />
             </Box>
             <FormControl sx={{m: 1, width: '97.5%'}}>
@@ -109,12 +137,14 @@ function Register() {
               <Select labelID="currency-selector"
                 value={currency}
                 label="Currency"
-                onChange={(e) => setCurrency(e.target.value)}>
+                onChange={(e) => checkInput("currency", e.target.value, 3, 3, setCurrency)}
+                error={inputErrors.currency}>
                   <MenuItem value={'usd'}>USD</MenuItem>
                   <MenuItem value={'gbp'}>GBP</MenuItem>
                   <MenuItem value={'eur'}>EUR</MenuItem>
                   <MenuItem value={'cny'}>CNY</MenuItem>
                 </Select>
+                {inputErrors.currency ? <FormHelperText>Please select a value.</FormHelperText> : null}
               </FormControl>
             <Button sx={{marginTop: 1}} variant="contained" color="success" onClick={onSubmitClick}>Go</Button>
           </Stack>

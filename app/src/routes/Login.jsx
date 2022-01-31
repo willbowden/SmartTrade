@@ -5,6 +5,8 @@ import { Box, Stack, TextField, Typography, Button, CircularProgress } from '@mu
 import CenteredPageContainer from "../components/centeredPageContainer";
 
 function Login() {
+    const [usernameError, setUsernameError] = useState(false)
+    const [passwordError, setPasswordError] = useState(false)
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [errorMessage, setErrorMessage] = useState('')
@@ -37,11 +39,21 @@ function Login() {
     }
   
     const handleUsernameChange = (e) => {
-      setUsername(e.target.value)
+      if (e.target.value.length < 4) {
+        setUsernameError(true);
+      } else {
+        setUsernameError(false);
+        setUsername(e.target.value);
+      };
     }
   
     const handlePasswordChange = (e) => {
-      setPassword(e.target.value)
+      if (e.target.value.length < 8) {
+        setPasswordError(true);
+      } else {
+        setPasswordError(false);
+        setPassword(e.target.value);
+      };
     }
 
   
@@ -65,12 +77,16 @@ function Login() {
               label="Username"
               variant="outlined"
               onChange={handleUsernameChange}
+              error={usernameError}
+              helperText={usernameError ? "Please enter a value 4 or more characters long." : null}
             />
             <TextField
               label="Password"
               type="password"
               variant="outlined"
               onChange={handlePasswordChange}
+              error={passwordError}
+              helperText={passwordError ? "Please enter a value 8 or more characters long." : null}
             />
             <Button sx={{marginTop: 1}} variant="contained" color="success" onClick={onSubmitClick}>Go</Button>
             {errorMessage ? <Typography color="red" paragraph>{errorMessage}</Typography> : null}
