@@ -94,7 +94,7 @@ def __assemble_transactions(user, tradedPairs, trades=None):
 
     return txns
 
-def track_transactions(user, tradedPairs, trades=None): # Track a user's trading history and use it to populate the database.
+def track_transactions(user, tradedPairs, trades=None):
     txns = __assemble_transactions(user, tradedPairs, trades)
 
     tradeHistory = pd.DataFrame(columns=['timestamp', 'type', 'symbol', 'cost', 'amount', 'profit'])
@@ -105,8 +105,6 @@ def track_transactions(user, tradedPairs, trades=None): # Track a user's trading
         return tradeHistory
 
     balances = {}
-
-
     for pair in tradedPairs:
         coins = pair.split("/") # Separate trading pairs into base and quote currency
         for coin in coins:
@@ -115,7 +113,7 @@ def track_transactions(user, tradedPairs, trades=None): # Track a user's trading
 
     for index, txn in txns.iterrows():
         timestamp = int(txn['timestamp'].value / 1e6)
-        if txn['type'] in ['buy', 'sell', 'fiatBuy', 'fiatSell']: # If we're working with a trading pair..
+        if txn['type'] in ['fiatBuy']: # If we're working with a trading pair..
             base, quote = txn['symbol'].split("/") # .. separate into base and quote currencies.
             quoteValue = user.exchange.fetch_price_at_time(quote, timestamp)
             baseValue = user.exchange.fetch_price_at_time(base, timestamp)
@@ -144,12 +142,8 @@ def track_transactions(user, tradedPairs, trades=None): # Track a user's trading
             balances, profit = __decrease_balances(user, balances, base, txn['cost'], baseValue)
             tradeHistory = __add_trade(tradeHistory, txn, txn['symbol'], txn['cost'], profit)
 
-        print(txn['type'])
-        print(tradeHistory)
-        print(balances)
-        input()
-
     print(tradeHistory)
+    print(balances)
 
     return tradeHistory
             
@@ -187,13 +181,13 @@ def __decrease_balances(user, balances: dict, coin: str, amount: float, value:fl
 
 
 
-trades = pd.read_json('trades.json')
-with open('tradedPairs.json', 'r') as infile:
+trades = pd.read_json('./Testing Files/trades.json')
+with open('./Testing Files/tradedPairs.json', 'r') as infile:
     tradedPairs = json.load(infile)
 
-with open('trades.json', 'r') as infile:
+with open('./Testing Files/trades.json', 'r') as infile:
     trades = pd.read_json(infile)
 
 out = track_transactions(u, tradedPairs, trades)
-with open('tradeHistory.json', 'w') as outfile:
-    out.to_json(outfile)
+# with open('tradeHistory.json', 'w') as outfile:
+#     out.to_json(outfile)
