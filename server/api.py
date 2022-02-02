@@ -69,6 +69,8 @@ def main():
         print(f"Gathering dataset for: {payload['symbol']}")
         dataset = datasets.load_dataset(current_identity, payload['symbol'], payload['timeframe'],
          payload['startDate'], payload['config'])
+        dataset = dataset.rename(columns={"timestamp": "time"})
+        dataset = dataset.fillna(0)
         return jsonify(dataset.to_json(orient="records"))
 
     @app.route('/api/get_user_holdings', methods=["GET"])

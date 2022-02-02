@@ -1,15 +1,11 @@
-import React, { useState, useRef, useLayoutEffect } from "react";
-import "../App.css";
-import * as am4core from "@amcharts/amcharts4/core";
-import * as am4charts from "@amcharts/amcharts4/charts";
+import React, { useState, useRef, useEffect } from "react";
+import { createChart } from 'lightweight-charts';
 import protectedFetch from "../auth/protectedFetch";
 import { Box, Stack, TextField, Button, CircularProgress } from '@mui/material';
 import CenteredPageContainer from "./centeredPageContainer";
 
-am4core.options.onlyShowOnViewport = true;
-
 function CandlestickChart(props) {
-  const chart = useRef(null);
+  const [mainChart, setChart] = useState(null)
   const [symbol, setSymbol] = useState("ETH/USDT");
   const [timeframe, setTimeframe] = useState("1h");
   const [startDate, setStartDate] = useState(1634304616000);
@@ -17,49 +13,13 @@ function CandlestickChart(props) {
   const [result, setResult] = useState(null);
   const config = { candleType: "candles", requiredIndicators: [] };
 
-  useLayoutEffect(() => {
-    console.log(props.test);
-    let x = am4core.create("chartdiv", am4charts.XYChart);
-
-    x.paddingRight = 20;
-    x.legend = new am4charts.Legend();
-    x.legend.markers.template.disabled = true;
-
-    let dateAxis = x.xAxes.push(new am4charts.DateAxis());
-    dateAxis.renderer.grid.template.location = 0;
-    dateAxis.baseInterval = {
-        "timeUnit": "hour",
-        "count": 1
-    }
-    dateAxis.dateFormatter = new am4core.DateFormatter();
-    dateAxis.dateFormatter.dateFormat = "i";
-    dateAxis.renderer.stroke = '#ffffff';
-    dateAxis.renderer.fill = "#ffffff";
-
-    let valueAxis = x.yAxes.push(new am4charts.ValueAxis());
-    valueAxis.tooltip.disabled = true;
-    valueAxis.renderer.minWidth = 35;
-
-    var series = x.series.push(new am4charts.CandlestickSeries());
-    series.dataFields.dateX = "timestamp";
-    series.dataFields.valueY = "close";
-    series.dataFields.openValueY = "open";
-    series.dataFields.lowValueY = "low";
-    series.dataFields.highValueY = "high";
-    series.legendSettings.itemValueText = "[bold]{valueY}[/bold]";
-    x.cursor = new am4charts.XYCursor()
-    x.cursor.behaviour = "panX";
-
-    chart.current = x;
-
-    return () => {
-      x.dispose();
-    };
-  });
-  
-  useLayoutEffect(() => {
-    chart.current.data = result;
-}, [result]);
+  useEffect(() => {
+    const chart = createChart(document.getElementById('chartdiv'), {layout: {
+      backgroundColor: '#131722',
+      textColor: 'rgba(255, 255, 255, 0.9)',
+    },});
+    setChart(chart);
+  }, []);
 
   const sendRequest = (e) => {
     // Send a request to the api endpoint of choice
@@ -78,7 +38,10 @@ function CandlestickChart(props) {
     }).then((data) => {
       setLoading(false);
       let asArray = JSON.parse(data);
-      setResult(asArray);
+      console.log(asArray);
+      const candleSeries = mainChart.addCandlestickSeries();
+      candleSeries.setData(asArray);
+
     });
   };
 
