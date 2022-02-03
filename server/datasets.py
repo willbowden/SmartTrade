@@ -79,7 +79,7 @@ def modify_candles(dataframe, candleType) -> pd.DataFrame:
 
 
 def load_dataset(user, symbol: str, timeframe: str, startDate: int, config: dict) -> pd.DataFrame: # Load a dataset from a .json file
-    startDate = startDate - (5 * constants.TIMEFRAME_MILLISECONDS[timeframe]) # So that the start date is actually included in the data. Prevents errors.
+    startDate = startDate - (10 * constants.TIMEFRAME_MILLISECONDS[timeframe]) # So that the start date is actually included in the data. Prevents errors.
     fname = helpers.get_dataset_filepath(symbol, timeframe) # As defined above
     if dataset_exists(symbol, timeframe, startDate): # If we've already downloaded the dataset for the given symbol, and it includes the start date, load it.
         with open(fname, 'r') as infile:
@@ -87,16 +87,18 @@ def load_dataset(user, symbol: str, timeframe: str, startDate: int, config: dict
     else: # Otherwise, create a new one
         print(f"Dataset for {symbol} does not exist or does not contain start date! Creating...")
         datasetWithoutIndicators = create_new_dataset(user, symbol, timeframe, startDate) # Read the raw dataset with just OHLCV data (no indicators)
+        datasetWithoutIndicators['timestamp'] = pd.to_datetime(datasetWithoutIndicators['timestamp'], unit="ms")
     # Find the index closest to our startdate.
-    indexOfStartDate = np.where(datasetWithoutIndicators['timestamp'] >= pd.to_datetime(startDate, unit='ms'))[0][0] 
+    searchForStartDate = np.where(datasetWithoutIndicators['timestamp'] >= pd.to_datetime(startDate, unit='ms'))
+    if len(searchForStartDate) > 0:
+        indexOfStartDate = searchForStartDate[0][0]
 
     dataset = datasetWithoutIndicators.iloc[indexOfStartDate:] # Select only parts of the dataset from the start date onwards
-    if config['candleType'] != 'candles':
-        dataset = modify_candles(dataset, config['candleType'])
 
     dataset = populate_dataset(dataset, config['requiredIndicators']) # Populate the dataset with the required indicators that were provided in the config.
     dataset = dataset.dropna(0) # Remove all rows from the dataset that contain a "Not A Number" value.
     dataset.reset_index(inplace=True, drop=True) # Reset and delete the index.
+    dataset = dataset.drop_duplicates()
 
     return dataset
 

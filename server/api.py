@@ -8,6 +8,7 @@ import requests
 from flask import Flask, jsonify, request
 from flask_jwt import JWT, jwt_required, current_identity
 import dbmanager
+import json
 import time
 from SmartTrade.server.user import User
 from SmartTrade.server import account_data, datasets
@@ -68,10 +69,11 @@ def main():
         payload = request.json
         print(f"Gathering dataset for: {payload['symbol']}")
         dataset = datasets.load_dataset(current_identity, payload['symbol'], payload['timeframe'],
-         payload['startDate'], payload['config'])
+         int(payload['startDate']), payload['config'])
         dataset = dataset.rename(columns={"timestamp": "time"})
         dataset = dataset.fillna(0)
-        return jsonify(dataset.to_json(orient="records"))
+        out = dataset.to_json(orient="records", date_unit="s")
+        return jsonify(out)
 
     @app.route('/api/get_user_holdings', methods=["GET"])
     @jwt_required()

@@ -5,21 +5,12 @@ import { Box, Stack, TextField, Button, CircularProgress } from '@mui/material';
 import CenteredPageContainer from "./centeredPageContainer";
 
 function CandlestickChart(props) {
-  const [mainChart, setChart] = useState(null)
   const [symbol, setSymbol] = useState("ETH/USDT");
   const [timeframe, setTimeframe] = useState("1h");
   const [startDate, setStartDate] = useState(1634304616000);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const config = { candleType: "candles", requiredIndicators: [] };
-
-  useEffect(() => {
-    const chart = createChart(document.getElementById('chartdiv'), {layout: {
-      backgroundColor: '#131722',
-      textColor: 'rgba(255, 255, 255, 0.9)',
-    },});
-    setChart(chart);
-  }, []);
 
   const sendRequest = (e) => {
     // Send a request to the api endpoint of choice
@@ -39,7 +30,11 @@ function CandlestickChart(props) {
       setLoading(false);
       let asArray = JSON.parse(data);
       console.log(asArray);
-      const candleSeries = mainChart.addCandlestickSeries();
+      const chart = createChart(document.getElementById('chartdiv'), {layout: {
+        backgroundColor: '#131722',
+        textColor: 'rgba(255, 255, 255, 0.9)',
+      },});
+      const candleSeries = chart.addCandlestickSeries();
       candleSeries.setData(asArray);
 
     });
