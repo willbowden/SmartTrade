@@ -9,7 +9,7 @@ function Dashboard() {
   return ( 
     <CenteredPageContainer>
       <Grid item xs={4} >
-        <HoldingsTable />
+        {/*<HoldingsTable />*/}
       </Grid>
     </CenteredPageContainer>
   );

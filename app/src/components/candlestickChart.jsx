@@ -33,6 +33,18 @@ function CandlestickChart(props) {
       const chart = createChart(document.getElementById('chartdiv'), {layout: {
         backgroundColor: '#131722',
         textColor: 'rgba(255, 255, 255, 0.9)',
+      }, 
+      timeScale: {
+        timeVisible: true,
+        secondsVisible: false,
+      },
+      grid: {
+        vertLines: {
+          color: '#292929',
+        },
+        horzLines: {
+          color: '#292929',
+        },
       },});
       const candleSeries = chart.addCandlestickSeries();
       candleSeries.setData(asArray);
