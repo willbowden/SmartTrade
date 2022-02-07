@@ -1,7 +1,9 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Grid, Button, Stack } from '@mui/material';
+import { Grid, Button, Stack, Typography } from '@mui/material';
 import IndicatorBox from './indicatorBox';
+
+
 export default function IndicatorSelector(props) {
     const [index, setIndex] = useState(0);
     const [chosenIndicators, setChosenIndicators] = useState([]);
@@ -26,20 +28,29 @@ export default function IndicatorSelector(props) {
         setChosenIndicators(temp);
     }
 
+    const deleteIndicator = (i) => {
+        let temp = chosenIndicators;
+        temp.splice(i, 1);
+        setChosenIndicators(temp);
+        temp = index - 1;
+        setIndex(temp);
+    }
+
     return (
         <Stack>
+            <Typography variant="h3" sx={{paddingBottom: 5}}>Step 1: Choose Your Indicators</Typography>
             <Grid item xs={12}>
                 <Stack>
                     {Array.apply(null, Array(index)).map(function (x, i) { return i; }).map(
                         (x, i) => {
-                            return <IndicatorBox changerFunc={changerFunc} index={i} available={availableIndicators}></IndicatorBox>
+                            return <IndicatorBox changerFunc={changerFunc} onDelete={deleteIndicator} index={i} available={availableIndicators}></IndicatorBox>
                         }
                     )}
                 </Stack>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{display: 'flex', justifyContent: 'space-evenly'}}>
                 <Button variant="contained" color="secondary" onClick={() => {addIndicator();}}>Add Another</Button>
-                <Button variant="contained" color="success">Submit</Button>
+                <Button variant="contained" color="success" onClick={() => props.onComplete(chosenIndicators)}>Submit</Button>
             </Grid>
         </Stack>
     )  

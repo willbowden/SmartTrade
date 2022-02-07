@@ -1,28 +1,34 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Grid, Select, FormControl, InputLabel, MenuItem, TextField } from '@mui/material';
+import { Grid, Select, Container, FormControl, InputLabel, MenuItem, TextField, Box, IconButton } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
 
 export default function IndicatorBox(props) {
-    const [name, setName] = useState(null);
-    const [chosen, setChosen] = useState(null);
+    const [name, setName] = useState("");
+    const [chosen, setChosen] = useState({});
     const [showOptions, setShowOptions] = useState(false);
 
     const chooseIndicator = (name) => {
         setName(name)
         props.available.forEach((val, index) => {
-            if (val.name.toUpperCase() === name) {
+            if (val.name === name) {
                 setChosen(val);
-                setShowOptions(true);
-                updateParent()
             }
         })
     }
+
+    useEffect(() =>
+    {
+        if (Object.keys(chosen).length > 0) {
+            setShowOptions(true);
+            updateParent();
+        }
+    }, [chosen])
 
     const updateArgs = (key, value) => {
         let temp = chosen;
         temp.arguments[key] = value;
         setChosen(temp)
-        updateParent()
     }
     
     const updateParent = () => {
@@ -30,29 +36,38 @@ export default function IndicatorBox(props) {
     }
 
     return (
-        <Grid item sx={6}>
-            <FormControl sx={{width: '50vw'}}>
-                <InputLabel id="indicator-selector">Indicator</InputLabel>
-                <Select labelId="indicator-selector"
-                    value={name}
-                    label="Indicator"
-                    onChange={(e) => {chooseIndicator(e.target.value);}}
-                >
-                    {props.available.map((object, i) => {
-                        return <MenuItem value={object.name}>{object.name.toUpperCase()}</MenuItem>
-                    })}
-                </Select>
-            </FormControl>
-            <Grid item sx={12}>
-                { showOptions ? chosen.arguments.map((key, i) => {
-                    return <TextField
-                        label={key.toUpperCase()}
-                        variant="outlined"
-                        key={key}
-                        onChange={(e) => updateArgs(props.key, e.target.value)}
-                    />
-                }) : null}
+        <Box sx={{bgcolor: '#212121', padding: 1, borderRadius: 2, width: '50vw'}}>
+            <Grid container>
+                <Grid item xs={11}>
+                <FormControl sx={{width: '95%'}}>
+                    <InputLabel id="indicator-selector">Indicator</InputLabel>
+                    <Select labelId="indicator-selector"
+                        value={name}
+                        label="Indicator"
+                        onChange={(e) => {chooseIndicator(e.target.value)}}
+                    >
+                        {props.available.map((object, i) => {
+                            return <MenuItem value={object.name}>{object.name.toUpperCase()}</MenuItem>
+                        })}
+                    </Select>
+                </FormControl>
+                </Grid>
+                <Grid item xs={1}>
+                    <IconButton onClick={() => props.onDelete(props.index)}>
+                        <ClearIcon />
+                    </IconButton>
+                </Grid>
+                <Box sx={{padding: 1}}>
+                    { showOptions ? Object.keys(chosen.arguments).map((key, i) => {
+                        return <TextField
+                            label={key.toUpperCase()}
+                            variant="outlined"
+                            value={chosen.arguments[key]}
+                            onChange={(e) => updateArgs(key, e.target.value)}
+                        />
+                    }) : null}
+                </Box>
             </Grid>
-        </Grid>
+        </Box>
     )  
 }
