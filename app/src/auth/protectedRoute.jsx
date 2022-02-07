@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import protectedFetch from './protectedFetch';
 
@@ -7,7 +7,7 @@ const PrivateRoute = function () {
 
   function refreshStatus() { // Verify the user's token
     try {
-      protectedFetch('/api/verify_token').then(r => r.json()).then(result => {
+      protectedFetch('/api/verify_token').then(result => {
         return
       })
     } catch (err) {

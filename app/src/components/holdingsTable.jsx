@@ -11,7 +11,7 @@ export default function HoldingsTable() {
         protectedFetch('/api/get_user_holdings').then(result => {
         let asArray = []
         for (const [key, value] of Object.entries(result)) {
-            if (key != 'totalValue') {
+            if (key !== 'totalValue') {
             asArray.push({asset: key, quantity: value.balance, value: value.value})
             }
         }

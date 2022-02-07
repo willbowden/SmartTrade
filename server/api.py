@@ -52,11 +52,18 @@ def main():
     app.config['JWT_AUTH_PASSWORD_KEY'] = 'password'
     jwt = JWT(app, authenticate_user, get_user_by_id) # Create our JWT auth manager
 
+    with open('./server/available_indicators.json', 'r') as infile:
+        AVAILABLEINDICATORS = json.load(infile)
+
     @app.route('/time', methods=["GET"])
     @jwt_required()
     def get_current_time():
         print(current_identity)
         return jsonify({'time': time.time()})
+
+    @app.route('/api/available_indicators', methods=["GET"])
+    def get_available_indicators():
+        return jsonify(AVAILABLEINDICATORS)
 
     @app.route('/api/verify_token', methods=['GET'])
     @jwt_required()

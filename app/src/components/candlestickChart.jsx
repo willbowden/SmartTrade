@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { createChart } from 'lightweight-charts';
 import protectedFetch from "../auth/protectedFetch";
 import { Box, Stack, TextField, Button, CircularProgress } from '@mui/material';
@@ -9,7 +9,6 @@ function CandlestickChart(props) {
   const [timeframe, setTimeframe] = useState("1h");
   const [startDate, setStartDate] = useState(1634304616000);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
   const config = { candleType: "candles", requiredIndicators: [] };
 
   const sendRequest = (e) => {

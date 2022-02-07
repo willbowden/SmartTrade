@@ -1,18 +1,18 @@
 import React from "react";
 import CenteredPageContainer from '../components/centeredPageContainer.jsx';
 import { Grid } from '@mui/material';
-import HoldingsTable from "../components/holdingsTable.jsx";
+import IndicatorSelector from "../components/indicatorSelector.jsx";
 
 
-function Dashboard() {
+function StrategyWriter() {
   
   return ( 
     <CenteredPageContainer>
-      <Grid xs={4} >
-        {/*<HoldingsTable />*/}
+      <Grid>
+          <IndicatorSelector></IndicatorSelector>
       </Grid>
     </CenteredPageContainer>
   );
 }
  
-export default Dashboard;
+export default StrategyWriter;

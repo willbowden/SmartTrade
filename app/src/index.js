@@ -11,6 +11,7 @@ import APITest from './routes/APITest';
 import CandlestickChart from './components/candlestickChart';
 import PrivateRoute from './auth/protectedRoute';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import StrategyWriter from './routes/StrategyWriter';
 
 const darkTheme = createTheme({
   palette: {
@@ -26,6 +27,9 @@ ReactDOM.render(
         <Route exact path="/" element={<App />}>
           <Route exact path='/dashboard' element={<PrivateRoute />}>
               <Route exact path='/dashboard' element={<Dashboard />}/>
+          </Route>
+          <Route exact path='/strategy_writer' element={<PrivateRoute />}>
+            <Route exact path="/strategy_writer" element={<StrategyWriter />}/>
           </Route>
           <Route exact path='/chart_test' element={<CandlestickChart />}/>
           <Route exact path='/api_test' element={<PrivateRoute />}>

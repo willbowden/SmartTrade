@@ -1,0 +1,55 @@
+[
+    {
+        "name": "rsi",
+        "functionName": "talib.RSI",
+        "plot": null,
+        "data": ["close"],
+        "arguments": {
+            "timeperiod": 14
+        },
+        "output": [
+            "rsi"
+        ]
+    },
+    {
+        "name": "bbands",
+        "functionName": "talib.BBANDS",
+        "plot": {
+            "objects": [
+                {
+                    "name": "upperband",
+                    "type": "LineSeries",
+                    "lineWidth": 2,
+                    "colour": "#e38e27",
+                    "value": "upperband"
+                },
+                {
+                    "name": "middleband",
+                    "type": "LineSeries",
+                    "lineWidth": 3,
+                    "colour": "#e38e27",
+                    "value": "middleband"
+                },
+                {
+                    "name": "lowerband",
+                    "type": "LineSeries",
+                    "lineWidth": 2,
+                    "colour": "#e38e27",
+                    "value": "lowerband"
+                }
+            ]
+        },
+        "data": ["close"],
+        "arguments": {
+            "timeperiod": 5, 
+            "nbdevup": 2, 
+            "nbdevdn": 2,
+            "matype": 0
+        },
+        "output": [
+            "upperband",
+            "middleband",
+            "lowerband"
+        ]
+    }
+]
