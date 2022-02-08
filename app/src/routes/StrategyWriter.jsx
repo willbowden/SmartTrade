@@ -26,7 +26,7 @@ function StrategyWriter() {
     <CenteredPageContainer>
       <Grid>
           { stage === 0 ? <IndicatorSelector onComplete={chooseIndicators}/> : null}
-          { stage === 1 ? <RuleMaker indicators={indicators} onComplete={chooseIndicators}/> : null}
+          { stage === 1 ? <RuleMaker indicators={indicators} onComplete={addRules}/> : null}
       </Grid>
     </CenteredPageContainer>
   );

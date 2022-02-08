@@ -1,6 +1,7 @@
 [
     {
         "name": "rsi",
+        "properName": "Relative Strength Index",
         "functionName": "talib.RSI",
         "plot": null,
         "data": ["close"],
@@ -13,6 +14,7 @@
     },
     {
         "name": "bbands",
+        "properName": "Bolinger Bands",
         "functionName": "talib.BBANDS",
         "plot": {
             "objects": [
@@ -50,6 +52,52 @@
             "upperband",
             "middleband",
             "lowerband"
+        ]
+    },
+    {
+        "name": "ema",
+        "properName": "Exponential Moving Average",
+        "functionName": "talib.EMA",
+        "plot": {
+            "objects": [
+                {
+                    "name": "ema",
+                    "type": "LineSeries",
+                    "lineWidth": 2,
+                    "colour": "#e38e27",
+                    "value": "ema"
+                }
+            ]
+        },
+        "data": ["close"],
+        "arguments": {
+            "timeperiod": 9
+        },
+        "output": [
+            "ema"
+        ]
+    },
+    {
+        "name": "ma",
+        "properName": "Simple Moving Average",
+        "functionName": "talib.MA",
+        "plot": {
+            "objects": [
+                {
+                    "name": "ma",
+                    "type": "LineSeries",
+                    "lineWidth": 2,
+                    "colour": "#e38e27",
+                    "value": "ma"
+                }
+            ]
+        },
+        "data": ["close"],
+        "arguments": {
+            "timeperiod": 9
+        },
+        "output": [
+            "ma"
         ]
     }
 ]

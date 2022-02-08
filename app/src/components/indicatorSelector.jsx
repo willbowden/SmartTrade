@@ -36,6 +36,14 @@ export default function IndicatorSelector(props) {
         setIndex(temp);
     }
 
+    const handleSubmit = () => {
+        if (Object.keys(chosenIndicators).length < 1) {
+            alert("Please select an indicator!");
+        } else {
+            props.onComplete(chosenIndicators);
+        }
+    }
+
     return (
         <Stack>
             <Typography variant="h3" sx={{paddingBottom: 5}}>Step 1: Choose Your Indicators</Typography>
@@ -43,14 +51,14 @@ export default function IndicatorSelector(props) {
                 <Stack>
                     {Array.apply(null, Array(index)).map(function (x, i) { return i; }).map(
                         (x, i) => {
-                            return <IndicatorBox changerFunc={changerFunc} onDelete={deleteIndicator} index={i} available={availableIndicators}></IndicatorBox>
+                            return <IndicatorBox key={i} changerFunc={changerFunc} onDelete={deleteIndicator} index={i} available={availableIndicators}></IndicatorBox>
                         }
                     )}
                 </Stack>
             </Grid>
             <Grid item xs={12} sx={{display: 'flex', justifyContent: 'space-evenly'}}>
                 <Button variant="contained" color="secondary" onClick={() => {addIndicator();}}>Add Another</Button>
-                <Button variant="contained" color="success" onClick={() => props.onComplete(chosenIndicators)}>Submit</Button>
+                <Button variant="contained" color="success" onClick={handleSubmit}>Submit</Button>
             </Grid>
         </Stack>
     )  
