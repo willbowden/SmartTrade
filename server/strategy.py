@@ -13,6 +13,9 @@ class Strategy:
     def __load_from_json(self) -> None:
         pass
 
+    def save_to_json(self) -> None:
+        pass
+
     def check_buy(self, bot: object, data: pd.DataFrame, index: int, symbol: str) -> None:
         pass
 

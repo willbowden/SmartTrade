@@ -65,6 +65,18 @@ def main():
     def get_available_indicators():
         return jsonify(AVAILABLEINDICATORS)
 
+    @app.route('/api/create_strategy', methods=["GET", "POST"])
+    @jwt_required()
+    def create_strategy():
+        payload = request.json
+        dbmanager.create_strategy(current_identity.id, payload['name'])
+
+    @app.route('/api/get_strategies', methods=["GET"])
+    @jwt_required()
+    def get_user_strategies():
+        res = dbmanager.get_user_strategies(current_identity.id)
+        return jsonify(res), 200
+
     @app.route('/api/verify_token', methods=['GET'])
     @jwt_required()
     def verify_token():
