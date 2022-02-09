@@ -26,7 +26,7 @@ export default function Rule(props) {
         }
         console.log(asArray);
         props.changerFunc(type, index, asArray);
-    }, [indicator, comparison, value, duration, numericalValue])
+    }, [indicator, comparison, value, duration, numericalValue, index, props, type])
 
     const getOutputValue = (object, outputName) => {
         if (overlaps.includes(object.name)) {
@@ -65,10 +65,10 @@ export default function Rule(props) {
                         <MenuItem value={"high"}>High Price</MenuItem>
                         <MenuItem value={"low"}>Low Price</MenuItem>
                         <MenuItem value={"close"}>Close Price</MenuItem>
-                        {props.type == "sell" && (
+                        {props.type === "sell" && (
                             <MenuItem value={"profit"}>Profit</MenuItem>
                         )}
-                        {props.type == "sell" && (
+                        {props.type === "sell" && (
                             <MenuItem value={"tradeDuration"}>Time In Trade</MenuItem>
                         )}
                     </Select>

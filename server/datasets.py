@@ -2,7 +2,9 @@
 #    Module to download, process and retrieve datasets containing price data.    #
 ##################################################################################
 
-from SmartTrade.server import constants, helpers
+from simplejson import load
+from SmartTrade.server import constants, helpers, dbmanager
+from SmartTrade.server.user import User
 
 import talib
 import pandas as pd
@@ -61,21 +63,21 @@ def dataset_exists(symbol: str, timeframe: str, startDate: int) -> bool: # Check
 
     return okay
 
-def modify_candles(dataframe, candleType) -> pd.DataFrame:
-    if candleType == 'heikin_ashi':
-        newDataframe = dataframe.apply(lambda x: (x['open'] + x['high'] + x['low'] + x['close']) / 4 if x.name == 'close' else x, axis=1)
-        newOpen = []
-        for i in range(len(newDataframe['open'])):
-            if i == 0:
-                newOpen.append(newDataframe['open'].iat[i])
-            else:
-                newOpen.append(((newOpen[i-1] + newDataframe['close'].iat[i-1]) / 2))
+# def modify_candles(dataframe, candleType) -> pd.DataFrame:
+#     if candleType == 'heikin_ashi':
+#         newDataframe = dataframe.apply(lambda x: (x['open'] + x['high'] + x['low'] + x['close']) / 4 if x.name == 'close' else x, axis=1)
+#         newOpen = []
+#         for i in range(len(newDataframe['open'])):
+#             if i == 0:
+#                 newOpen.append(newDataframe['open'].iat[i])
+#             else:
+#                 newOpen.append(((newOpen[i-1] + newDataframe['close'].iat[i-1]) / 2))
 
-        newDataframe['open'] = newOpen
-        newDataframe = newDataframe.apply(lambda x: max(x['open'], x['high'], x['low'], x['close']) if x.name == 'high' else x, axis=1)
-        newDataframe = newDataframe.apply(lambda x: min(x['open'], x['high'], x['low'], x['close']) if x.name == 'low' else x, axis=1)
-        print(newDataframe)
-        exit()
+#         newDataframe['open'] = newOpen
+#         newDataframe = newDataframe.apply(lambda x: max(x['open'], x['high'], x['low'], x['close']) if x.name == 'high' else x, axis=1)
+#         newDataframe = newDataframe.apply(lambda x: min(x['open'], x['high'], x['low'], x['close']) if x.name == 'low' else x, axis=1)
+#         print(newDataframe)
+#         exit() 
 
 
 def load_dataset(user, symbol: str, timeframe: str, startDate: int, config: dict) -> pd.DataFrame: # Load a dataset from a .json file

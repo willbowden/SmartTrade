@@ -1,14 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createChart } from 'lightweight-charts';
 import protectedFetch from "../auth/protectedFetch";
 import { Box, Stack, TextField, Button, CircularProgress } from '@mui/material';
 import CenteredPageContainer from "./centeredPageContainer";
+import { Navigate } from 'react-router-dom';
 
-function CandlestickChart(props) {
+function CandlestickChart() {
   const [symbol, setSymbol] = useState("ETH/USDT");
   const [timeframe, setTimeframe] = useState("1h");
   const [startDate, setStartDate] = useState(1634304616000);
   const [loading, setLoading] = useState(false);
+  const [data, setData] = useState({});
+  const [chart, setChart] = useState({});
+  const [shouldRedirect, setShouldRedirect] = useState(false);
   const config = { candleType: "candles", requiredIndicators: [] };
 
   const sendRequest = (e) => {
@@ -26,6 +30,10 @@ function CandlestickChart(props) {
       method: "POST",
       body: JSON.stringify(payload),
     }).then((data) => {
+      if (data.response === 'Error') {
+        setShouldRedirect(true);
+      }
+      setData(data);
       setLoading(false);
       let asArray = JSON.parse(data);
       console.log(asArray);
@@ -47,12 +55,19 @@ function CandlestickChart(props) {
       },});
       const candleSeries = chart.addCandlestickSeries();
       candleSeries.setData(asArray);
-
+      setChart(chart);
     });
   };
 
+  useEffect(() => {
+    data.forEach((row, i) => {
+      console.log("UNFINISHED IN CANDLESTICKCHART")
+    })
+  }, [data])
+
   return (
     <CenteredPageContainer>
+      { shouldRedirect ? <Navigate to="/login" /> : null}
       {loading ? <CircularProgress /> : 
       <Stack sx={{display: 'flex', justifyContent: 'center'}}>
       <Box

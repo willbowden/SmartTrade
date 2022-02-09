@@ -11,39 +11,39 @@ export default function IndicatorSelector(props) {
     useEffect(() => {
         fetch('/api/available_indicators').then(r => r.json()).then(data => {
             setAvailableIndicators(data);
-        }
-        )
+        })
     }, [])
 
-    useEffect(() => {
-        console.log(chosenIndicators);
-    }, [chosenIndicators])
+    // useEffect(() => {
+    //     console.log(chosenIndicators);
+    // }, [chosenIndicators])
 
     const addIndicator = (val) => {
-        let temp = [...chosenIndicators];
+        const temp = [...chosenIndicators];
         temp.push(val);
         setChosenIndicators(temp);
     }
     
     const updateOptions = (i, key, value) => {
-        let temp = [...chosenIndicators];
-        temp[i].arguments[key] = value;
-        setChosenIndicators(temp);
+        const newArray = [...chosenIndicators];
+        newArray[i].arguments[key] = value;    
+        setChosenIndicators(newArray);
     }
 
     const chooseIndicator = (i, name) => {
         availableIndicators.forEach((val, index) => {
             if (val.name === name) {
-                let temp = [...chosenIndicators];
+                const temp = [...chosenIndicators];
                 temp[i] = val;
-                console.log("Choosing " + val.name)
+                console.log("Choosing " + val.name);
+                console.log(temp);
                 setChosenIndicators(temp);
             }
         })
     }
 
     const deleteIndicator = (i) => {
-        let temp = [...chosenIndicators];
+        const temp = [...chosenIndicators];
         temp.splice(i, 1);
         setChosenIndicators(temp);
     }
@@ -69,7 +69,7 @@ export default function IndicatorSelector(props) {
                 </Stack>
             </Grid>
             <Grid item xs={12} sx={{display: 'flex', justifyContent: 'space-evenly'}}>
-                <Button variant="contained" color="secondary" onClick={() => {addIndicator({});}}>Add Another</Button>
+                <Button variant="contained" color="secondary" onClick={() => {addIndicator(availableIndicators[0])}}>Add Another</Button>
                 <Button variant="contained" color="success" onClick={handleSubmit}>Submit</Button>
             </Grid>
         </Stack>

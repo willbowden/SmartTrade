@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { Grid, Button, Stack, Typography, TextField } from '@mui/material';
+import { Grid, Button, Typography, TextField } from '@mui/material';
 
 export default function StrategyDetails(props) {
     const [strategyName, setStrategyName] = useState("");

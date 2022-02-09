@@ -11,7 +11,8 @@ class Strategy:
         self.ownerID = ownerID
 
     def __load_from_json(self) -> None:
-        pass
+        self.indicators = loaded['indicators']
+        self.rules = loaded['rules']
 
     def save_to_json(self) -> None:
         pass

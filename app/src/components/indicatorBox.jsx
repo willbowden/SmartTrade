@@ -4,23 +4,10 @@ import { Grid, Select, FormControl, InputLabel, MenuItem, TextField, Box, IconBu
 import ClearIcon from '@mui/icons-material/Clear';
 
 export default function IndicatorBox(props) {
-    const [index, setIndex] = useState(props.index);
-    const [name, setName] = useState("");
-    const [options, setOptions] = useState({});
-    const [showOptions, setShowOptions] = useState(false);
 
     const choose = (name) => {
-        setName(name);
         props.chooseIndicator(props.index, name);
     }
-
-    useEffect(() =>
-    {
-        if (Object.keys(props.indicator).length > 0) {
-            setShowOptions(true);
-        }
-    }, [props.indicator])
-    
 
     return (
         <Box sx={{bgcolor: '#212121', padding: 1, borderRadius: 2, width: '90vw', diplay: 'flex', justifyContent: 'space-evenly'}}>
@@ -30,7 +17,7 @@ export default function IndicatorBox(props) {
                 <FormControl sx={{width: '95%'}}>
                     <InputLabel id="indicator-selector">Indicator</InputLabel>
                     <Select labelId="indicator-selector"
-                        value={name}
+                        value={props.indicator.name}
                         label="Indicator"
                         onChange={(e) => {choose(e.target.value)}}
                     >
@@ -51,9 +38,9 @@ export default function IndicatorBox(props) {
                             return <TextField
                                 key={key}
                                 label={key.toUpperCase()}
-                                defaultValue={props.indicator.arguments[key]}
+                                value={props.indicator.arguments[key] ? props.indicator.arguments[key] : 0}
                                 variant="outlined"
-                                onChange={(e) => props.updateOptions(index, key, parseInt(e.target.value))}
+                                onChange={(e) => props.updateOptions(props.index, key, parseInt(e.target.value))}
                             />
                         })}
                     </Grid>

@@ -1,3 +1,4 @@
+
 function protectedFetch(url, args={}){
     return new Promise((resolve, reject) => {
         const token_header = JSON.parse(localStorage.getItem('REACT_TOKEN_AUTH_KEY'));
@@ -8,7 +9,6 @@ function protectedFetch(url, args={}){
                 resolve(data);
             })
         } catch(err) {
-            console.log(err)
             resolve({response: "Error"})
         }
     })
