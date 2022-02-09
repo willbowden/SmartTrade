@@ -12,6 +12,7 @@ export default function Rule(props) {
     const [duration, setDuration] = useState(1);
     const events = ["crossup", "crossdown"];
     const price = ["high", "low", "close", "open"];
+    const overlaps = ["ema", "ma"];
     const type = props.type
     const index = props.index
 
@@ -23,8 +24,25 @@ export default function Rule(props) {
         } else {
             asArray.push(duration);
         }
+        console.log(asArray);
         props.changerFunc(type, index, asArray);
     }, [indicator, comparison, value, duration, numericalValue])
+
+    const getOutputValue = (object, outputName) => {
+        if (overlaps.includes(object.name)) {
+            return object.name + "_" + outputName + "_" + object.arguments[Object.keys(object.arguments)[0]]
+        } else {
+            return object.name + "_" + outputName
+        }
+    }
+
+    const getProperName = (object, outputName) => {
+        if (overlaps.includes(object.name)) {
+            return object.name + ": " + outputName + " " + object.arguments[Object.keys(object.arguments)[0]]
+        } else {
+            return object.name + ": " + outputName
+        }
+    }
 
     return (
         <Box sx={{bgcolor: '#212121', padding: 1, borderRadius: 2, width: '90vw'}}>
@@ -40,7 +58,7 @@ export default function Rule(props) {
                     >
                         {props.indicators.map((object, i) => {
                             return object.output.map((name, i) => {
-                                return <MenuItem key={object.name+"_"+name} value={object.name+"_"+name}>{object.name+"_"+name}</MenuItem>
+                                return <MenuItem key={getOutputValue(object, name)} value={getOutputValue(object, name)}>{getProperName(object, name)}</MenuItem>
                         })
                         })}
                         <MenuItem value={"open"}>Open Price</MenuItem>

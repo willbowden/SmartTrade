@@ -4,24 +4,30 @@ import { Grid, Button } from '@mui/material';
 import IndicatorSelector from "../components/indicatorSelector.jsx";
 import RuleMaker from "../components/ruleMaker.jsx";
 import StrategyDetails from '../components/strategyDetails.jsx';
-import protectedFetch from '../auth/protectedFetch.jsx';
+import protectedFetch from '../auth/protectedFetch.js';
 import { Navigate } from 'react-router-dom';
 
 function StrategyWriter(props) {
   const [stage, setStage] = useState(0);
-  const [indicators, setIndicators] = useState(props.state.indicators || null);
-  const [rules, setRules] = useState(props.state.rules || null);
-  const [asDict, setAsDict] = useState({})
+  const [indicators, setIndicators] = useState([]);
+  const [rules, setRules] = useState({});
+  const [asDict, setAsDict] = useState({});
+  if (props.state) {
+    setIndicators(props.state.indicators);
+    setRules(props.state.rules);
+    setAsDict(props.state.asDict);
+  } 
   const [allowSubmit, setAllowSubmit] = useState(false);
 
   useEffect(() => {
-    if (asDict !== {}) {
+    if (Object.keys(asDict).length > 0) {
       setAllowSubmit(true);
     }
   }, [asDict])
 
   const chooseIndicators = (chosen) => {  
     setIndicators(chosen);
+    console.log(chosen);
     setStage(1);
   }
 
@@ -29,7 +35,8 @@ function StrategyWriter(props) {
     let temp = rules;
     temp.buy = buyRules;
     temp.sell = sellRules;
-    setRules(temp)
+    console.log(temp);
+    setRules(temp);
     setStage(2);
   }
 
@@ -40,6 +47,7 @@ function StrategyWriter(props) {
         'rules': rules
       };
     setStage(3);
+    console.log(asDict);
     setAsDict(asDict);
   }
   
@@ -56,8 +64,8 @@ function StrategyWriter(props) {
       <Grid>
           { stage === 0 ? <IndicatorSelector onComplete={chooseIndicators}/> : null}
           { stage === 1 ? <RuleMaker indicators={indicators} onComplete={addRules}/> : null}
-          { stage == 2 ? <StrategyDetails onComplete={addDetails} /> : null }
-          { stage == 3 ? <Button disabled={allowSubmit} color="success" onClick={create}>Create Strategy</Button> : null}
+          { stage === 2 ? <StrategyDetails onComplete={addDetails} /> : null }
+          { stage === 3 ? <Button disabled={allowSubmit} color="success" onClick={create}>Create Strategy</Button> : null}
       </Grid>
     </CenteredPageContainer>
   );
