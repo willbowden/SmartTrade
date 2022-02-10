@@ -12,6 +12,7 @@ import json
 import numpy as np
 
 def populate_dataset(dataset: pd.DataFrame, indicators) -> pd.DataFrame: # Calculate & add indicators to the dataset.
+    overlaps = ['ma', 'ema']
     with open(constants.DEFAULT_INDICATORS, 'r') as infile: # Load default indicators from file
         defaultIndicators = json.load(infile)
 
@@ -38,11 +39,16 @@ def populate_dataset(dataset: pd.DataFrame, indicators) -> pd.DataFrame: # Calcu
         if isinstance(result, tuple): # Some indicators return multiple outputs, so we'll separate them out.
             # Iterate over all the results and add a named column to the dataset to..
             #   ..allow us to identify the output.
-            for index, column in enumerate(result): 
+            for index, column in enumerate(result):                     
                 name = f"{item['name']}_{item['output'][index]}"
+                if item['name'] in overlaps:
+                    name += f"_{indicator_args['timeperiod']}"
                 dataset.loc[:, name] = column # Add the indicator to the dataset.
         else:
-            dataset.loc[:, item['name']] = result 
+            name = f"{item['name']}_{item['name']}"
+            if item['name'] in overlaps:
+                name += f"_{indicator_args['timeperiod']}"
+            dataset.loc[:, name] = result 
 
     return dataset
 
@@ -80,7 +86,7 @@ def dataset_exists(symbol: str, timeframe: str, startDate: int) -> bool: # Check
 #         exit() 
 
 
-def load_dataset(user, symbol: str, timeframe: str, startDate: int, config: dict) -> pd.DataFrame: # Load a dataset from a .json file
+def load_dataset(user, symbol: str, timeframe: str, startDate: int, requiredIndicators: dict) -> pd.DataFrame: # Load a dataset from a .json file
     startDate = startDate - (10 * constants.TIMEFRAME_MILLISECONDS[timeframe]) # So that the start date is actually included in the data. Prevents errors.
     fname = helpers.get_dataset_filepath(symbol, timeframe) # As defined above
     if dataset_exists(symbol, timeframe, startDate): # If we've already downloaded the dataset for the given symbol, and it includes the start date, load it.
@@ -97,7 +103,7 @@ def load_dataset(user, symbol: str, timeframe: str, startDate: int, config: dict
 
     dataset = datasetWithoutIndicators.iloc[indexOfStartDate:] # Select only parts of the dataset from the start date onwards
 
-    dataset = populate_dataset(dataset, config['requiredIndicators']) # Populate the dataset with the required indicators that were provided in the config.
+    dataset = populate_dataset(dataset, requiredIndicators ) # Populate the dataset with the required indicators that were provided in the config.
     dataset = dataset.dropna(0) # Remove all rows from the dataset that contain a "Not A Number" value.
     dataset.reset_index(inplace=True, drop=True) # Reset and delete the index.
     dataset = dataset.drop_duplicates()

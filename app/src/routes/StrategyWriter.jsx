@@ -16,16 +16,9 @@ function StrategyWriter(props) {
     setIndicators(props.state.indicators);
     setRules(props.state.rules);
     setAsDict(props.state.asDict);
-  } 
-  const [allowSubmit, setAllowSubmit] = useState(false);
+  }
 
-  useEffect(() => {
-    if (Object.keys(asDict).length > 0) {
-      setAllowSubmit(true);
-    }
-  }, [asDict])
-
-  const chooseIndicators = (chosen) => {  
+  const chooseIndicators = (chosen) => {
     setIndicators(chosen);
     console.log(chosen);
     setStage(1);
@@ -65,7 +58,7 @@ function StrategyWriter(props) {
           { stage === 0 ? <IndicatorSelector onComplete={chooseIndicators}/> : null}
           { stage === 1 ? <RuleMaker indicators={indicators} onComplete={addRules}/> : null}
           { stage === 2 ? <StrategyDetails onComplete={addDetails} /> : null }
-          { stage === 3 ? <Button disabled={allowSubmit} color="success" onClick={create}>Create Strategy</Button> : null}
+          { stage === 3 ? <Button color="success" onClick={create}>Create Strategy</Button> : null}
       </Grid>
     </CenteredPageContainer>
   );

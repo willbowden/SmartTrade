@@ -69,7 +69,9 @@ def main():
     @jwt_required()
     def create_strategy():
         payload = request.json
+        print(payload)
         dbmanager.create_strategy(current_identity.id, payload['name'])
+        return 200
 
     @app.route('/api/get_strategies', methods=["GET"])
     @jwt_required()
@@ -86,9 +88,10 @@ def main():
     @jwt_required()
     def get_dataset():
         payload = request.json
+        print(payload)
         print(f"Gathering dataset for: {payload['symbol']}")
         dataset = datasets.load_dataset(current_identity, payload['symbol'], payload['timeframe'],
-         int(payload['startDate']), payload['config'])
+         int(payload['startDate']), payload['requiredIndicators'])
         dataset = dataset.rename(columns={"timestamp": "time"})
         dataset = dataset.fillna(0)
         out = dataset.to_json(orient="records", date_unit="s")

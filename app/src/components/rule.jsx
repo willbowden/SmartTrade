@@ -110,7 +110,7 @@ export default function Rule(props) {
                         }   
                         {props.indicators.map((object, i) => {
                             return object.output.map((name, i) => {
-                                return <MenuItem key={object.name+"_"+name} value={object.name+"_"+name}>{object.name+"_"+name}</MenuItem>
+                                return <MenuItem key={getOutputValue(object, name)} value={getOutputValue(object, name)}>{getProperName(object, name)}</MenuItem>
                         })
                         })}
                     </Select>

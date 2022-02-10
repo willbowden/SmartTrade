@@ -1,0 +1,105 @@
+var AvailableIndicators = [
+    {
+        "name": "rsi",
+        "properName": "Relative Strength Index",
+        "functionName": "talib.RSI",
+        "plot": null,
+        "data": ["close"],
+        "arguments": {
+            "timeperiod": 14
+        },
+        "output": [
+            "rsi"
+        ]
+    },
+    {
+        "name": "bbands",
+        "properName": "Bolinger Bands",
+        "functionName": "talib.BBANDS",
+        "plot": {
+            "objects": [
+                {
+                    "name": "upperband",
+                    "type": "LineSeries",
+                    "lineWidth": 2,
+                    "colour": "#e38e27",
+                    "value": "upperband"
+                },
+                {
+                    "name": "middleband",
+                    "type": "LineSeries",
+                    "lineWidth": 3,
+                    "colour": "#e38e27",
+                    "value": "middleband"
+                },
+                {
+                    "name": "lowerband",
+                    "type": "LineSeries",
+                    "lineWidth": 2,
+                    "colour": "#e38e27",
+                    "value": "lowerband"
+                }
+            ]
+        },
+        "data": ["close"],
+        "arguments": {
+            "timeperiod": 5, 
+            "nbdevup": 2, 
+            "nbdevdn": 2,
+            "matype": 0
+        },
+        "output": [
+            "upperband",
+            "middleband",
+            "lowerband"
+        ]
+    },
+    {
+        "name": "ema",
+        "properName": "Exponential Moving Average",
+        "functionName": "talib.EMA",
+        "plot": {
+            "objects": [
+                {
+                    "name": "ema",
+                    "type": "LineSeries",
+                    "lineWidth": 2,
+                    "colour": "#e38e27",
+                    "value": "ema"
+                }
+            ]
+        },
+        "data": ["close"],
+        "arguments": {
+            "timeperiod": 9
+        },
+        "output": [
+            "ema"
+        ]
+    },
+    {
+        "name": "ma",
+        "properName": "Simple Moving Average",
+        "functionName": "talib.MA",
+        "plot": {
+            "objects": [
+                {
+                    "name": "ma",
+                    "type": "LineSeries",
+                    "lineWidth": 2,
+                    "colour": "#e38e27",
+                    "value": "ma"
+                }
+            ]
+        },
+        "data": ["close"],
+        "arguments": {
+            "timeperiod": 9
+        },
+        "output": [
+            "ma"
+        ]
+    }
+]
+
+export default AvailableIndicators;

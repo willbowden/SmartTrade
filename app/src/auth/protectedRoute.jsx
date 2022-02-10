@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import protectedFetch from './protectedFetch';
 
 const PrivateRoute = function () {
-  const isAuthenticated = JSON.parse(localStorage.getItem("isAuthenticated"));
+  const [isAuthenticated, setIsAuthenticated] = useState(JSON.parse(localStorage.getItem("isAuthenticated")));
 
   function refreshStatus() { // Verify the user's token
     try {
@@ -12,7 +12,7 @@ const PrivateRoute = function () {
       })
     } catch (err) {
       localStorage.setItem('isAuthenticated', 'false')
-      return <Navigate to="/login"></Navigate>
+      setIsAuthenticated(false);
     }
   }
   

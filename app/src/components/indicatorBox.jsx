@@ -10,9 +10,8 @@ export default function IndicatorBox(props) {
     }
 
     return (
-        <Box sx={{bgcolor: '#212121', padding: 1, borderRadius: 2, width: '90vw', diplay: 'flex', justifyContent: 'space-evenly'}}>
+        <Box sx={{bgcolor: '#212121', padding: 1, margin: 1, borderRadius: 2, width: '90vw', diplay: 'flex', justifyContent: 'space-evenly'}}>
             <Grid container>
-                <Typography variant="body2">{props.index}</Typography>
                 <Grid item xs={11}>
                 <FormControl sx={{width: '95%'}}>
                     <InputLabel id="indicator-selector">Indicator</InputLabel>

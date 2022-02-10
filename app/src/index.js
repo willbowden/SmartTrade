@@ -8,7 +8,7 @@ import Dashboard from './routes/Dashboard';
 import Login from './routes/Login';
 import Register from './routes/Register';
 import APITest from './routes/APITest';
-import CandlestickChart from './components/candlestickChart';
+import ChartTest from './routes/ChartTest';
 import PrivateRoute from './auth/protectedRoute';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import StrategyWriter from './routes/StrategyWriter';
@@ -31,7 +31,7 @@ ReactDOM.render(
           <Route exact path='/strategy_writer' element={<PrivateRoute />}>
             <Route exact path="/strategy_writer" element={<StrategyWriter />}/>
           </Route>
-          <Route exact path='/chart_test' element={<CandlestickChart />}/>
+          <Route exact path='/chart_test' element={<ChartTest />}/>
           <Route exact path='/api_test' element={<PrivateRoute />}>
               <Route exact path='/api_test' element={<APITest />}/>
           </Route>
