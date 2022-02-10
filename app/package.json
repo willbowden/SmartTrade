@@ -19,6 +19,7 @@
     "react-router-dom": "^6.0.1",
     "react-scripts": "^3.4.4",
     "react-token-auth": "^2.2.0",
+    "uuid": "^8.3.2",
     "web-vitals": "^1.1.2"
   },
   "scripts": {

@@ -10,7 +10,7 @@ function CandlestickChart() {
   const [timeframe, setTimeframe] = useState("1h");
   const [startDate, setStartDate] = useState(1634304616000);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState({});
+  const [data, setData] = useState([]);
   const [chart, setChart] = useState({});
   const [shouldRedirect, setShouldRedirect] = useState(false);
   const config = { candleType: "candles", requiredIndicators: [] };

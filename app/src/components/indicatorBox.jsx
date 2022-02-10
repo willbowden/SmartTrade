@@ -32,7 +32,7 @@ export default function IndicatorBox(props) {
                         <ClearIcon />
                     </IconButton>
                 </Grid>
-                { (Object.keys(props.indicator).length > 0) ? 
+                { props.indicator.arguments ? 
                     <Grid item xs={12} sx={{paddingTop: 1.5}}>
                         {Object.keys(props.indicator.arguments).map((key, i) => {
                             return <TextField

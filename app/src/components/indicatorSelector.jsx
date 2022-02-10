@@ -2,10 +2,11 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Grid, Button, Stack, Typography } from '@mui/material';
 import IndicatorBox from './indicatorBox';
+import { v4 as uuidv4 } from 'uuid';
 
 
 export default function IndicatorSelector(props) {
-    const [chosenIndicators, setChosenIndicators] = useState([]);
+    const [chosenIndicators, setChosenIndicators] = useState({});
     const [availableIndicators, setAvailableIndicators] = useState([]);
 
     useEffect(() => {
@@ -14,18 +15,14 @@ export default function IndicatorSelector(props) {
         })
     }, [])
 
-    // useEffect(() => {
-    //     console.log(chosenIndicators);
-    // }, [chosenIndicators])
-
     const addIndicator = (val) => {
-        const temp = [...chosenIndicators];
-        temp.push(val);
-        setChosenIndicators(temp);
+        const newDict = chosenIndicators;
+        newDict[uuidv4()] = val;
+        setChosenIndicators(newDict);
     }
     
     const updateOptions = (i, key, value) => {
-        const newArray = [...chosenIndicators];
+        const newDict = {...chosenIndicators};
         newArray[i].arguments[key] = value;    
         setChosenIndicators(newArray);
     }
@@ -33,7 +30,7 @@ export default function IndicatorSelector(props) {
     const chooseIndicator = (i, name) => {
         availableIndicators.forEach((val, index) => {
             if (val.name === name) {
-                const temp = [...chosenIndicators];
+                const temp = {...chosenIndicators};
                 temp[i] = val;
                 console.log("Choosing " + val.name);
                 console.log(temp);
@@ -43,8 +40,8 @@ export default function IndicatorSelector(props) {
     }
 
     const deleteIndicator = (i) => {
-        const temp = [...chosenIndicators];
-        temp.splice(i, 1);
+        const temp = {...chosenIndicators};
+        temp[i] = null;
         setChosenIndicators(temp);
     }
 
@@ -61,9 +58,9 @@ export default function IndicatorSelector(props) {
             <Typography variant="h3" sx={{paddingBottom: 5}}>Step 1: Choose Your Indicators</Typography>
             <Grid item xs={12}>
                 <Stack>
-                    {chosenIndicators.map(
-                        (indicator, i) => {
-                            return <IndicatorBox key={i} indicator={indicator} chooseIndicator={chooseIndicator} updateOptions={updateOptions} onDelete={deleteIndicator} index={i} available={availableIndicators}></IndicatorBox>
+                    {Object.keys(chosenIndicators).map(
+                        (key, i) => {
+                            return <IndicatorBox key={key} indicator={chosenIndicators[key]} chooseIndicator={chooseIndicator} updateOptions={updateOptions} onDelete={deleteIndicator} index={key} available={availableIndicators}></IndicatorBox>
                         }
                     )}
                 </Stack>
