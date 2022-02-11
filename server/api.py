@@ -11,6 +11,7 @@ import dbmanager
 import json
 import time
 from SmartTrade.server.user import User
+from SmartTrade.server.strategy import Strategy 
 from SmartTrade.server import account_data, datasets
 
 def authenticate_user(username, password): # Verify a user's credentials 
@@ -70,7 +71,9 @@ def main():
     def create_strategy():
         payload = request.json
         print(payload)
-        dbmanager.create_strategy(current_identity.id, payload['name'])
+        # s = Strategy(payload['name'], current_identity.id, payload)
+        # s.save_to_json()
+        # dbmanager.create_strategy(current_identity.id, payload['name'])
         return 200
 
     @app.route('/api/get_strategies', methods=["GET"])
