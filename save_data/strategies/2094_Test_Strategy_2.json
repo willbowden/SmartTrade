@@ -1,7 +1,6 @@
 {
-  "name": "Test Strategy 1",
-  "startingBalance": 1000,
-  "positionSize": 50,
+  "name": "Test Strategy 2",
+  "ownerID": 2094,
   "indicators": [
     {
       "name": "ema",
@@ -43,7 +42,9 @@
     }
   ],
   "rules": {
-    "buy": [["ema_ema_20", "crossup", "ema_ema_50", 1]],
-    "sell": [["ema_ema_20", "crossdown", "ema_ema_50", 1]]
-  }
+    "buy": [["ema_ema_20", "crossdown", "ema_ema_50", 1]],
+    "sell": [["ema_ema_20", ">=", "percentage", "1.05", 1]]
+  },
+  "startingBalance": 2000,
+  "positionSize": 100
 }

@@ -71,10 +71,10 @@ def main():
     def create_strategy():
         payload = request.json
         print(payload)
-        # s = Strategy(payload['name'], current_identity.id, payload)
-        # s.save_to_json()
-        # dbmanager.create_strategy(current_identity.id, payload['name'])
-        return 200
+        s = Strategy(payload['name'], current_identity.id, payload)
+        s.save_to_json()
+        dbmanager.create_strategy(current_identity.id, payload['name'])
+        return jsonify({'response': 'Ok'}), 200
 
     @app.route('/api/get_strategies', methods=["GET"])
     @jwt_required()

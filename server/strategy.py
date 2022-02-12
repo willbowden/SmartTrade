@@ -17,15 +17,22 @@ class Strategy:
         if data is None:
             with open(self._fileName, 'r') as infile:
                 loaded = json.load(infile)
-        self.indicators = loaded['indicators']
-        self.startingBalance = loaded['startingBalance']
-        self.rules = loaded['rules']
+        else:
+            loaded = data
+
+        self.__indicators = loaded['indicators']
+        self.__startingBalance = loaded['startingBalance']
+        self.__rules = loaded['rules']
+        self.__positionSize = loaded['positionSize']
 
     def save_to_json(self) -> None:
         asDict = {
-            'indicators': self.indicators,
-            'rules': self.rules,
-            'startingBalance': self.startingBalance
+            'name': self.name,
+            'ownerID': self.ownerID,
+            'indicators': self.__indicators,
+            'rules': self.__rules,
+            'startingBalance': self.__startingBalance,
+            'positionSize': self.__positionSize
         }
 
         with open(self._fileName, 'w') as outfile:

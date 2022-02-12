@@ -33,9 +33,10 @@ function StrategyWriter(props) {
     setStage(2);
   }
 
-  const addDetails = (strategyName, balance) => {
+  const addDetails = (strategyName, balance, positionSize) => {
     let asDict = {'name': strategyName,
-        'startingBalance': balance,
+        'startingBalance': parseInt(balance),
+        'positionSize': parseInt(positionSize),
         'indicators': indicators,
         'rules': rules
       };

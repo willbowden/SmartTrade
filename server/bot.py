@@ -62,7 +62,8 @@ class Bot:
 
         self.__update_balances_and_pnl(data, symbol)
 
-    def place_order(self, side, quantity, value, price, timestamp) -> None:
+    def place_order(self, side, quantity, price, timestamp) -> None:
+        value = quantity * price # Work out the value of bought/sold assets in quote currency
         if side == "sell":
             self.__sell(quantity, value, price, timestamp)
         elif side == "buy":
@@ -121,7 +122,7 @@ class Bot:
                     print(f"Bot tried to buy {self.currentSymbol} but didn't have a great enough balance!")
                     
     def __save_progress(self) -> None:
-        pass
+        raise NotImplementedError
 
     def __update_balances_and_pnl(self, data: dict, symbol: str) -> None:
         totalValue = 0
