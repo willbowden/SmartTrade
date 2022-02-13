@@ -2,36 +2,36 @@
 #    Class that automates a user's strategy, keeping track of balances, profits and placing orders.    #
 ########################################################################################################
 
-import sys
-import importlib
 from datetime import datetime
-from numpy import save
 import pandas as pd
-from SmartTrade.server import constants
+import json
+from SmartTrade.server import strategy, constants
 
 class Bot:
     def __init__(self, owner, strategyName, dryRun, config, saveData=None) -> None:
         self.owner = owner
-        self.config = config
-        self.dryRun = dryRun
+        self.__config = config
+        self.strategy = strategy.Strategy(strategyName, self.owner.id)
+        self.__dryRun = dryRun
         self.inPosition = False
+        self._saveName = f"{self.owner.id}_{strategyName.replace(' ', '_')}_BOT.json"
         if saveData is not None:
-            self.__load_from_save(saveData)
+            self.__load_from_save(saveData) # Load from save if we're given data
         else:
-            self.__first_time_setup()
-
-        self.__load_strategy(strategyName)
-
-    def get_tick_frequency(self) -> int:
-        return self.config['tickFrequency']
+            try:
+                with open(constants.SAVE_PATH+self._saveName, 'r') as infile: # Or load from save if file exists
+                    self.__load_from_save(json.load(infile))
+            except:
+                self.__first_time_setup()
 
     def __first_time_setup(self) -> None:
-        self.balance = self.config['startingBalance']
+        # Setup all initial variables 
+        self.balance = self.strategy.get_starting_balance()
         self.startingBalance = self.balance
         self.startDate = datetime.now()
         self.daysRunning = 1
         self.assetHoldings = {}
-        for symbol in self.config['symbols']:
+        for symbol in self.__config['symbols']:
             self.assetHoldings[symbol] = {'balance': 0, 'value': 0, 'outstandingSpend': 0}
         self.profit = 0
         self.profitPercent = 0
@@ -39,6 +39,7 @@ class Bot:
         self.orderHistory = pd.DataFrame(columns=['timestamp', 'symbol', 'side', 'quantity', 'value', 'price'])
 
     def __load_from_save(self, saveData) -> None:
+        # Or, load them from a save file (for example if the program was interrupted)
         self.balance = saveData['balance']
         self.accountValue = saveData['value']
         self.startingBalance = saveData['startingBalance']
@@ -49,11 +50,27 @@ class Bot:
         self.profitPercent = saveData['profitPercent']
         self.orderHistory = pd.DataFrame(saveData['orderHistory'], columns=['timestamp', 'symbol', 'side', 'quantity', 'value', 'price'])
 
-    def __load_strategy(self, name) -> None:
-        sys.path.append(constants.STRATEGY_PATH)
-        self.strategy = importlib.import_module(name)
+    def __save_progress(self) -> None:
+        # Save important information to JSON save file
+        toSave = {
+            'balance': self.balance,
+            'value': self.accountValue,
+            'startingBalance': self.startingBalance,
+            'startDate': self.startDate.strftime('%Y-%m-%d %H:%M:%S'),
+            'daysRunning': self.daysRunning,
+            'assetHoldings': self.assetHoldings,
+            'profit': self.profit,
+            'profitPercent': self.profitPercent,
+            'orderHistory': self.orderHistory.to_json()
+        }
+        
+        with open(constants.SAVE_PATH+self._saveName, 'w') as outfile:
+            json.dump(toSave, outfile)
 
     def tick(self, data, index, symbol) -> None:
+        # Given a new index in the dataset, check the strategy's
+        #   buy and sell rules. Then, update balances and PNL
+        #   (profit 'n' loss).
         self.currentSymbol = symbol
         if self.inPosition == False:
             self.strategy.check_buy(self, data, index, symbol)
@@ -72,22 +89,22 @@ class Bot:
     def __sell(self, quantity, value, price, timestamp) -> None:
         potentialOrder = {'timestamp': timestamp, 'symbol': self.currentSymbol, 'side': 'sell', 'quantity': quantity, 'value': value, 'price': price}
         if value >= 10:
-            if not self.dryRun:
-                valid = self.owner.place_sell_order(quantity, value, price)
+            if not self.__dryRun: # If we're spending real money
+                valid = self.owner.place_sell_order(quantity, value, price) # Place a real money order
                 if valid:
-                    self.balance += (value * (1 - self.config['fee']))
+                    self.balance += (value * (1 - self.__config['fee'])) # Increase our balance taking into account the fee
                     self.assetHoldings[self.currentSymbol]['balance'] -= quantity
-                    if self.assetHoldings[self.currentSymbol]['outstandingSpend'] < value:
+                    if self.assetHoldings[self.currentSymbol]['outstandingSpend'] < value: # Reduce our 'outstanding spend'
                         self.assetHoldings[self.currentSymbol]['outstandingSpend'] = 0
                     else:
                         self.assetHoldings[self.currentSymbol]['outstandingSpend'] -= value
-                    self.orderHistory = self.orderHistory.append(potentialOrder, ignore_index=True)
+                    self.orderHistory = self.orderHistory.append(potentialOrder, ignore_index=True) # Add the order to history
                     self.inPosition = False
                 else:
                     print("Bot tried to execute sell order but exchange refused!")
-            else:
+            else: # Do the same things, but without spending real money
                 if self.assetHoldings[self.currentSymbol]['balance'] >= quantity:
-                    self.balance += (value * (1 - self.config['fee']))
+                    self.balance += (value * (1 - self.__config['fee']))
                     self.assetHoldings[self.currentSymbol]['balance'] -= quantity
                     if self.assetHoldings[self.currentSymbol]['outstandingSpend'] < value:
                         self.assetHoldings[self.currentSymbol]['outstandingSpend'] = 0
@@ -99,13 +116,14 @@ class Bot:
                     print(f"Bot tried to sell {self.currentSymbol} but didn't have a great enough balance!")
 
     def __buy(self, quantity, value, price, timestamp) -> None:
+        # Identical to above, but we're buying instead.
         potentialOrder = {'timestamp': timestamp, 'symbol': self.currentSymbol, 'side': 'buy', 'quantity': quantity, 'value': value, 'price': price}
         if value >= 10:
-            if not self.dryRun:
+            if not self.__dryRun:
                 valid = self.owner.place_buy_order(quantity, value, price)
                 if valid:
                     self.balance -= (value)
-                    self.assetHoldings[self.currentSymbol]['balance'] += (quantity * (1 - self.config['fee']))
+                    self.assetHoldings[self.currentSymbol]['balance'] += (quantity * (1 - self.__config['fee']))
                     self.assetHoldings[self.currentSymbol]['outstandingSpend'] += value
                     self.orderHistory = self.orderHistory.append(potentialOrder, ignore_index=True)
                     self.inPosition = True
@@ -114,17 +132,16 @@ class Bot:
             else:
                 if self.balance >= value:
                     self.balance -= (value)
-                    self.assetHoldings[self.currentSymbol]['balance'] += (quantity * (1 - self.config['fee']))
+                    self.assetHoldings[self.currentSymbol]['balance'] += (quantity * (1 - self.__config['fee']))
                     self.assetHoldings[self.currentSymbol]['outstandingSpend'] += value
                     self.orderHistory = self.orderHistory.append(potentialOrder, ignore_index=True)
                     self.inPosition = True
                 else:
                     print(f"Bot tried to buy {self.currentSymbol} but didn't have a great enough balance!")
-                    
-    def __save_progress(self) -> None:
-        raise NotImplementedError
 
     def __update_balances_and_pnl(self, data: dict, symbol: str) -> None:
+        # Re-calculate the value of the entire account, and then calculate  
+        #   profit and/or losses from that.
         totalValue = 0
         for symbol in self.assetHoldings.keys():
             newValue = (self.assetHoldings[symbol]['balance'] * data['close'].iat[-1])
@@ -137,6 +154,7 @@ class Bot:
         self.profitPercent = (self.profit / self.startingBalance) * 100
 
     def get_info(self) -> dict:
+        # Return some important performance metrics as a dictionary
         results = {}
         results['holdings'] = {}
         for symbol in self.assetHoldings.keys():
