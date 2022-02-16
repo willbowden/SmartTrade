@@ -54,7 +54,10 @@ class Strategy:
 
         if valid:
             # Place an order, buying as much as the __positionSize can afford.
-            bot.place_order('buy', (self.__positionSize / data['close'].iat[index], data['close'].iat[index], data['timestamp'].iat[index]))
+            print("BUY!")
+            # bot.place_order('buy', (self.__positionSize / data['close'].iat[index], data['close'].iat[index], data['timestamp'].iat[index]))
+        else:
+            print("Do not buy.")
             
     def check_sell(self, bot: bot.Bot, data: pd.DataFrame, index: int, symbol: str) -> None:
         valid = True
