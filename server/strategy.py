@@ -93,7 +93,7 @@ class Strategy:
     def __check_crossover(self, direction: str, data: pd.DataFrame, index: int, rule: list) -> bool:
         # For a crossover to occur, one value has to be below/above another value in one time step,
         #   and then be on the opposite side the following timestep. This method checks for that.
-        if index <= 0: 
+        if index <= 0: # Can only check for crossover if we have a value before the current one.
             return False
         if direction == 'crossup':
             if data[rule[0]].iat[index-1] <= data[rule[2]].iat[index-1]:

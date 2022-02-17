@@ -95,7 +95,7 @@ def load_dataset(user, symbol: str, timeframe: str, startDate: int, requiredIndi
     else: # Otherwise, create a new one
         print(f"Dataset for {symbol} does not exist or does not contain start date! Creating...")
         datasetWithoutIndicators = create_new_dataset(user, symbol, timeframe, startDate) # Read the raw dataset with just OHLCV data (no indicators)
-        datasetWithoutIndicators['timestamp'] = pd.to_datetime(datasetWithoutIndicators['timestamp'], unit="ms")
+        datasetWithoutIndicators.loc[:, 'timestamp'] = pd.to_datetime(datasetWithoutIndicators['timestamp'], unit="ms")
     # Find the index closest to our startdate.
     searchForStartDate = np.where(datasetWithoutIndicators['timestamp'] >= pd.to_datetime(startDate, unit='ms'))
     if len(searchForStartDate) > 0:
@@ -104,7 +104,7 @@ def load_dataset(user, symbol: str, timeframe: str, startDate: int, requiredIndi
     dataset = datasetWithoutIndicators.iloc[indexOfStartDate:] # Select only parts of the dataset from the start date onwards
 
     dataset = populate_dataset(dataset, requiredIndicators ) # Populate the dataset with the required indicators that were provided in the config.
-    dataset = dataset.dropna(0) # Remove all rows from the dataset that contain a "Not A Number" value.
+    dataset = dataset.dropna() # Remove all rows from the dataset that contain a "Not A Number" value.
     dataset.reset_index(inplace=True, drop=True) # Reset and delete the index.
     dataset = dataset.drop_duplicates()
 

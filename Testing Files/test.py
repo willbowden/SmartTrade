@@ -6,4 +6,5 @@ c = {'symbols': ['ETH/USDT'],
      'fee': 0.001}
 s = strategy.Strategy('Test Strategy 1', 2094)
 d = datasets.load_dataset(u, "ETH/USDT", "1h", 1634386628000, s.get_indicators())
-s.check_buy(None, d, 0, 'ETH/USDT')
+# print(d)
+s.check_buy(None, d, 2133, 'ETH/USDT')
