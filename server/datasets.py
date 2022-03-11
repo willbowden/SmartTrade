@@ -97,9 +97,10 @@ def load_dataset(user, symbol: str, timeframe: str, startDate: int, requiredIndi
         datasetWithoutIndicators = create_new_dataset(user, symbol, timeframe, startDate) # Read the raw dataset with just OHLCV data (no indicators)
         datasetWithoutIndicators.loc[:, 'timestamp'] = pd.to_datetime(datasetWithoutIndicators['timestamp'], unit="ms")
     # Find the index closest to our startdate.
-    searchForStartDate = np.where(datasetWithoutIndicators['timestamp'] >= pd.to_datetime(startDate, unit='ms'))
+    searchForStartDate = np.where(datasetWithoutIndicators['timestamp'] <= pd.to_datetime(startDate, unit='ms'))
     if len(searchForStartDate) > 0:
-        indexOfStartDate = searchForStartDate[0][0]
+        # FIX HERE
+        indexOfStartDate = searchForStartDate[0]
 
     dataset = datasetWithoutIndicators.iloc[indexOfStartDate:] # Select only parts of the dataset from the start date onwards
 

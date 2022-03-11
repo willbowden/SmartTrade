@@ -2,7 +2,7 @@
 #
 ####
 
-from SmartTrade.server import constants, bot
+from SmartTrade.server import constants
 import json
 import pandas as pd
 
@@ -46,7 +46,7 @@ class Strategy:
         with open(self._fileName, 'w') as outfile:
             json.dump(asDict, outfile)
 
-    def check_buy(self, bot: bot.Bot, data: pd.DataFrame, index: int, symbol: str) -> None:
+    def check_buy(self, bot, data: pd.DataFrame, index: int, symbol: str) -> None:
         valid = True
         for rule in self.__rules['buy']: # Check all of the buy rules
             if not self.__check_rule(data, index, rule):
@@ -59,7 +59,7 @@ class Strategy:
         else:
             print("Do not buy.")
             
-    def check_sell(self, bot: bot.Bot, data: pd.DataFrame, index: int, symbol: str) -> None:
+    def check_sell(self, bot, data: pd.DataFrame, index: int, symbol: str) -> None:
         valid = True
         for rule in self.__rules['sell']: # Check all of the sell rules
             if not self.__check_rule(data, index, rule):

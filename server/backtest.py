@@ -8,10 +8,11 @@ class Backtest:
     def __init__(self, user, config, strategyName):
         self.__owner = user
         self.__config = config
+        self.id = self.__owner.id
         # Initialise the bot
         self.bot = bot.Bot(self, strategyName, True, config)
         self.info = {'strategyName': strategyName, 'userID': self.__owner.id}
-        self.startingBalance = self.bot["startingBalance"]
+        self.startingBalance = self.bot.startingBalance
         self.data = {}
         for item in self.__config['symbols']:
             self.data[item] = datasets.load_dataset(self.__owner, item, self.__config['timeframe'], self.__config['startDate'], self.bot.strategy.get_indicators())
@@ -80,4 +81,6 @@ class Backtest:
 
 if __name__ == '__main__':
     u = user.User(dbmanager.get_row_by_column('tblUsers', 'userID', 2094))
-    b = Backtest(u, 1632956400000, 'sarScalp', True)
+    b = Backtest(u, {'startDate': 1644585000710,
+    'symbols': ["ETH/BUSD"],
+    'timeframe': '1h'}, 'Test Strategy 1')
