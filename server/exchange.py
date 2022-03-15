@@ -116,11 +116,12 @@ class Exchange: # Class to represent an exchange object. This is necessary as ea
             sameSinceCount = 0
             end = self.exchange.milliseconds() - 1000
             # Estimate the number of datapoints to download.
+            print(since, end)
             toFetch = int(round(((end-since)/constants.TIMEFRAME_MILLISECONDS[timeframe]), 0))
             print(f'Downloading historical data for {symbol}. Approximate number of datapoints to fetch: {toFetch}')
             while since < end and sameSinceCount < 3:
                 toAppend = pd.DataFrame(self.exchange.fetch_ohlcv(symbol, timeframe, since, limit), columns=whole.columns) # Fetch data
-                if len(toAppend.index <= 0):
+                if toAppend.empty:
                     break
                 if since == toAppend['timestamp'].iat[-1]:
                     sameSinceCount += 1

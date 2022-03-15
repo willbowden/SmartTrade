@@ -17,6 +17,7 @@ class Backtest:
         for item in self.__config['symbols']:
             self.data[item] = datasets.load_dataset(self.__owner, item, self.__config['timeframe'], self.__config['startDate'], self.bot.strategy.get_indicators())
 
+
     def run(self):
         # Iterate over each row of every dataset and check the buy/sell rules of the bot.
         for symbol in self.__config['symbols']:
@@ -81,6 +82,8 @@ class Backtest:
 
 if __name__ == '__main__':
     u = user.User(dbmanager.get_row_by_column('tblUsers', 'userID', 2094))
-    b = Backtest(u, {'startDate': 1644585000710,
-    'symbols': ["ETH/BUSD"],
-    'timeframe': '1h'}, 'Test Strategy 1')
+    b = Backtest(u, {'startDate': 1644537600000,
+    'symbols': ["ETH/USDT"],
+    'timeframe': '1h',
+    'fee': 0.001}, 'Test Strategy 1')
+    b.run()

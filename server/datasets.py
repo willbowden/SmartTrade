@@ -2,6 +2,7 @@
 #    Module to download, process and retrieve datasets containing price data.    #
 ##################################################################################
 
+from turtle import st
 from simplejson import load
 from SmartTrade.server import constants, helpers, dbmanager
 from SmartTrade.server.user import User
@@ -53,21 +54,20 @@ def populate_dataset(dataset: pd.DataFrame, indicators) -> pd.DataFrame: # Calcu
     return dataset
 
 def dataset_exists(symbol: str, timeframe: str, startDate: int) -> bool: # Check if a dataset exists and if it contains the start date specified by the user.
-    okay = True
     fname = helpers.get_dataset_filepath(symbol, timeframe) # As defined above
     startDatePandas = pd.Timestamp(startDate, unit='ms') # Pandas stores timestamps as a unique object, so I'll..
     #  ..have to convert between my integer timestamp and Pandas' format.
     try:
         with open(fname, 'r') as infile: # Attempt to open the file
             dataset = pd.read_json(infile)
-            if startDatePandas > dataset['timestamp'][0]: # Check that the start date is included in the dataframe
-                return okay
+            searchForStartDate = np.where(dataset['timestamp'] >= startDatePandas)[0]
+            if len(searchForStartDate) > 0: # Check that the start date is included in the dataframe
+                return True, None
             else:
-                okay = False
+                return False, dataset['timestamp'].iat[0] # Return the earliest date in the dataset so we can append it.
     except: # If we can't, assume it doesnt exist or doesn't contain the start date.
-        okay = False
+        return False, None
 
-    return okay
 
 # def modify_candles(dataframe, candleType) -> pd.DataFrame:
 #     if candleType == 'heikin_ashi':
@@ -89,18 +89,23 @@ def dataset_exists(symbol: str, timeframe: str, startDate: int) -> bool: # Check
 def load_dataset(user, symbol: str, timeframe: str, startDate: int, requiredIndicators: dict) -> pd.DataFrame: # Load a dataset from a .json file
     startDate = startDate - (10 * constants.TIMEFRAME_MILLISECONDS[timeframe]) # So that the start date is actually included in the data. Prevents errors.
     fname = helpers.get_dataset_filepath(symbol, timeframe) # As defined above
-    if dataset_exists(symbol, timeframe, startDate): # If we've already downloaded the dataset for the given symbol, and it includes the start date, load it.
+    datasetExists = dataset_exists(symbol, timeframe, startDate)
+    if datasetExists[0]: # If we've already downloaded the dataset for the given symbol, and it includes the start date, load it.
         with open(fname, 'r') as infile:
             datasetWithoutIndicators = pd.read_json(infile) # Read the raw dataset with just OHLCV data (no indicators)
     else: # Otherwise, create a new one
         print(f"Dataset for {symbol} does not exist or does not contain start date! Creating...")
+        if datasetExists[1] is not None:
+            startDate = datasetExists[1]
         datasetWithoutIndicators = create_new_dataset(user, symbol, timeframe, startDate) # Read the raw dataset with just OHLCV data (no indicators)
         datasetWithoutIndicators.loc[:, 'timestamp'] = pd.to_datetime(datasetWithoutIndicators['timestamp'], unit="ms")
     # Find the index closest to our startdate.
-    searchForStartDate = np.where(datasetWithoutIndicators['timestamp'] <= pd.to_datetime(startDate, unit='ms'))
+    searchForStartDate = np.where(datasetWithoutIndicators['timestamp'] >= pd.to_datetime(startDate, unit='ms'))[0]
+
     if len(searchForStartDate) > 0:
-        # FIX HERE
         indexOfStartDate = searchForStartDate[0]
+    else:
+        indexOfStartDate = 0
 
     dataset = datasetWithoutIndicators.iloc[indexOfStartDate:] # Select only parts of the dataset from the start date onwards
 
