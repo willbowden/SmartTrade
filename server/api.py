@@ -70,7 +70,15 @@ def main():
     @jwt_required()
     def create_strategy():
         payload = request.json
-        print(payload)
+        alreadyExisting = dbmanager.get_user_strategies(current_identity.id)
+        nameClash = False
+        for strat in alreadyExisting:
+            if strat['name'] == payload['name']:
+                nameClash = True
+                
+        if nameClash:
+            payload['name'] += '_2'
+
         s = Strategy(payload['name'], current_identity.id, payload)
         s.save_to_json()
         dbmanager.create_strategy(current_identity.id, payload['name'])

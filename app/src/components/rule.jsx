@@ -9,7 +9,6 @@ export default function Rule(props) {
     const [comparison, setComparison] = useState("=");
     const [value, setValue] = useState(0);
     const [numericalValue, setNumericalValue] = useState(null);
-    const [duration, setDuration] = useState(1);
     const events = ["crossup", "crossdown"];
     const price = ["high", "low", "close", "open"];
     const overlaps = ["ema", "ma"];
@@ -20,13 +19,10 @@ export default function Rule(props) {
         let asArray = [indicator, comparison, value];
         if (numericalValue !== null) {
             asArray.push(numericalValue);
-            asArray.push(duration);
-        } else {
-            asArray.push(duration);
-        }
+        } 
         console.log(asArray);
         props.changerFunc(type, index, asArray);
-    }, [indicator, comparison, value, duration, numericalValue, index, props, type])
+    }, [indicator, comparison, value, numericalValue, index, props, type])
 
     const getOutputValue = (object, outputName) => {
         if (overlaps.includes(object.name)) {
@@ -67,9 +63,6 @@ export default function Rule(props) {
                         <MenuItem value={"close"}>Close Price</MenuItem>
                         {props.type === "sell" && (
                             <MenuItem value={"profit"}>Profit</MenuItem>
-                        )}
-                        {props.type === "sell" && (
-                            <MenuItem value={"tradeDuration"}>Time In Trade</MenuItem>
                         )}
                     </Select>
                 </FormControl>

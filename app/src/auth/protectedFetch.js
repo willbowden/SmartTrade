@@ -6,10 +6,14 @@ function protectedFetch(url, args={}){
             const token = token_header.access_token
             args.headers = {'Authorization': 'JWT ' + token, 'Content-Type': 'application/json'}
             fetch(url, args).then(res => res.json()).then( data => {
-                resolve(data);
+                if (data.status_code !== 200) {
+                    reject(data)
+                } else {
+                    resolve(data)
+                }
             })
         } catch(err) {
-            resolve({response: "Error"})
+            reject()
         }
     })
 }

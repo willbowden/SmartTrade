@@ -2,8 +2,6 @@
 #    Module to download, process and retrieve datasets containing price data.    #
 ##################################################################################
 
-from turtle import st
-from simplejson import load
 from SmartTrade.server import constants, helpers, dbmanager
 from SmartTrade.server.user import User
 
