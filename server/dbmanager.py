@@ -21,7 +21,7 @@ def create_trade(creatorID: int, creator: str, date: int, symbol: str, tradeType
     id = __get_unique_id('tblTrades', 'tradeID')
     query = f"INSERT INTO tblTrades VALUES ({id}, '{creator}', {date}, '{symbol}', '{tradeType}', {quantity}, {price}, {profit})"
     __execute_query(query)
-    if creatorID is "backtest":
+    if creator is "backtest":
         __create_link(backtestID=creatorID, strategyID=id)
     else:
         __create_link(userID=creatorID, backtestID=id)

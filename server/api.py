@@ -13,6 +13,7 @@ import time
 from SmartTrade.server.user import User
 from SmartTrade.server.strategy import Strategy 
 from SmartTrade.server import account_data, datasets
+from SmartTrade.server.backtest import Backtest
 
 def authenticate_user(username, password): # Verify a user's credentials 
     print(f"Attempting Login For: {username}")
@@ -65,6 +66,28 @@ def main():
     @app.route('/api/available_indicators', methods=["GET"])
     def get_available_indicators():
         return jsonify(AVAILABLEINDICATORS)
+
+    @app.route('/api/run_backtest', methods=["GET"])
+    @jwt_required()
+    def run_backtest():
+        payload = request.json
+        config = {'startDate': payload['startDate'],
+        'symbols': payload['symbols'],
+        'timeframe': payload['timeframe'],
+        'fee': payload['fee']}
+
+        try: 
+            b = Backtest(current_identity, config, payload['strategyName'])
+            b.run()
+            results = b.get_results()
+            for order in results['orderHistory']: # LEFT OFF HERE
+                dbmanager.create_trade(current_identity.id, 'backtest', order['timestamp'], order['symbol'],
+                order['side'], order['quantity'], order['value'], order['price'], 0)
+
+            return jsonify(results), 200
+        except:
+            return jsonify({'response': 'Error During Backtest'}), 500
+
 
     @app.route('/api/create_strategy', methods=["GET", "POST"])
     @jwt_required()
