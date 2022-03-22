@@ -35,7 +35,9 @@ ReactDOM.render(
           <Route exact path='/api_test' element={<PrivateRoute />}>
               <Route exact path='/api_test' element={<APITest />}/>
           </Route>
-          <Route path="/backtest" element={<Backtest />} />
+          <Route exact path="/backtest" element={<PrivateRoute />}>
+            <Route path="/backtest" element={<Backtest />} />
+          </Route>
           <Route exact path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Route>

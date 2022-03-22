@@ -5,7 +5,7 @@ import { Grid } from '@mui/material';
 import protectedFetch from '../auth/protectedFetch.js';
 import StrategyCard from "../components/strategyCard.jsx";
 
-function StrategyWriter() {
+function UserStrategies() {
     const [loading, setLoading] = useState(true);
     const [strategies, setStrategies] = useState([]);
     const [redirectToLogin, setRedirect] = useState(false);
@@ -30,4 +30,4 @@ function StrategyWriter() {
     );
 }
  
-export default StrategyWriter;
+export default UserStrategies;
