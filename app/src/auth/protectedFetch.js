@@ -6,7 +6,7 @@ function protectedFetch(url, args={}){
             const token = token_header.access_token
             args.headers = {'Authorization': 'JWT ' + token, 'Content-Type': 'application/json'}
             fetch(url, args).then(res => res.json()).then( data => {
-                if (data.status_code !== 200) {
+                if (data.status_code === 401 || data.status_code === 500) {
                     reject(data)
                 } else {
                     resolve(data)

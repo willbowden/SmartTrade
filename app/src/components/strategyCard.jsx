@@ -9,7 +9,8 @@ export default function StrategyCard(props) {
             <Typography variant="body2">Average Return: {props.return}</Typography>
         </CardContent>
         <CardActions disableSpacing>
-            <Button size="small">Backtest</Button>
+            <Button onClick={() => {props.selectStrategy(props.name)}} size="small">Backtest</Button>
+            <Button color="error" onClick={() => {props.deleteStrategy(props.name)}} size="small">Delete</Button>
         </CardActions>
     </Card>
 }

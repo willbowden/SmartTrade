@@ -68,8 +68,38 @@ def __create_link(userID: int = None, strategyID: int = None, backtestID:int = N
 
     __execute_query(query)
 
-def delete_row(table:str, idName: str, id: int) -> None: # Delete a row
+def __remove_links(linkType: str, id: int):
+    query = ""
+    if linkType == "strategy":
+        query = f"DELETE FROM tblUserStrategy WHERE strategyID={id}"
+        __execute_query(query)
+        query = f"DELETE FROM tblStrategyBacktest WHERE strategyID={id}"
+    elif linkType == "backtest":
+        query = f"DELETE FROM tblStrategyBacktest WHERE backtestID={id}"
+        __execute_query(query)
+        query = f"DELETE FROM tblBacktestTrades WHERE backtestID={id}"
+    elif linkType == "trade":
+        query = f"DELETE FROM tblUserTrades WHERE tradeID={id}"
+    elif linkType == "user":
+        query = f"DELETE FROM tblUserStrategy WHERE userID={id}"
+        __execute_query(query)
+        query = f"DELETE FROM tblUserTrades WHERE userID={id}"
+        __execute_query(query)
+        query = f"DELETE FROM tblStrategyBacktest WHERE userID={id}"
+    
+    if query is not "":
+        __execute_query(query)
+
+
+def delete_row(table:str, idName: str, id, tableIDName: str, linkType: str = None) -> None: # Delete a row
+    if type(id) == str:
+        id = f"'{id}'"
     try:
+        if linkType is not None:
+            toDelete = get_row_by_column(table, idName, id)
+            toDeleteID = toDelete[tableIDName]
+            __remove_links(linkType, toDeleteID)
+
         query = f"DELETE FROM {table} WHERE {idName}={id}"
         __execute_query(query)
     except Exception as e:
@@ -159,5 +189,10 @@ def get_all_accounts() -> list: # Get all accounts in database as a dictionary
 
     return accounts
 
+def test():
+    delete_row('tblStrategies', 'name', 'Bad Strategy 1', 'strategyID')
+
+
 if __name__ == '__main__':
     print(f"Please do not run {__file__} directly.")
+    test()

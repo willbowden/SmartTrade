@@ -23,7 +23,7 @@ function App() {
       <AppBar position="sticky" color="default" style={{ height: '8vh', display: 'flex', justifyContent: 'center'}}>
         <Toolbar>
           <Button component={Link} to="/dashboard" variant="text">Dashboard</Button>
-          <Button component={Link} to="/backtest" variant="text">Backtesting</Button>
+          <Button component={Link} to="/backtest" variant="text">My Strategies</Button>
           <Button component={Link} to="/api_test" variant="text">API Tester</Button>
           <Button component={Link} to="/chart_test" variant="text">Candlestick Charts</Button>
           <Button component={Link} to="/strategy_writer" variant="text">Strategy Writer</Button>

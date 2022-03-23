@@ -166,6 +166,10 @@ class Bot:
         results['profitPercent'] = self.profitPercent
         results['orderHistory'] = self.orderHistory 
         numOrders = len(self.orderHistory.index)
+        results['numBuys'] = self.orderHistory['side'].value_counts()['buy']
+        results['numSells'] = self.orderHistory['side'].value_counts()['sell']
         results['numOrders'] = numOrders
+
+        # MORE TO DO HERE
 
         return results

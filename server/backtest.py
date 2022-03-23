@@ -32,6 +32,7 @@ class Backtest:
         results = self.bot.get_info()
         print(f"Balance: ${round(results['balance'], 2)}. Profit: ${round(results['profit'], 2)}, {round(results['profitPercent'], 2)}%. Number of Trades: {results['numOrders']}.")
         results['chosenIndicators'] = self.bot.strategy.get_indicators()
+        results['datasets'] = self.data
         print(self.bot.assetHoldings)
         print(self.bot.orderHistory)
         

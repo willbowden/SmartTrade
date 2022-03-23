@@ -12,8 +12,9 @@ import json
 import time
 from SmartTrade.server.user import User
 from SmartTrade.server.strategy import Strategy 
-from SmartTrade.server import account_data, datasets
+from SmartTrade.server import datasets
 from SmartTrade.server.backtest import Backtest
+from datetime import datetime
 
 def authenticate_user(username, password): # Verify a user's credentials 
     print(f"Attempting Login For: {username}")
@@ -77,12 +78,19 @@ def main():
         'fee': payload['fee']}
 
         try: 
+            strategyID = dbmanager.get_row_by_column('tblStrategies', 'name', payload['strategyName'])['strategyID']
             b = Backtest(current_identity, config, payload['strategyName'])
             b.run()
             results = b.get_results()
-            for order in results['orderHistory']: # LEFT OFF HERE
+            for order in results['orderHistory']:
                 dbmanager.create_trade(current_identity.id, 'backtest', order['timestamp'], order['symbol'],
                 order['side'], order['quantity'], order['value'], order['price'], 0)
+
+            lastOrder = results['orderHistory'][-1]['timestamp']
+
+            dbmanager.create_backtest(strategyID, payload['symbols'],
+                payload['startDate'], lastOrder, results['numBuys'], results['numSells'],
+                ) # LEFT OFF HERE
 
             return jsonify(results), 200
         except:
@@ -105,6 +113,14 @@ def main():
         s = Strategy(payload['name'], current_identity.id, payload)
         s.save_to_json()
         dbmanager.create_strategy(current_identity.id, payload['name'])
+        return jsonify({'response': 'Ok'}), 200
+
+    @app.route("/api/delete_strategy", methods=['GET', 'POST'])
+    @jwt_required()
+    def delete_strategy():
+        payload = request.json
+        print(payload)
+        dbmanager.delete_row('tblStrategies', 'name', payload['strategyName'], 'strategyID', 'strategy')
         return jsonify({'response': 'Ok'}), 200
 
     @app.route('/api/get_strategies', methods=["GET"])

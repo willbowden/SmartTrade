@@ -32,8 +32,8 @@ query = """
     CREATE TABLE tblUserStrategy (
         strategyID INT NOT NULL UNIQUE,
         userID INT NOT NULL,
-        FOREIGN KEY (strategyID) REFERENCES tblStrategies(strategyID),
-        FOREIGN KEY (userID) REFERENCES tblUsers(userID),
+        FOREIGN KEY (strategyID) REFERENCES tblStrategies(strategyID) ON DELETE CASCADE,
+        FOREIGN KEY (userID) REFERENCES tblUsers(userID) ON DELETE CASCADE,
         PRIMARY KEY (strategyID, userID)
     )
     """
@@ -62,9 +62,9 @@ query = """
         backtestID INT NOT NULL UNIQUE,
         strategyID INT NOT NULL UNIQUE,
         userID INT NOT NULL UNIQUE,
-        FOREIGN KEY (backtestID) REFERENCES tblBacktests(backtestID),
-        FOREIGN KEY (strategyID) REFERENCES tblStrategies(strategyID),
-        FOREIGN KEY (userID) REFERENCES tblUsers(userID),
+        FOREIGN KEY (backtestID) REFERENCES tblBacktests(backtestID) ON DELETE CASCADE,
+        FOREIGN KEY (strategyID) REFERENCES tblStrategies(strategyID) ON DELETE CASCADE, 
+        FOREIGN KEY (userID) REFERENCES tblUsers(userID) ON DELETE CASCADE,
         PRIMARY KEY(backtestID, strategyID, userID)
     )
     """
@@ -91,8 +91,8 @@ query = """
     CREATE TABLE tblUserTrades (
         userID INT NOT NULL UNIQUE,
         tradeID INT NOT NULL UNIQUE,
-        FOREIGN KEY (userID) REFERENCES tblUsers(userID),
-        FOREIGN KEY (tradeID) REFERENCES tblTrades(tradeID),
+        FOREIGN KEY (userID) REFERENCES tblUsers(userID) ON DELETE CASCADE,
+        FOREIGN KEY (tradeID) REFERENCES tblTrades(tradeID) ON DELETE CASCADE,
         PRIMARY KEY(userID, tradeID)
     )
     """
@@ -103,8 +103,8 @@ query = """
     CREATE TABLE tblBacktestTrades (
         backtestID INT NOT NULL UNIQUE,
         tradeID INT NOT NULL UNIQUE,
-        FOREIGN KEY (backtestID) REFERENCES tblBacktests(backtestID),
-        FOREIGN KEY (tradeID) REFERENCES tblTrades(tradeID),
+        FOREIGN KEY (backtestID) REFERENCES tblBacktests(backtestID) ON DELETE CASCADE,
+        FOREIGN KEY (tradeID) REFERENCES tblTrades(tradeID) ON DELETE CASCADE,
         PRIMARY KEY(backtestID, tradeID)
     )
     """
