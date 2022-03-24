@@ -51,20 +51,22 @@ def populate_dataset(dataset: pd.DataFrame, indicators) -> pd.DataFrame: # Calcu
 
     return dataset
 
-def dataset_exists(symbol: str, timeframe: str, startDate: int) -> bool: # Check if a dataset exists and if it contains the start date specified by the user.
+def dataset_exists(symbol: str, timeframe: str, startDate: int, endDate: int) -> bool: # Check if a dataset exists and if it contains the start date specified by the user.
     fname = helpers.get_dataset_filepath(symbol, timeframe) # As defined above
     startDatePandas = pd.Timestamp(startDate, unit='ms') # Pandas stores timestamps as a unique object, so I'll..
     #  ..have to convert between my integer timestamp and Pandas' format.
+    endDatePandas = pd.Timestamp(endDate, unit='ms')
     try:
         with open(fname, 'r') as infile: # Attempt to open the file
             dataset = pd.read_json(infile)
-            searchForStartDate = np.where(dataset['timestamp'] >= startDatePandas)[0]
-            if len(searchForStartDate) > 0: # Check that the start date is included in the dataframe
-                return True, None
+            searchForStartDate = np.where(dataset['timestamp'] <= startDatePandas)[0]
+            searchForEndDate = np.where(dataset['timestamp'] >= endDatePandas)[0]
+            if len(searchForStartDate) > 0 and len(searchForEndDate) > 0: # Check that the start date is included in the dataframe
+                return True
             else:
-                return False, dataset['timestamp'].iat[0] # Return the earliest date in the dataset so we can append it.
+                return False
     except: # If we can't, assume it doesnt exist or doesn't contain the start date.
-        return False, None
+        return False
 
 
 # def modify_candles(dataframe, candleType) -> pd.DataFrame:
@@ -84,28 +86,32 @@ def dataset_exists(symbol: str, timeframe: str, startDate: int) -> bool: # Check
 #         exit() 
 
 
-def load_dataset(user, symbol: str, timeframe: str, startDate: int, requiredIndicators: dict) -> pd.DataFrame: # Load a dataset from a .json file
+def load_dataset(user, symbol: str, timeframe: str, startDate: int, endDate: int, requiredIndicators: dict) -> pd.DataFrame: # Load a dataset from a .json file
     startDate = startDate - (10 * constants.TIMEFRAME_MILLISECONDS[timeframe]) # So that the start date is actually included in the data. Prevents errors.
     fname = helpers.get_dataset_filepath(symbol, timeframe) # As defined above
-    datasetExists = dataset_exists(symbol, timeframe, startDate)
-    if datasetExists[0]: # If we've already downloaded the dataset for the given symbol, and it includes the start date, load it.
+    datasetExists = dataset_exists(symbol, timeframe, startDate, endDate)
+    if datasetExists: # If we've already downloaded the dataset for the given symbol, and it includes the start date, load it.
         with open(fname, 'r') as infile:
             datasetWithoutIndicators = pd.read_json(infile) # Read the raw dataset with just OHLCV data (no indicators)
     else: # Otherwise, create a new one
-        print(f"Dataset for {symbol} does not exist or does not contain start date! Creating...")
-        if datasetExists[1] is not None:
-            startDate = datasetExists[1]
+        print(f"Dataset for {symbol} does not exist or does not contain start/end date! Creating...")
         datasetWithoutIndicators = create_new_dataset(user, symbol, timeframe, startDate) # Read the raw dataset with just OHLCV data (no indicators)
         datasetWithoutIndicators.loc[:, 'timestamp'] = pd.to_datetime(datasetWithoutIndicators['timestamp'], unit="ms")
     # Find the index closest to our startdate.
-    searchForStartDate = np.where(datasetWithoutIndicators['timestamp'] >= pd.to_datetime(startDate, unit='ms'))[0]
+    searchForStartDate = np.where(datasetWithoutIndicators['timestamp'] <= pd.to_datetime(startDate, unit='ms'))[0]
+    searchForEndDate = np.where(datasetWithoutIndicators['timestamp'] >= pd.to_datetime(endDate, 'ms'))[0]
+
+    if len(searchForEndDate) > 0:
+        indexOfEndDate = searchForEndDate[0]
+    else:
+        indexOfEndDate = -1
 
     if len(searchForStartDate) > 0:
         indexOfStartDate = searchForStartDate[0]
     else:
         indexOfStartDate = 0
 
-    dataset = datasetWithoutIndicators.iloc[indexOfStartDate:] # Select only parts of the dataset from the start date onwards
+    dataset = datasetWithoutIndicators.iloc[indexOfStartDate:indexOfEndDate] # Select only parts of the dataset from the start date onwards
 
     dataset = populate_dataset(dataset, requiredIndicators ) # Populate the dataset with the required indicators that were provided in the config.
     dataset = dataset.dropna() # Remove all rows from the dataset that contain a "Not A Number" value.

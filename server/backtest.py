@@ -15,7 +15,7 @@ class Backtest:
         self.startingBalance = self.bot.startingBalance
         self.data = {}
         for item in self.__config['symbols']:
-            self.data[item] = datasets.load_dataset(self.__owner, item, self.__config['timeframe'], self.__config['startDate'], self.bot.strategy.get_indicators())
+            self.data[item] = datasets.load_dataset(self.__owner, item, self.__config['timeframe'], self.__config['startDate'], self.__config['endDate'], self.bot.strategy.get_indicators())
 
 
     def run(self):

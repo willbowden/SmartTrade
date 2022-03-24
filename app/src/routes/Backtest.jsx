@@ -22,12 +22,13 @@ function Backtest() {
     setShowOptions(true);
   }
 
-  const startBacktest = (startDate, timeframe, symbols, fee) => {
+  const startBacktest = (startDate, endDate, timeframe, symbols, fee) => {
     setShowOptions(false);
     setLoading(true);
     let payload = {
       strategyName: selectedStrategy,
       startDate: startDate,
+      endDate: endDate,
       timeframe: timeframe,
       symbols: symbols,
       fee: fee
@@ -37,6 +38,8 @@ function Backtest() {
       body: JSON.parse(payload)
     }).then((results) => {
       setResults(results);
+      setLoading(false);
+      setShowResults(true);
     }).catch(() => {
       return <Navigate to="/login" />
     })
