@@ -22,7 +22,7 @@ function Backtest() {
     setShowOptions(true);
   }
 
-  const startBacktest = (startDate, endDate, timeframe, symbols, fee) => {
+  const startBacktest = (startDate, endDate, timeframe, symbols, startingBalance, fee) => {
     setShowOptions(false);
     setLoading(true);
     let payload = {
@@ -31,13 +31,16 @@ function Backtest() {
       endDate: endDate,
       timeframe: timeframe,
       symbols: symbols,
+      startingBalance: startingBalance,
       fee: fee
     }
+    console.log(payload);
     protectedFetch("/api/run_backtest", {
       method: 'POST',
-      body: JSON.parse(payload)
+      body: JSON.stringify(payload)
     }).then((results) => {
       setResults(results);
+      console.log(results);
       setLoading(false);
       setShowResults(true);
     }).catch(() => {

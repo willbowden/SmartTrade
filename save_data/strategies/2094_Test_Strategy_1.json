@@ -45,6 +45,5 @@
     "buy": [["ema_ema_20", "crossup", "ema_ema_50", 1]],
     "sell": [["ema_ema_20", "crossdown", "ema_ema_50", 1]]
   },
-  "startingBalance": 1000,
   "positionSize": 50
 }

@@ -22,12 +22,8 @@ class Strategy:
             loaded = data
 
         self.__indicators = loaded['indicators']
-        self.__startingBalance = loaded['startingBalance']
         self.__rules = loaded['rules']
         self.__positionSize = loaded['positionSize']
-
-    def get_starting_balance(self) -> float: # Getters
-        return self.__startingBalance
 
     def get_indicators(self) -> list:
         return self.__indicators
@@ -39,7 +35,6 @@ class Strategy:
             'ownerID': self.ownerID,
             'indicators': self.__indicators,
             'rules': self.__rules,
-            'startingBalance': self.__startingBalance,
             'positionSize': self.__positionSize
         }
 

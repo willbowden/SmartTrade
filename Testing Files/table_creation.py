@@ -74,7 +74,7 @@ conn.commit()
 query = """
     CREATE TABLE tblTrades (
         tradeID INT PRIMARY KEY NOT NULL UNIQUE,
-        creator TEXT CHECK( creator IN ("user", "botDry", "botLive", "backtest") ) NOT NULL,
+        creator TEXT CHECK( creator IN ("user", "backtest") ) NOT NULL,
         date BIGINT NOT NULL,
         symbol VARCHAR(15) NOT NULL,
         type TEXT CHECK (type IN ("buy", "sell", "income", "disposal") ) NOT NULL,

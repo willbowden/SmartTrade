@@ -69,7 +69,7 @@ def main():
     def get_available_indicators():
         return jsonify(AVAILABLEINDICATORS)
 
-    @app.route('/api/run_backtest', methods=["GET"])
+    @app.route('/api/run_backtest', methods=["GET", "POST"])
     @jwt_required()
     def run_backtest():
         payload = request.json
@@ -77,7 +77,10 @@ def main():
         'endDate': payload['endDate'],
         'symbols': payload['symbols'],
         'timeframe': payload['timeframe'],
-        'fee': payload['fee']}
+        'startingBalance': payload['startingBalance'],
+        'fee': float(payload['fee'])}
+
+        print(config) # LEFT OFF HERE
 
         try: 
             strategyID = dbmanager.get_row_by_column('tblStrategies', 'name', payload['strategyName'])['strategyID']
@@ -108,7 +111,8 @@ def main():
             dbmanager.update_row_by_column('tblStrategies', 'strategyID', strategyID, 'avgReturn', avgReturn)
 
             return jsonify(results), 200
-        except:
+        except Exception as e:
+            print(e)
             return jsonify({'response': 'Error During Backtest'}), 500
 
 

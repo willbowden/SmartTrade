@@ -15,6 +15,7 @@ function BacktestOptions(props) {
     const [endDate, setEndDate] = useState(0);
     const [timeframe, setTimeframe] = useState("");
     const [symbols, setSymbols] = useState([]);
+    const [startingBalance, setStartingBalance] = useState(0);
     const [fee, setFee] = useState(0);
 
     return (
@@ -65,7 +66,6 @@ function BacktestOptions(props) {
                 <Select
                 labelId="symbols-selector"
                 id="symbols-selector"
-                multiple
                 value={symbols}
                 onChange={(e) => {setSymbols(e.target.value)}}
                 input={<OutlinedInput label="Symbol" />}
@@ -81,9 +81,19 @@ function BacktestOptions(props) {
                 </Select>
             </FormControl>
             </Grid>
+            <Grid item xs={6} sx={{width: '95%'}}>
+                <TextField 
+                    label="Starting Balance"
+                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                    variant="outlined"
+                    value={startingBalance}
+                    onChange={(e) => setStartingBalance(e.target.value)}
+                />
+            </Grid>
             <Grid item xs={3} sx={{width: '95%'}}>
                 <TextField 
                     label="Fee"
+                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                     variant="outlined"
                     value={fee}
                     onChange={(e) => setFee(e.target.value)}
@@ -91,7 +101,7 @@ function BacktestOptions(props) {
             </Grid>
             <Grid item xs={4}>
                 <Button variant="contained" color="success" onClick={
-                    () => props.startBacktest(startDate, endDate, timeframe, symbols, fee)}>Start Backtest</Button>
+                    () => props.startBacktest(startDate, endDate, timeframe, symbols, startingBalance, fee)}>Start Backtest</Button>
             </Grid>
         </CenteredPageContainer>
     );

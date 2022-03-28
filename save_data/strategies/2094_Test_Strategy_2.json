@@ -45,6 +45,5 @@
     "buy": [["ema_ema_20", "crossdown", "ema_ema_50", 1]],
     "sell": [["ema_ema_20", ">=", "percentage", "1.05", 1]]
   },
-  "startingBalance": 2000,
   "positionSize": 100
 }

@@ -28,7 +28,7 @@ class Bot:
 
     def __first_time_setup(self) -> None:
         # Setup all initial variables 
-        self.balance = self.strategy.get_starting_balance()
+        self.balance = self.__config['startingBalance']
         self.startingBalance = self.balance
         self.startDate = datetime.now()
         self.daysRunning = 1
