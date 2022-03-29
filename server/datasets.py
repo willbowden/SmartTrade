@@ -99,7 +99,7 @@ def load_dataset(user, symbol: str, timeframe: str, startDate: int, endDate: int
         datasetWithoutIndicators.loc[:, 'timestamp'] = pd.to_datetime(datasetWithoutIndicators['timestamp'], unit="ms")
     # Find the index closest to our startdate.
     searchForStartDate = np.where(datasetWithoutIndicators['timestamp'] <= pd.to_datetime(startDate, unit='ms'))[0]
-    searchForEndDate = np.where(datasetWithoutIndicators['timestamp'] >= pd.to_datetime(endDate, 'ms'))[0]
+    searchForEndDate = np.where(datasetWithoutIndicators['timestamp'] >= pd.to_datetime(endDate, unit='ms'))[0]
 
     if len(searchForEndDate) > 0:
         indexOfEndDate = searchForEndDate[0]

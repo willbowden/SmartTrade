@@ -10,7 +10,7 @@ import getUnixTime from 'date-fns/getUnixTime'
  
 function BacktestOptions(props) {
     const availableTimeframes = ["1m", "3m", "5m", "15m", "30m", "1h", "4h", "1d", "1w", "1M", "3M", "1y"]
-    const availableSymols = ["ETH/BUSD", "BTC/BUSD", "AVAX/BUSD", "LTC/BUSD", "ETH/USDT", "BTC/USDT", "ADA/BUSD", "ADA/USDT", "BTC/ETH"]
+    const availableSymbols = ["ETH/BUSD", "BTC/BUSD", "AVAX/BUSD", "LTC/BUSD", "ETH/USDT", "BTC/USDT", "ADA/BUSD", "ADA/USDT", "BTC/ETH"]
     const [startDate, setStartDate] = useState(0);
     const [endDate, setEndDate] = useState(0);
     const [timeframe, setTimeframe] = useState("");
@@ -70,7 +70,7 @@ function BacktestOptions(props) {
                 onChange={(e) => {setSymbols(e.target.value)}}
                 input={<OutlinedInput label="Symbol" />}
                 >
-                {availableSymols.map((name) => (
+                {availableSymbols.map((name) => (
                     <MenuItem
                     key={name}
                     value={name}

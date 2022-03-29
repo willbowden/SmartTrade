@@ -75,45 +75,41 @@ def main():
         payload = request.json
         config = {'startDate': payload['startDate'],
         'endDate': payload['endDate'],
-        'symbols': payload['symbols'],
+        'symbols': [payload['symbols']],
         'timeframe': payload['timeframe'],
-        'startingBalance': payload['startingBalance'],
+        'startingBalance': float(payload['startingBalance']),
         'fee': float(payload['fee'])}
 
         print(config) # LEFT OFF HERE
 
-        try: 
-            strategyID = dbmanager.get_row_by_column('tblStrategies', 'name', payload['strategyName'])['strategyID']
-            b = Backtest(current_identity, config, payload['strategyName'])
-            b.run()
-            results = b.get_results()
-            for order in results['orderHistory'].iterrows(): # Add trades to database
-                dbmanager.create_trade(current_identity.id, 'backtest', order['timestamp'], order['symbol'],
-                order['side'], order['quantity'], order['value'], order['price'], order['profit'])
+        strategyID = dbmanager.get_row_by_column('tblStrategies', 'name', payload['strategyName'])['strategyID']
+        b = Backtest(current_identity, config, payload['strategyName'])
+        b.run()
+        results = b.get_results()
+        for order in results['orderHistory'].iterrows(): # Add trades to database
+            dbmanager.create_trade(current_identity.id, 'backtest', order['timestamp'], order['symbol'],
+            order['side'], order['quantity'], order['value'], order['price'], order['profit'])
 
-            # Add backtest to database
-            dbmanager.create_backtest(strategyID, payload['symbols'],
-                payload['startDate'], payload['endDate'], results['numBuys'],
-                results['numSells'], results['winRate'], results['startingBalance'],
-                results['balance'])
+        # Add backtest to database
+        dbmanager.create_backtest(strategyID, payload['symbols'],
+            payload['startDate'], payload['endDate'], results['numBuys'],
+            results['numSells'], results['winRate'], results['startingBalance'],
+            results['balance'])
 
-            # Recalculate average winrate and returns
-            backTests = dbmanager.get_strategy_backtests(strategyID)
-            numberOfBacktests = len(backTests)
-            totalWinRate = sum([bt['winRate'] for bt in backTests])
-            totalReturn = sum([bt['return'] for bt in backTests])
+        # Recalculate average winrate and returns
+        backTests = dbmanager.get_strategy_backtests(strategyID)
+        numberOfBacktests = len(backTests)
+        totalWinRate = sum([bt['winRate'] for bt in backTests])
+        totalReturn = sum([bt['return'] for bt in backTests])
 
-            avgWinRate = (totalWinRate) / numberOfBacktests
-            avgReturn = (totalReturn) / numberOfBacktests
+        avgWinRate = (totalWinRate) / numberOfBacktests
+        avgReturn = (totalReturn) / numberOfBacktests
 
-            # Update entries in database
-            dbmanager.update_row_by_column('tblStrategies', 'strategyID', strategyID, 'avgWinRate', avgWinRate)
-            dbmanager.update_row_by_column('tblStrategies', 'strategyID', strategyID, 'avgReturn', avgReturn)
+        # Update entries in database
+        dbmanager.update_row_by_column('tblStrategies', 'strategyID', strategyID, 'avgWinRate', avgWinRate)
+        dbmanager.update_row_by_column('tblStrategies', 'strategyID', strategyID, 'avgReturn', avgReturn)
 
-            return jsonify(results), 200
-        except Exception as e:
-            print(e)
-            return jsonify({'response': 'Error During Backtest'}), 500
+        return jsonify(results), 200
 
 
     @app.route('/api/create_strategy', methods=["GET", "POST"])
