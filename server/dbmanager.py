@@ -6,7 +6,7 @@ import sqlite3
 import random
 
 def __get_conn_and_cursor() -> tuple: # See comments section in document.
-    connection = sqlite3.connect('smarttrade.db')
+    connection = sqlite3.connect('smarttrade.sqlite')
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
     return connection, cursor
@@ -142,7 +142,7 @@ def get_user_strategies(userID: int) -> list: # Return all trades associated wit
 
 def get_strategy_backtests(strategyID: int) -> list: # Return all backtests associated with a strategy and the user who performed them.
     cursor = __get_conn_and_cursor()[1]
-    query = f"""SELECT tblBacktests.*, tblStrategyBacktest.userID
+    query = f"""SELECT tblStrategyBacktest.strategyID, tblStrategyBacktest.backtestID, tblBacktests.backtestID
     FROM tblBacktests 
     INNER JOIN tblBacktests ON tblBacktests.backtestID = tblStrategyBacktest.backtestID
     WHERE tblStrategyBacktest.strategyID = {strategyID}

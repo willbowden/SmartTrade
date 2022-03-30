@@ -10,24 +10,25 @@ class Backtest:
         self.__config = config
         self.id = self.__owner.id
         # Initialise the bot
-        self.bot = bot.Bot(self, strategyName, True, config)
+        self.bot = bot.Bot(self, strategyName, config)
         self.info = {'strategyName': strategyName, 'userID': self.__owner.id}
         self.startingBalance = self.bot.startingBalance
         self.data = {}
         for item in self.__config['symbols']:
             self.data[item] = datasets.load_dataset(self.__owner, item, self.__config['timeframe'], self.__config['startDate'], self.__config['endDate'], self.bot.strategy.get_indicators())
+            print(self.data)
 
 
     def run(self):
         # Iterate over each row of every dataset and check the buy/sell rules of the bot.
         for symbol in self.__config['symbols']:
+            print(symbol)
             ds = self.data[symbol]
             for index, row in ds.iterrows():
                 self.bot.tick(ds, index, symbol)
         
-        return self.__get_results()
         
-    def __get_results(self):
+    def get_results(self):
         # Return the results from the backtest such as remaining balance, profit etc.
         results = self.bot.get_info()
         print(f"Balance: ${round(results['balance'], 2)}. Profit: ${round(results['profit'], 2)}, {round(results['profitPercent'], 2)}%. Number of Trades: {results['numOrders']}.")

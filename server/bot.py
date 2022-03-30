@@ -8,11 +8,10 @@ import json
 from SmartTrade.server import strategy, constants
 
 class Bot:
-    def __init__(self, owner, strategyName, dryRun, config, saveData=None) -> None:
+    def __init__(self, owner, strategyName, config, saveData=None) -> None:
         self.owner = owner
         self.__config = config
         self.strategy = strategy.Strategy(strategyName, self.owner.id)
-        self.__dryRun = dryRun
         self.inPosition = False
         self.__lastBuyPrice = 0
         self.__winners = 0
@@ -91,11 +90,7 @@ class Bot:
     def __sell(self, quantity, value, price, timestamp) -> None:
         potentialOrder = {'timestamp': timestamp, 'symbol': self.currentSymbol, 'side': 'sell', 'quantity': quantity, 'value': value, 'price': price}
         if value >= 10:
-            if not self.__dryRun: # If we're using real money
-                valid = self.owner.place_sell_order(quantity, value, price) # Place a real money order
-            else:
-                valid = True
-            if valid and self.assetHoldings[self.currentSymbol]['balance'] >= quantity:
+            if self.assetHoldings[self.currentSymbol]['balance'] >= quantity:
                 self.balance += (value * (1 - self.__config['fee'])) # Increase our balance taking into account the fee
                 self.assetHoldings[self.currentSymbol]['balance'] -= quantity
                 if self.assetHoldings[self.currentSymbol]['outstandingSpend'] < value: # Reduce our 'outstanding spend'
@@ -108,8 +103,6 @@ class Bot:
                 self.inPosition = False
                 if price > self.__lastBuyPrice:
                     self.__winners += 1
-            elif not valid:
-                print("Bot tried to execute sell order but exchange refused!")
             else:
                 print(f"Bot tried to sell {self.currentSymbol} but didn't have a great enough balance!")
 
@@ -117,19 +110,13 @@ class Bot:
         # Identical to above, but we're buying instead.
         potentialOrder = {'timestamp': timestamp, 'symbol': self.currentSymbol, 'side': 'buy', 'quantity': quantity, 'value': value, 'price': price, 'profit': 0}
         if value >= 10:
-            if not self.__dryRun: # If we're using real money
-                valid = self.owner.place_sell_order(quantity, value, price) # Place a real money order
-            else:
-                valid = True
-            if valid and self.assetHoldings[self.currentSymbol]['balance'] >= quantity:
+            if self.balance >= value:
                 self.balance -= (value)
                 self.assetHoldings[self.currentSymbol]['balance'] += (quantity * (1 - self.__config['fee']))
                 self.assetHoldings[self.currentSymbol]['outstandingSpend'] += value
                 self.orderHistory = self.orderHistory.append(potentialOrder, ignore_index=True)
                 self.inPosition = True
                 self.__lastBuyPrice = price
-            elif not valid:
-                print("Bot tried to execute buy order but exchange refused!")
             else:
                 print(f"Bot tried to buy {self.currentSymbol} but didn't have a great enough balance!")
 
