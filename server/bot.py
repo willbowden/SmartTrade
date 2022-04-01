@@ -146,7 +146,7 @@ class Bot:
         results['balance'] = self.balance
         results['profit'] = self.profit
         results['profitPercent'] = self.profitPercent
-        results['orderHistory'] = self.orderHistory 
+        results['orderHistory'] = self.orderHistory.to_json(orient='records')
         numOrders = len(self.orderHistory.index)
         print(self.orderHistory)
         print(self.orderHistory['side'].value_counts())

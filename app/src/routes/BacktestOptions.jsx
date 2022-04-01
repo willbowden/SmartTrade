@@ -11,12 +11,12 @@ import getUnixTime from 'date-fns/getUnixTime'
 function BacktestOptions(props) {
     const availableTimeframes = ["1m", "3m", "5m", "15m", "30m", "1h", "4h", "1d", "1w", "1M", "3M", "1y"]
     const availableSymbols = ["ETH/BUSD", "BTC/BUSD", "AVAX/BUSD", "LTC/BUSD", "ETH/USDT", "BTC/USDT", "ADA/BUSD", "ADA/USDT", "BTC/ETH"]
-    const [startDate, setStartDate] = useState(0);
-    const [endDate, setEndDate] = useState(0);
-    const [timeframe, setTimeframe] = useState("");
+    const [startDate, setStartDate] = useState(1643673600000);
+    const [endDate, setEndDate] = useState(1646006400000);
+    const [timeframe, setTimeframe] = useState("4h");
     const [symbols, setSymbols] = useState([]);
-    const [startingBalance, setStartingBalance] = useState(0);
-    const [fee, setFee] = useState(0);
+    const [startingBalance, setStartingBalance] = useState(1000);
+    const [fee, setFee] = useState(0.001);
 
     return (
         <CenteredPageContainer>

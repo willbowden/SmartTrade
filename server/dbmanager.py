@@ -142,9 +142,9 @@ def get_user_strategies(userID: int) -> list: # Return all trades associated wit
 
 def get_strategy_backtests(strategyID: int) -> list: # Return all backtests associated with a strategy and the user who performed them.
     cursor = __get_conn_and_cursor()[1]
-    query = f"""SELECT tblStrategyBacktest.strategyID, tblStrategyBacktest.backtestID, tblBacktests.backtestID
-    FROM tblBacktests 
-    INNER JOIN tblBacktests ON tblBacktests.backtestID = tblStrategyBacktest.backtestID
+    query = f"""SELECT tblBacktests.backtestID, tblStrategyBacktest.strategyID, tblStrategyBacktest.backtestID 
+    FROM tblBacktests
+    INNER JOIN tblStrategyBacktest ON tblStrategyBacktest.backtestID = tblBacktests.backtestID
     WHERE tblStrategyBacktest.strategyID = {strategyID}
     """
     result = cursor.execute(query).fetchall()
@@ -189,10 +189,9 @@ def get_all_accounts() -> list: # Get all accounts in database as a dictionary
 
     return accounts
 
-def test():
-    delete_row('tblStrategies', 'name', 'Bad Strategy 1', 'strategyID')
+# def test():
+    # print(get_strategy_backtests(32171192))
 
 
 if __name__ == '__main__':
     print(f"Please do not run {__file__} directly.")
-    test()

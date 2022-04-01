@@ -102,8 +102,9 @@ def main():
         totalWinRate = sum([bt['winRate'] for bt in backTests])
         totalReturn = sum([bt['return'] for bt in backTests])
 
-        avgWinRate = (totalWinRate) / numberOfBacktests
-        avgReturn = (totalReturn) / numberOfBacktests
+        if numberOfBacktests > 0:
+            avgWinRate = (totalWinRate) / numberOfBacktests
+            avgReturn = (totalReturn) / numberOfBacktests
 
         # Update entries in database
         # dbmanager.update_row_by_column('tblStrategies', 'strategyID', strategyID, 'avgWinRate', avgWinRate)

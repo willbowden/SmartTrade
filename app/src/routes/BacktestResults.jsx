@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import '../App.css';
 import {useState} from 'react';
 import CenteredPageContainer from "../components/centeredPageContainer";
@@ -11,8 +11,11 @@ function BacktestResults(props) {
   const [showResults, setShowResults] = useState(false);
   const [selectedGraph, setSelectedGraph] = useState("");
   const [results, setResults] = useState(props.results);
+  console.log(results);
 
-  const profitTextColour = props.results.profit > 0 ? teal[500] : red[500];
+  useEffect(() => {
+    const profitTextColour = results.profit > 0 ? teal[500] : red[500];
+  }, [results])
 
   return (
     <CenteredPageContainer>
@@ -23,8 +26,8 @@ function BacktestResults(props) {
         <Card>
           <CardContent>
             <Typography variant="h3">Profit</Typography>
-            <Typography variant="h4" color={profitTextColour}>${props.results.profit}</Typography>
-            <Typography variant="body1" color={profitTextColour}>{props.results.profitPercent}%</Typography>
+            <Typography variant="h4" color={profitTextColour}>${results.profit}</Typography>
+            <Typography variant="body1" color={profitTextColour}>{results.profitPercent}%</Typography>
           </CardContent>
         </Card>
       </Grid>
