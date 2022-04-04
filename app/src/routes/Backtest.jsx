@@ -23,6 +23,7 @@ function Backtest() {
     setShowOptions(true);
   }
 
+
   const startBacktest = (startDate, endDate, timeframe, symbols, startingBalance, fee) => {
     setShowOptions(false);
     setLoading(true);

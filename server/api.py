@@ -81,25 +81,26 @@ def main():
         'startingBalance': float(payload['startingBalance']),
         'fee': float(payload['fee'])}
 
-        print(config)
-
         strategyID = dbmanager.get_row_by_column('tblStrategies', 'name', payload['strategyName'])['strategyID']
         b = Backtest(current_identity, config, payload['strategyName'])
         b.run()
         results = b.get_results()
-        # for index, order in results['orderHistory'].iterrows(): # Add trades to database
-            # dbmanager.create_trade(current_identity.id, 'backtest', order['timestamp'], order['symbol'],
-            # order['side'], order['quantity'], order['value'], order['price'], order['profit'])
 
         # Add backtest to database
-        # dbmanager.create_backtest(strategyID, payload['symbols'],
+        # dbmanager.create_backtest(strategyID, current_identity.id, payload['symbols'],
         #     payload['startDate'], payload['endDate'], results['numBuys'],
         #     results['numSells'], results['winRate'], results['startingBalance'],
-        #     results['balance'])
+        #     results['balance'], results['profit'])
+
+        # for index, order in results['orderHistory'].iterrows(): # Add trades to database
+        #     dbmanager.create_trade(current_identity.id, strategyID, 'backtest', order['timestamp'].value, order['symbol'],
+        #     order['side'], order['quantity'], order['value'], order['price'], order['profit'])
+
 
         # Recalculate average winrate and returns
         backTests = dbmanager.get_strategy_backtests(strategyID)
         numberOfBacktests = len(backTests)
+        print(backTests)
         totalWinRate = sum([bt['winRate'] for bt in backTests])
         totalReturn = sum([bt['return'] for bt in backTests])
 
@@ -108,9 +109,10 @@ def main():
             avgReturn = (totalReturn) / numberOfBacktests
 
         # Update entries in database
-        # dbmanager.update_row_by_column('tblStrategies', 'strategyID', strategyID, 'avgWinRate', avgWinRate)
-        # dbmanager.update_row_by_column('tblStrategies', 'strategyID', strategyID, 'avgReturn', avgReturn)
+        dbmanager.update_row_by_column('tblStrategies', 'strategyID', strategyID, 'avgWinRate', avgWinRate)
+        dbmanager.update_row_by_column('tblStrategies', 'strategyID', strategyID, 'avgReturn', avgReturn)
 
+        results['orderHistory'] = results['orderHistory'].to_json(orient='records')
         return jsonify(results), 200
 
 

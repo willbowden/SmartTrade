@@ -17,14 +17,14 @@ def create_account(username: str, password: str, nickname: str, apiKey: str, exc
     __execute_query(query, (password, apiKey,))
     return id
 
-def create_trade(creatorID: int, creator: str, date: int, symbol: str, tradeType: str, quantity: float, value: float, price: float, profit: float) -> None: # Creates new trade entry
+def create_trade(creatorID: int, strategyID: int, creator: str, date: int, symbol: str, tradeType: str, quantity: float, value: float, price: float, profit: float) -> None: # Creates new trade entry
     id = __get_unique_id('tblTrades', 'tradeID')
-    query = f"INSERT INTO tblTrades VALUES ({id}, '{creator}', {date}, '{symbol}', '{tradeType}', {quantity}, {price}, {profit})"
+    query = f"INSERT INTO tblTrades VALUES ({id}, '{creator}', {date}, '{symbol}', '{tradeType}', {quantity}, {value}, {price}, {profit})"
     __execute_query(query)
     if creator is "backtest":
-        __create_link(backtestID=creatorID, strategyID=id)
+        __create_link(backtestID=creatorID, tradeID=id)
     else:
-        __create_link(userID=creatorID, backtestID=id)
+        __create_link(userID=creatorID, tradeID=id)
 
 def create_strategy(userID: int, name: str, avgWinRate: float = 0, avgReturn: float = 0) -> None: # Creates new strategy entry
     id = __get_unique_id('tblStrategies', 'strategyID')
@@ -32,11 +32,11 @@ def create_strategy(userID: int, name: str, avgWinRate: float = 0, avgReturn: fl
     __execute_query(query)
     __create_link(strategyID=id, userID=userID)
 
-def create_backtest(strategyID: int, symbols: str, start: int, end: int, buys: int, sells: int, winRate: float, startBalance: float, endBalance: float, gain: float) -> None: # Creates new backtest entry
+def create_backtest(strategyID: int, userID:int, symbols: str, start: int, end: int, buys: int, sells: int, winRate: float, startBalance: float, endBalance: float, gain: float) -> None: # Creates new backtest entry
     id = __get_unique_id('tblBacktests', 'backtestID')
     query = f"INSERT INTO tblBacktests VALUES ({id}, '{symbols}', {start}, {end}, {buys}, {sells}, {winRate}, {startBalance}, {endBalance}, {gain})"
     __execute_query(query)
-    __create_link(strategyID=strategyID, backtestID=id)
+    __create_link(strategyID=strategyID, backtestID=id, userID=userID)
 
 def __get_unique_id(table: str, idName: str) -> int: # Get an ID that is unused
     uniqueIDFound = False
@@ -48,6 +48,7 @@ def __get_unique_id(table: str, idName: str) -> int: # Get an ID that is unused
     return id
 
 def __execute_query(query: str, args=None) -> None:
+    print(query)
     conn, cursor = __get_conn_and_cursor()
     if args is None:
         cursor.execute(query)
@@ -142,7 +143,7 @@ def get_user_strategies(userID: int) -> list: # Return all trades associated wit
 
 def get_strategy_backtests(strategyID: int) -> list: # Return all backtests associated with a strategy and the user who performed them.
     cursor = __get_conn_and_cursor()[1]
-    query = f"""SELECT tblBacktests.backtestID, tblStrategyBacktest.strategyID, tblStrategyBacktest.backtestID 
+    query = f"""SELECT tblBacktests.*, tblBacktests.backtestID, tblStrategyBacktest.strategyID, tblStrategyBacktest.backtestID 
     FROM tblBacktests
     INNER JOIN tblStrategyBacktest ON tblStrategyBacktest.backtestID = tblBacktests.backtestID
     WHERE tblStrategyBacktest.strategyID = {strategyID}

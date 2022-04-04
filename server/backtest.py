@@ -36,8 +36,6 @@ class Backtest:
         datasetsAsJSON = {}
         for i, (key, set) in enumerate(self.data.items()):
             datasetsAsJSON[key] = set.to_json(orient='records')
-        print(self.bot.assetHoldings)
-        print(self.bot.orderHistory)
         
         return results
 

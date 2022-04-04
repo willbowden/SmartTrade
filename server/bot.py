@@ -146,12 +146,11 @@ class Bot:
         results['balance'] = self.balance
         results['profit'] = self.profit
         results['profitPercent'] = self.profitPercent
-        results['orderHistory'] = self.orderHistory.to_json(orient='records')
+        results['orderHistory'] = self.orderHistory
         numOrders = len(self.orderHistory.index)
-        print(self.orderHistory)
-        print(self.orderHistory['side'].value_counts())
-        #results['numSells'] = self.orderHistory['side'].value_counts()['sell']
-        results['numOrders'] = numOrders
-        results['winRate'] = (self.__winners / numOrders) * 100
+        results['numSells'] = int(self.orderHistory['side'].value_counts().iat[1])
+        results['numBuys'] = int(self.orderHistory['side'].value_counts().iat[0])
+        results['numOrders'] = int(numOrders)
+        results['winRate'] = (self.__winners / int(numOrders)) * 100
 
         return results

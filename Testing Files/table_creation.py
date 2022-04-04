@@ -60,8 +60,8 @@ conn.commit()
 query = """
     CREATE TABLE tblStrategyBacktest (
         backtestID INT NOT NULL UNIQUE,
-        strategyID INT NOT NULL UNIQUE,
-        userID INT NOT NULL UNIQUE,
+        strategyID INT NOT NULL,
+        userID INT NOT NULL,
         FOREIGN KEY (backtestID) REFERENCES tblBacktests(backtestID) ON DELETE CASCADE,
         FOREIGN KEY (strategyID) REFERENCES tblStrategies(strategyID) ON DELETE CASCADE, 
         FOREIGN KEY (userID) REFERENCES tblUsers(userID) ON DELETE CASCADE,
@@ -89,7 +89,7 @@ conn.commit()
 
 query = """
     CREATE TABLE tblUserTrades (
-        userID INT NOT NULL UNIQUE,
+        userID INT NOT NULL,
         tradeID INT NOT NULL UNIQUE,
         FOREIGN KEY (userID) REFERENCES tblUsers(userID) ON DELETE CASCADE,
         FOREIGN KEY (tradeID) REFERENCES tblTrades(tradeID) ON DELETE CASCADE,
@@ -101,7 +101,7 @@ conn.commit()
 
 query = """
     CREATE TABLE tblBacktestTrades (
-        backtestID INT NOT NULL UNIQUE,
+        backtestID INT NOT NULL,
         tradeID INT NOT NULL UNIQUE,
         FOREIGN KEY (backtestID) REFERENCES tblBacktests(backtestID) ON DELETE CASCADE,
         FOREIGN KEY (tradeID) REFERENCES tblTrades(tradeID) ON DELETE CASCADE,
