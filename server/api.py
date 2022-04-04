@@ -13,6 +13,7 @@ import json
 import time
 from SmartTrade.server.user import User
 from SmartTrade.server.strategy import Strategy 
+from SmartTrade.server import conversions
 from SmartTrade.server import datasets
 from SmartTrade.server.backtest import Backtest
 from datetime import datetime
@@ -157,7 +158,7 @@ def main():
         print(payload)
         print(f"Gathering dataset for: {payload['symbol']}")
         dataset = datasets.load_dataset(current_identity, payload['symbol'], payload['timeframe'],
-         int(payload['startDate']), payload['requiredIndicators'])
+         int(payload['startDate']), conversions.date_to_unix(datetime.now()), payload['requiredIndicators'])
         dataset = dataset.rename(columns={"timestamp": "time"})
         dataset = dataset.fillna(0)
         out = dataset.to_json(orient="records", date_unit="s")

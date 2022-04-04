@@ -1,13 +1,14 @@
 import React from "react";
 import {useState} from 'react';
 import '../App.css';
-import { Typography, CircularProgress } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import protectedFetch from "../auth/protectedFetch";
 import {Navigate} from 'react-router-dom';
 import CenteredPageContainer from "../components/centeredPageContainer";
 import BacktestResults from "./BacktestResults.jsx";
 import UserStrategies from './UserStrategies.jsx';
 import BacktestOptions from "./BacktestOptions";
+import { fromUnixTime } from "date-fns";
  
 function Backtest() {
   const [redirectToLogin, setRedirect] = useState(false);
@@ -34,28 +35,35 @@ function Backtest() {
       startingBalance: startingBalance,
       fee: fee
     }
-    console.log(payload);
     protectedFetch("/api/run_backtest", {
       method: 'POST',
       body: JSON.stringify(payload)
     }).then((results) => {
+      const parsedRows = JSON.parse(results.orderHistory);
+      let id = 0;
+      let newOrderHistory = []
+      parsedRows.forEach((row) => {
+        let newRow = row;
+        newRow.id = id;
+        newRow.timestamp = fromUnixTime(newRow.timestamp / 1000);
+        newOrderHistory.push(newRow)
+        id += 1;
+      })
+      results.orderHistory = newOrderHistory;
       setResults(results);
-      console.log(results);
       setLoading(false);
       setShowResults(true);
-    }).catch(() => {
-      return <Navigate to="/login" />
     })
   }
 
 
     return (
-      loading ? <CircularProgress /> : 
         <CenteredPageContainer>
+          {loading ? <CircularProgress /> : null}
           { redirectToLogin ? <Navigate to="/login"></Navigate> : null}
           { showOptions ? <BacktestOptions startBacktest={startBacktest} /> : null}
-          { showResults ? <BacktestResults /> : null }
-          { !showOptions && <UserStrategies selectStrategy={selectStrategy}/>}
+          { showResults ? <BacktestResults results={results} /> : null }
+          { !showResults && <UserStrategies selectStrategy={selectStrategy}/>}
         </CenteredPageContainer>
     );
 }
