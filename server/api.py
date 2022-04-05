@@ -86,7 +86,7 @@ def main():
         b.run()
         results = b.get_results()
 
-        # Add backtest to database
+        # # Add backtest to database
         # dbmanager.create_backtest(strategyID, current_identity.id, payload['symbols'],
         #     payload['startDate'], payload['endDate'], results['numBuys'],
         #     results['numSells'], results['winRate'], results['startingBalance'],
