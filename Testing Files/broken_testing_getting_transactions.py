@@ -9,7 +9,7 @@ import pandas as pd
 ### 
 
 
-u = User(dbmanager.get_row_by_column('tblUsers', 'userID', 2094))
+u = User(dbmanager.get_row_by_column('tblUsers', 'userID', 9227090))
 ex = u.exchange
 
 def get_traded_pairs(user):
@@ -181,13 +181,12 @@ def __decrease_balances(user, balances: dict, coin: str, amount: float, value:fl
 
 
 
-trades = pd.read_json('./Testing Files/trades.json')
-with open('./Testing Files/tradedPairs.json', 'r') as infile:
-    tradedPairs = json.load(infile)
+trades = pd.read_json('./Testing Files/trades.json', orient='columns')
 
-with open('./Testing Files/trades.json', 'r') as infile:
-    trades = pd.read_json(infile)
+print(trades)
+# with open('./Testing Files/tradedPairs.json', 'r') as infile:
+#     tradedPairs = json.load(infile)
 
-out = track_transactions(u, tradedPairs, trades)
+# out = track_transactions(u, tradedPairs, trades)
 # with open('tradeHistory.json', 'w') as outfile:
 #     out.to_json(outfile)

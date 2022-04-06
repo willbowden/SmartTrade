@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Chart from 'kaktana-react-lightweight-charts';
 import protectedFetch from "../auth/protectedFetch";
 import { Box, Stack, TextField, Button, CircularProgress } from '@mui/material';
 import CenteredPageContainer from "./centeredPageContainer";
 import { Navigate } from 'react-router-dom';
+import GenericChart from "./genericChart";
 
 function CandlestickChart(props) {
   const [symbol, setSymbol] = useState("ETH/USDT");
@@ -110,7 +110,7 @@ function CandlestickChart(props) {
           <Button variant="contained" color="success" onClick={sendRequest}>Go</Button>
       </Box>
       <Box sx={{width: '100vw'}}>
-        <Chart options={options} candlestickSeries={candlestickSeries} lineSeries={lineSeries} autoWidth height={500} />
+        <GenericChart options={options} candlestickSeries={candlestickSeries} lineSeries={lineSeries} autoWidth={true} height={500} />
       </Box>
       </Stack>
         }

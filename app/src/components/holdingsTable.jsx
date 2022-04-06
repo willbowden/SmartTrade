@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import protectedFetch from "../auth/protectedFetch.js";
-import { Button, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Button, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
 
 export default function HoldingsTable() {
     const [holdings, setHoldings] = useState(null);
@@ -32,6 +32,7 @@ export default function HoldingsTable() {
     <TableContainer component={Paper} sx={{tableLayout: 'auto'}}>
         <Table>
         <TableHead>
+            <Typography variant="h3">My Assets</Typography>
         <TableRow>
             <TableCell>Asset</TableCell>
             <TableCell>Quantity</TableCell>

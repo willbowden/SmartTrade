@@ -6,6 +6,7 @@ import ccxt
 import datetime
 import pandas as pd
 import time
+from dateutil import parser
 from forex_python.converter import CurrencyRates
 from SmartTrade.server import conversions, constants
 
@@ -138,28 +139,32 @@ class Exchange: # Class to represent an exchange object. This is necessary as ea
             raise Exception("Exchange does not support fetching OHLCV.")
 
     # Fetches the price of a given asset at any single point in time.
-    def fetch_price_at_time(self, symbol: str, date: int, amount: float=None) -> float: 
+    def fetch_price_at_time(self, symbol: str, date: int) -> float: 
+        if type(date) == str:
+            date = conversions.date_to_unix(parser.parse(date))
         print(f"Fetching Price For {symbol}")
         if "/" not in symbol:
-            return self.__get_dollar_value_at_time(symbol, date, amount)
+            return self.__get_dollar_value_at_time(symbol, date)
         else:
             data = self.exchange.fetch_ohlcv(symbol, '1m', date, limit=1)
 
         return data[0][4] # Fetch the close price from the returned list
 
-    def __get_dollar_value_at_time(self, coin: str, date: int, amount) -> float:
+    def __get_dollar_value_at_time(self, coin: str, date: int) -> float:
         # Gets the dollar value of an asset, useful for tracking profits
         print(f"Fetching Dollar Value For {coin}")
+        if coin == 'GBP':
+            return 1.25
         found = False
-        quotes = ['BUSD', 'USDC', 'USDT', 'USD'] # Iterate over all possible dollar-based currencies
+        quotes = ['BUSD', 'USDC', 'USDT'] # Iterate over all possible dollar-based currencies
         if coin in quotes:
-            return amount
+            return 1
         counter = 0
         while not found:
             try: # Keep trying until we find an answer
                 if counter > len(quotes)-1:
                     # If we can't find a value on the exchange, try to convert from fiat to USD
-                    return self.__fiat_to_usd(coin, date, amount)
+                    return self.__fiat_to_usd(coin, date)
                 symbol = f"{coin}/{quotes[counter]}"
                 data = self.exchange.fetch_ohlcv(symbol, '1m', date, limit=1)
                 if len(data) > 0:
@@ -172,7 +177,7 @@ class Exchange: # Class to represent an exchange object. This is necessary as ea
 
         return data[0][4] # Fetch the close price from the returned list
 
-    def __fiat_to_usd(self, coin: str, date:int, amount: float):
+    def __fiat_to_usd(self, coin: str, date:int):
         print(date)
         date = datetime.datetime.fromtimestamp(date/1e3) # Convert from milliseconds to seconds
         print(f"Performing Fiat Conversion For {coin} to USD at time {date}")
@@ -180,12 +185,11 @@ class Exchange: # Class to represent an exchange object. This is necessary as ea
         while not found:
             try:
                 rate = self.fiatConverter.get_rate(coin, 'USD', date)
-                result = amount * rate
                 found = True
-                return result
+                return rate
             except Exception as e:
                 print(e)
-                return amount
+                return 1
 
     # Just return most recent close price from ticker
     def fetch_current_price(self, symbol: str) -> float: 

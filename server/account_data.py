@@ -3,24 +3,42 @@
 ######################################################
 
 from datetime import datetime
-from SmartTrade.server import constants, dbmanager
+from SmartTrade.server import constants, dbmanager, conversions
 import time
 
-def get_account_value(user, balances=None) -> dict: # Calculate and return user's total account value in USD
+def get_account_value(user, balances=None, atTime=None) -> dict: # Calculate and return user's total account value in USD
     totalValue = 0.0
-    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    if atTime is None:
+        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        date = atTime
     if balances is None:
         balances = get_account_balances(user)
 
     for key in balances.keys(): # Iterate through non-zero balances
-        if key != 'USDT':
-            value = get_asset_value(user, key, balances[key])
+        if key not in ['USDT', 'BUSD', 'USDC']:
+            value = get_asset_value(user, key, balances[key], date)
         else:
             value = balances[key]
         totalValue += value
     result = {'date': date, 'value': totalValue}
 
     return result
+
+def get_account_value_over_time(user, startDate=None):
+    currentTime = conversions.date_to_unix(datetime.now())
+    if startDate is None:
+        startDate = currentTime - (30 * 86400000)
+    dayDifference = ((currentTime - startDate) // 86400000) - 1
+    results = []
+    if dayDifference > 0:
+        for day in range(dayDifference):
+            value = get_account_value(user, atTime=startDate+(day*86400000))
+            newRow = {'time': (startDate+(day*86400000))/10e3, 'value': value}
+            results.append(newRow)
+
+    return results
+    
 
 def get_account_holdings(user) -> dict: # Return a dictionary of the user's cryptocurrency balances and their individual value
     balances = get_account_balances(user)
@@ -34,13 +52,16 @@ def get_account_holdings(user) -> dict: # Return a dictionary of the user's cryp
 
     return result
 
-def get_asset_value(user, asset:str, quantity:float) -> float: # Calculates the value of a given asset based on its most recent price
+def get_asset_value(user, asset:str, quantity:float, atTime=None) -> float: # Calculates the value of a given asset based on its most recent price
     if asset == 'USDT':
         value = quantity
     elif asset in constants.BLACKLISTED_COINS:
         value = 0
     else:
-        price = user.exchange.fetch_current_price(f"{asset}/USDT")
+        if atTime is not None:
+            price = user.exchange.fetch_price_at_time(asset, atTime)
+        else:
+            price = user.exchange.fetch_current_price(f"{asset}/USDT")
         value = quantity * price
     return round(value, 2)
 

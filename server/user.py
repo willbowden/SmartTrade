@@ -59,12 +59,6 @@ class User: # Class to represent a user in the system, containing their account 
         self.holdings = account_data.get_account_holdings(self)
         return self.holdings
 
-    def calculate_history(self) -> None: # Get a user's trade history and calculate profit etc.
-        # As yet unimplemented.
-        # Will download all of a user's past transactions, save them and calculate profits.
-
-        raise NotImplementedError
-
     def login(self) -> None:
         self.loggedIn = True
 

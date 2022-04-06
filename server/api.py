@@ -13,8 +13,7 @@ import json
 import time
 from SmartTrade.server.user import User
 from SmartTrade.server.strategy import Strategy 
-from SmartTrade.server import conversions
-from SmartTrade.server import datasets
+from SmartTrade.server import conversions, account_data, datasets
 from SmartTrade.server.backtest import Backtest
 from datetime import datetime
 
@@ -170,7 +169,7 @@ def main():
     @jwt_required()
     def get_user_holdings():
         print(f"Fetching Balances For: {current_identity.id}")
-        return jsonify(current_identity.get_holdings())
+        return jsonify(current_identity.get_holdings()), 200
 
     @app.route('/api/register', methods=['POST'])
     def register():
