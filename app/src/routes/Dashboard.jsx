@@ -3,7 +3,6 @@ import {useState, useEffect} from 'react';
 import CenteredPageContainer from '../components/centeredPageContainer.jsx';
 import { Grid, Typography, Card, CardContent } from '@mui/material';
 import HoldingsTable from "../components/holdingsTable.jsx";
-import GenericChart from "../components/genericChart.jsx";
 import protectedFetch from "../auth/protectedFetch.js";
 
 
@@ -30,7 +29,7 @@ function Dashboard() {
       </Grid>
       <Grid item xs={8}>
         { waitingForData ? <Typography variant="h4">We're calculating your trade history.</Typography> 
-        : <GenericChart lineSeries={valueData} autoWidth={true} height={300}></GenericChart>}
+        : null }
       </Grid>
     </CenteredPageContainer>
   );
