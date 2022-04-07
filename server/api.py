@@ -85,15 +85,16 @@ def main():
         b.run()
         results = b.get_results()
 
-        # # Add backtest to database
-        # dbmanager.create_backtest(strategyID, current_identity.id, payload['symbols'],
-        #     payload['startDate'], payload['endDate'], results['numBuys'],
-        #     results['numSells'], results['winRate'], results['startingBalance'],
-        #     results['balance'], results['profit'])
+        # Add backtest to database
+        backtestID  = dbmanager.create_backtest(strategyID, current_identity.id, payload['symbols'],
+            payload['startDate'], payload['endDate'], results['numBuys'],
+            results['numSells'], results['winRate'], results['startingBalance'],
+            results['balance'], results['profit'])
 
-        # for index, order in results['orderHistory'].iterrows(): # Add trades to database
-        #     dbmanager.create_trade(current_identity.id, strategyID, 'backtest', order['timestamp'].value, order['symbol'],
-        #     order['side'], order['quantity'], order['value'], order['price'], order['profit'])
+        # Add backtest trades to database
+        for index, order in results['orderHistory'].iterrows(): # Add trades to database
+            dbmanager.create_trade(backtestID, 'backtest', order['timestamp'].value, order['symbol'],
+            order['side'], order['quantity'], order['value'], order['price'], order['profit'])
 
 
         # Recalculate average winrate and returns

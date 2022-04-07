@@ -38,6 +38,7 @@ def create_backtest(strategyID: int, userID:int, symbols: str, start: int, end: 
     query = f"INSERT INTO tblBacktests VALUES ({id}, '{symbols}', {start}, {end}, {buys}, {sells}, {winRate}, {startBalance}, {endBalance}, {gain})"
     __execute_query(query)
     __create_link(strategyID=strategyID, backtestID=id, userID=userID)
+    return id
 
 def __get_unique_id(table: str, idName: str) -> int: # Get an ID that is unused
     uniqueIDFound = False
