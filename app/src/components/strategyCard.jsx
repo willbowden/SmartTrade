@@ -14,6 +14,7 @@ export default function StrategyCard(props) {
         </CardContent>
         <CardActions disableSpacing>
             <Button onClick={() => {props.selectStrategy(props.name)}} size="small">Backtest</Button>
+            <Button onClick={() => {props.viewBacktests(props.name)}} size="small">View</Button>
             <Button color="error" onClick={() => {props.deleteStrategy(props.name)}} size="small">Delete</Button>
         </CardActions>
     </Card>

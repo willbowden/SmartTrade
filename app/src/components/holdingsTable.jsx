@@ -2,10 +2,14 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import protectedFetch from "../auth/protectedFetch.js";
 import { Button, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
+import {Navigate} from 'react-router-dom'
 
 export default function HoldingsTable() {
     const [holdings, setHoldings] = useState(null);
     const [refresh, setRefresh] = useState(false);
+    const [totalValue, setTotalValue] = useState(0);
+    const [shouldRedirect, setRedirect] = useState(false);
+
 
     useEffect(() => {
         protectedFetch('/api/get_user_holdings').then(result => {
@@ -19,6 +23,8 @@ export default function HoldingsTable() {
             return second.value - first.value;
         });
         setHoldings(asArray);
+        }).catch((err) => {
+            setRedirect(true);
         })
     }, [refresh])
 
@@ -30,9 +36,10 @@ export default function HoldingsTable() {
 
     return (
     <TableContainer component={Paper} sx={{tableLayout: 'auto'}}>
+        {shouldRedirect ? <Navigate to='/login' /> : null}
         <Table>
         <TableHead>
-            <Typography variant="h3">My Assets</Typography>
+            <Typography variant="h3">My Assets: ${totalValue}</Typography>
         <TableRow>
             <TableCell>Asset</TableCell>
             <TableCell>Quantity</TableCell>

@@ -31,7 +31,9 @@ ReactDOM.render(
           <Route exact path='/strategy_writer' element={<PrivateRoute />}>
             <Route exact path="/strategy_writer" element={<StrategyWriter />}/>
           </Route>
-          <Route exact path='/chart' element={<ChartTest />}/>
+          <Route exact path='/chart' element={<PrivateRoute />}>
+            <Route exact path='/chart' element={<ChartTest />}/>
+          </Route>
           <Route exact path='/api_test' element={<PrivateRoute />}>
               <Route exact path='/api_test' element={<APITest />}/>
           </Route>

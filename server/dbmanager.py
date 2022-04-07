@@ -4,6 +4,7 @@
 
 import sqlite3
 import random
+from turtle import update
 
 def __get_conn_and_cursor() -> tuple: # See comments section in document.
     connection = sqlite3.connect('smarttrade.sqlite')
@@ -48,7 +49,6 @@ def __get_unique_id(table: str, idName: str) -> int: # Get an ID that is unused
     return id
 
 def __execute_query(query: str, args=None) -> None:
-    print(query)
     conn, cursor = __get_conn_and_cursor()
     if args is None:
         cursor.execute(query)
@@ -122,7 +122,7 @@ def get_row_by_column(table: str, column: str, value) -> dict: # Returns a row f
 
 def get_backtest_trades(backtestID: int) -> list: # Return all trades associated with a backtest.
     return __get_linked_entities(
-        'tblBacktest', 'tblTrades',
+        'tblBacktests', 'tblTrades',
         'tblBacktestTrades', ['backtestID', 'tradeID'],
         backtestID
     )
@@ -158,10 +158,9 @@ def get_strategy_backtests(strategyID: int) -> list: # Return all backtests asso
 
 def __get_linked_entities(table1: str, table2: str, linkTable: str, idNames: list, id: int) -> list: # Return all linked entities linked to another one.
     cursor = __get_conn_and_cursor()[1]
-    query = f"""SELECT {table2}.*, {table1}.{idNames[0]} FROM {table2} 
-    INNER JOIN {table1} ON {linkTable}.{idNames[0]} = {table1}.{idNames[0]}
-    LEFT OUTER JOIN {linkTable} ON {linkTable}.{idNames[1]} = {table2}.{idNames[1]}
-    WHERE {table1}.{idNames[0]} = {id}"""
+    query = f"""SELECT {table2}.*, {table2}.{idNames[1]}, {linkTable}.{idNames[0]}, {linkTable}.{idNames[1]} FROM {table2} 
+    INNER JOIN {linkTable} ON {linkTable}.{idNames[1]} = {table2}.{idNames[1]}
+    WHERE {linkTable}.{idNames[0]} = {id}"""
 
     result = cursor.execute(query).fetchall()
     cursor.close()

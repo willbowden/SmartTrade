@@ -64,7 +64,7 @@ class User: # Class to represent a user in the system, containing their account 
 
     def get_trade_history(self): # Return user's trade history. Calculate it if it doesn't exist.
         if self.id == 9227090:
-            with open("C:/Users/willb/Desktop/Coding/SmartTrade/Testing Files/trades.json", 'r') as infile:
+            with open("./Testing Files/trades.json", 'r') as infile:
                 asDf = pd.read_json(infile, orient='columns')
                 return asDf.to_json(orient='records')
         if self.tradedPairs is None:

@@ -1,35 +1,22 @@
 import React from "react";
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import CenteredPageContainer from '../components/centeredPageContainer.jsx';
-import { Grid, Typography, Card, CardContent } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import HoldingsTable from "../components/holdingsTable.jsx";
-import protectedFetch from "../auth/protectedFetch.js";
+import TradeList from "../components/tradeList.jsx";
 
 
-function Dashboard() {
-  const [valueData, setValueData] = useState([])
-  const [waitingForData, setWaitingForData] = useState(true);
-
-  useEffect(() => {
-    protectedFetch('/api/get_user_trades').then((results) => {
-      // const lineSeries = [{data: results}];
-      // setValueData(lineSeries);
-      // setWaitingForData(false);
-      console.log(results);
-    })
-  }, [])
-  
+function Dashboard() {  
   return ( 
     <CenteredPageContainer>
       <Grid item xs={12}>
         <Typography variant="h1">Welcome</Typography>
       </Grid>
       <Grid item xs={4} >
-        {/* <HoldingsTable /> */}
+        <HoldingsTable />
       </Grid>
-      <Grid item xs={8}>
-        { waitingForData ? <Typography variant="h4">We're calculating your trade history.</Typography> 
-        : null }
+      <Grid item xs={12} sx={{width: '90%'}}>
+        <TradeList></TradeList>
       </Grid>
     </CenteredPageContainer>
   );

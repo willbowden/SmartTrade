@@ -2,7 +2,7 @@
 #    Flask application that serves webpages to users and provides HTML endpoints for getting data.    #
 #######################################################################################################
 
-import dbm
+import random
 import os
 import hashlib
 import requests
@@ -165,6 +165,35 @@ def main():
         out = dataset.to_json(orient="records", date_unit="s")
         return jsonify(out)
 
+    @app.route('/api/get_backtest_results', methods=['POST'])
+    @jwt_required()
+    def get_backtest_results():
+        payload = request.json
+        backtestInfo = dbmanager.get_row_by_column('tblBacktests', 'backtestID', payload['backtestID'])
+        backtestTrades = dbmanager.get_backtest_trades(payload['backtestID'])
+        result = backtestInfo
+        result['profit'] = result['return']
+        result['profitPercent'] = (result.pop('return') / result['startingBalance']) * 100
+        result['numOrders'] = result['numBuys'] + result['numSells']
+        result['id'] = result.pop('backtestID')
+        result['orderHistory'] = backtestTrades
+        for row in result['orderHistory']:
+            row['side'] = row.pop('type')
+        
+
+
+        return jsonify(result), 200
+
+    @app.route('/api/get_strategy_backtests', methods=['POST'])
+    @jwt_required()
+    def get_strategy_backtests():
+        payload = request.json
+        strategyID = dbmanager.get_row_by_column('tblStrategies', 'name', payload['strategyName'])['strategyID']
+        result = dbmanager.get_strategy_backtests(strategyID)
+        for row in result:
+            row['id'] = row.pop('backtestID')
+        return jsonify(result), 200
+
     @app.route('/api/get_user_holdings', methods=["GET"])
     @jwt_required()
     def get_user_holdings():
@@ -174,6 +203,10 @@ def main():
     @app.route('/api/get_user_trades', methods=['GET'])
     @jwt_required()
     def get_user_trade_history():
+        #### WARNIIIIIIIIIIIING
+        inc = random.randint(4, 12)
+        time.sleep(inc)
+        ########################
         return jsonify(current_identity.get_trade_history()), 200
 
     @app.route('/api/register', methods=['POST'])
