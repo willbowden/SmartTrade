@@ -17,7 +17,7 @@ def create_account(username: str, password: str, nickname: str, apiKey: str, exc
     __execute_query(query, (password, apiKey,))
     return id
 
-def create_trade(creatorID: int, strategyID: int, creator: str, date: int, symbol: str, tradeType: str, quantity: float, value: float, price: float, profit: float) -> None: # Creates new trade entry
+def create_trade(creatorID: int, creator: str, date: int, symbol: str, tradeType: str, quantity: float, value: float, price: float, profit: float) -> None: # Creates new trade entry
     id = __get_unique_id('tblTrades', 'tradeID')
     query = f"INSERT INTO tblTrades VALUES ({id}, '{creator}', {date}, '{symbol}', '{tradeType}', {quantity}, {value}, {price}, {profit})"
     __execute_query(query)

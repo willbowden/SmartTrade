@@ -12,22 +12,6 @@ function CandlestickChart(props) {
   const [loading, setLoading] = useState(false);
   const [candlestickSeries, setCandleStickSeries] = useState([]);
   const [lineSeries, setLineSeries] = useState([]);
-  const [options, setOptions] = useState({layout: {
-    backgroundColor: '#131722',
-    textColor: 'rgba(255, 255, 255, 0.9)',
-  }, 
-  timeScale: {
-    timeVisible: true,
-    secondsVisible: false,
-  },
-  grid: {
-    vertLines: {
-      color: '#292929',
-    },
-    horzLines: {
-      color: '#292929',
-    },
-  }});
   const [shouldRedirect, setShouldRedirect] = useState(false);
   const overlaps = ['ma', 'ema']
 
@@ -110,7 +94,7 @@ function CandlestickChart(props) {
           <Button variant="contained" color="success" onClick={sendRequest}>Go</Button>
       </Box>
       <Box sx={{width: '100vw'}}>
-        <GenericChart options={options} candlestickSeries={candlestickSeries} lineSeries={lineSeries} autoWidth={true} height={500} />
+        <GenericChart candlestickSeries={candlestickSeries} lineSeries={lineSeries} autoWidth={true} height={500} />
       </Box>
       </Stack>
         }

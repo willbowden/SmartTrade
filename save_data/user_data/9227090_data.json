@@ -1,0 +1,24 @@
+{
+  "holdings": {
+    "BNB": { "asset": "BNB", "balance": 1e-7, "value": 0.0 },
+    "LDBNB": { "asset": "LDBNB", "balance": 0.01099041, "value": 0 },
+    "GBP": { "asset": "GBP", "balance": 0.00937741, "value": 0.01 },
+    "totalValue": { "date": "2022-04-07 11:50:22", "value": 0.00937741 }
+  },
+  "loggedIn": false,
+  "tradedPairs": [
+    "BTC/USDT",
+    "ETH/USDT",
+    "XRP/BTC",
+    "BNB/USDT",
+    "BCPT/BTC",
+    "ADA/USDT",
+    "XRP/USDT",
+    "ZEN/BTC",
+    "ETH/USDC",
+    "ADA/USDC",
+    "FTM/BTC",
+    "DOGE/BTC",
+    "DUSK/BTC"
+  ]  
+}

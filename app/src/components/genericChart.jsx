@@ -26,7 +26,7 @@ function GenericChart(props) {
   return (
     <CenteredPageContainer>
       <Box sx={{width: '100vw'}}>
-        <Chart options={props.options} candlestickSeries={props.candlestickSeries} lineSeries={props.lineSeries} autoWidth={props.autoWidth} width={props.height} height={props.height} />
+        <Chart options={options} candlestickSeries={props.candlestickSeries} lineSeries={props.lineSeries} autoWidth={props.autoWidth} width={props.height} height={props.height} />
       </Box>
     </CenteredPageContainer>
   );

@@ -12,6 +12,7 @@ function StrategyWriter(props) {
   const [indicators, setIndicators] = useState([]);
   const [rules, setRules] = useState({});
   const [asDict, setAsDict] = useState({});
+  const [redirectToStrategies, setRedirect] = useState(false);
   if (props.state) {
     setIndicators(props.state.indicators);
     setRules(props.state.rules);
@@ -48,16 +49,17 @@ function StrategyWriter(props) {
     protectedFetch("/api/create_strategy", {
       method: "POST",
       body: JSON.stringify(asDict)}).then(() => {
-        return <Navigate to="/strategies"></Navigate>
+        setRedirect(true);
       });
   }
   
   return ( 
+    redirectToStrategies ? <Navigate to="/strategies"></Navigate> : 
     <CenteredPageContainer>
       <Grid>
           { stage === 0 ? <IndicatorSelector onComplete={chooseIndicators}/> : null}
           { stage === 1 ? <RuleMaker indicators={indicators} onComplete={addRules}/> : null}
-          { stage === 2 ? <StrategyDetails onComplete={addDetails} /> : null }
+          { stage === 2 || stage == 3 ? <StrategyDetails onComplete={addDetails} /> : null }
           { stage === 3 ? <Button color="success" onClick={create}>Create Strategy</Button> : null}
       </Grid>
     </CenteredPageContainer>

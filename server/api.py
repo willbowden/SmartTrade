@@ -171,6 +171,11 @@ def main():
         print(f"Fetching Balances For: {current_identity.id}")
         return jsonify(current_identity.get_holdings()), 200
 
+    @app.route('/api/get_user_trades', methods=['GET'])
+    @jwt_required()
+    def get_user_trade_history():
+        return jsonify(current_identity.get_trade_history()), 200
+
     @app.route('/api/register', methods=['POST'])
     def register():
         payload = request.json
