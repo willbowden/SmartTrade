@@ -1,0 +1,10 @@
+ccxt==4.5.18
+Flask==3.1.2
+flask_jwt==0.3.2
+forex_python==1.9.2
+numpy==2.3.4
+pandas==2.3.3
+python-dotenv==1.2.1
+python_dateutil==2.9.0.post0
+Requests==2.32.5
+ta_lib==0.6.8
